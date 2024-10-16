@@ -1,10 +1,20 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Created by https://www.toptal.com/developers/gitignore/api/react,nextjs,firebase,vercel
+# Edit at https://www.toptal.com/developers/gitignore?templates=react,nextjs,firebase,vercel
 
+### Firebase ###
+.idea
+**/node_modules/*
+**/.firebaserc
+
+### Firebase Patch ###
+.runtimeconfig.json
+.firebase/
+
+### NextJS ###
 # dependencies
 /node_modules
 /.pnp
 .pnp.js
-.yarn/install-state.gz
 
 # testing
 /coverage
@@ -24,6 +34,7 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
 # local env files
 .env*.local
@@ -34,3 +45,23 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+### react ###
+.DS_*
+*.log
+logs
+**/.backup.
+**/.back.
+
+node_modules
+bower_components
+
+.sublime
+
+psd
+thumb
+sketch
+
+### Vercel ###
+
+# End of https://www.toptal.com/developers/gitignore/api/react,nextjs,firebase,vercel
