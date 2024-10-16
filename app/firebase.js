@@ -1,6 +1,7 @@
 "use client";
 
 import { initializeApp } from 'firebase/app';
+// import { getAuth } from "firebase/auth"; //ログイン機能実装後にやる
 import { getFirestore } from 'firebase/firestore';
 
 // .envから環境変数を取得
