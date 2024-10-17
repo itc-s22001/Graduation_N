@@ -1,7 +1,7 @@
 // app/firebase.js
 
 import { initializeApp } from 'firebase/app';
-import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 // 環境変数からFirebaseの設定を取得
@@ -23,5 +23,22 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
+// Googleアカウントでログインする関数
+const loginWithGoogle = async () => {
+    try {
+        const result = await signInWithPopup(auth, googleProvider);
+        const user = result.user;
+
+        // ユーザー情報
+        const userId = user.uid; // GoogleアカウントのID
+        const email = user.email; // Googleアカウントのメールアドレス
+
+        return { userId, email }; // ユーザーIDとメールアドレスを返す
+    } catch (error) {
+        console.error("ログインエラー:", error);
+        throw error; // エラーをスロー
+    }
+};
+
 // エクスポート
-export { auth, googleProvider, db };
+export { auth, googleProvider, db, loginWithGoogle };
