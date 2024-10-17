@@ -1,9 +1,11 @@
-"use client";
+// app/firebase.js
 
 import { initializeApp } from 'firebase/app';
+
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
-// .envから環境変数を取得
+// 環境変数からFirebaseの設定を取得
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -17,8 +19,10 @@ const firebaseConfig = {
 // Firebaseアプリを初期化
 const app = initializeApp(firebaseConfig);
 
-// Firestoreを取得
+// AuthとFirestoreを取得
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
 
-// dbをエクスポート
-export { db };
+// エクスポート
+export { auth, googleProvider, db };
