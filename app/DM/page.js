@@ -125,6 +125,40 @@ const DM = () => {
         }
     };
 
+    const cancelMessage = async (message) => {
+        const docId = [user.uid, selectedUser.uid].sort().join('-');
+        const docRef = doc(db, "direct_messages", docId);
+
+        try {
+            // まず、メッセージを取得
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+                const currentMessages = docSnap.data().messages;
+
+                // 取り消したいメッセージをフィルタリングして削除
+                const updatedMessages = currentMessages.filter((msg) => msg.message_content !== message.message_content);
+
+                // 取り消しメッセージを追加
+                updatedMessages.push({
+                    sender_id: user.uid,
+                    receiver_id: selectedUser.uid,
+                    message_content: `${user.email}がメッセージを取り消しました。`,
+                    canceled: true, // メッセージが取り消されたことを示すフラグ
+                    original_message: message.message_content, // 取り消された元のメッセージ内容
+                });
+
+                // Firestoreを更新
+                await updateDoc(docRef, {
+                    messages: updatedMessages,
+                    updated_at: serverTimestamp(),
+                });
+            }
+        } catch (error) {
+            console.error("Error canceling message:", error);
+        }
+    };
+
+
     const handleLogout = () => {
         signOut(auth).then(() => {
             router.push('/');
@@ -176,6 +210,11 @@ const DM = () => {
                             messages.map((message, index) => (
                                 <div key={index} style={{ marginBottom: "10px", textAlign: message.sender_id === user.uid ? "right" : "left" }}>
                                     <strong>{message.sender_id === user.uid ? "自分" : selectedUser.name}:</strong> {message.message_content}
+                                    {message.sender_id === user.uid && (
+                                        <button onClick={() => cancelMessage(message)} style={{ marginLeft: "10px" }}>
+                                            取り消す
+                                        </button>
+                                    )}
                                 </div>
                             ))
                         )}
