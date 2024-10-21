@@ -1,8 +1,9 @@
 import React from "react";
+import Login from './login/page'
 
 const Home = () => {
   return (
-    <h1>ようこそ</h1>
+      <Login />
   )
 };
 
