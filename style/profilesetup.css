@@ -1,0 +1,54 @@
+html, body {
+    height: 100%; /* HTMLとBODYの高さを100%に設定 */
+    margin: 0; /* デフォルトのマージンを削除 */
+}
+
+.profile-edit-container {
+    margin: 0 auto;
+    max-width: 600px; /* 最大幅を設定 */
+    padding: 20px; /* 内側の余白を追加 */
+    display: flex; /* Flexboxを使用 */
+    flex-direction: column; /* 縦方向に配置 */
+    align-items: center; /* 横方向に中央に揃える */
+    justify-content: center; /* 縦方向にも中央に揃える */
+    height: 100vh; /* 画面の高さを100%に設定 */
+}
+
+h1 {
+    text-align: center;
+}
+
+label {
+    display: block; /* 各ラベルをブロック要素に */
+    margin-bottom: 10px; /* ラベル間の余白 */
+}
+
+input, textarea {
+    width: 100%; /* 幅を100%に設定 */
+    max-width: 300px; /* 適切な長さを設定 */
+    padding: 10px; /* 内側の余白を追加 */
+    margin-bottom: 20px; /* 下部の余白を追加 */
+    border: 1px solid #ccc; /* ボーダーを追加 */
+    border-radius: 5px; /* 角を丸める */
+}
+
+textarea {
+    resize: vertical; /* 垂直方向のみリサイズ可能 */
+    min-height: 80px; /* 最小の高さを設定 */
+}
+
+button {
+    background-color: #4CAF50; /* 緑色 */
+    color: white; /* 文字色 */
+    padding: 10px 20px; /* パディング */
+    border: none; /* ボーダーをなしに */
+    border-radius: 5px; /* 角を丸める */
+    cursor: pointer; /* カーソルをポインターに */
+    font-size: 1em; /* フォントサイズ */
+    max-width: 300px; /* ボタンの最大幅を設定 */
+    width: 100%; /* ボタンを幅100%に設定 */
+}
+
+button:hover {
+    background-color: #45a049; /* ホバー時の色 */
+}
