@@ -14,7 +14,7 @@ const LoginPage = () => {
       console.log('User:', result.user);
       // ログイン成功後にホームページにリダイレクト
 
-      router.push('/Sidebar');
+      // router.push('/Sidebar');
 
       router.push('/profile/setup');
 
