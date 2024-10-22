@@ -13,7 +13,11 @@ const LoginPage = () => {
       const result = await signInWithPopup(auth, googleProvider); // authとgoogleProviderを渡す
       console.log('User:', result.user);
       // ログイン成功後にホームページにリダイレクト
+
+      // router.push('/Sidebar');
+
       router.push('/profile/setup');
+
     } catch (error) {
       console.error('Login Error:', error);
     }
