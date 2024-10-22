@@ -1,3 +1,4 @@
+
 // app/Home/page.js
 import React from 'react';
 import Login from './login/page'; // Sidebarコンポーネントをインポート
@@ -10,6 +11,15 @@ const Home = () => {
             <Login />
         </div>
     );
+
+import React from "react";
+import Login from './login/page'
+
+const Home = () => {
+  return (
+      <Login />
+  )
+
 };
 
 export default Home;
