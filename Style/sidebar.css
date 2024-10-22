@@ -142,14 +142,6 @@
     margin-left: 200px; /* 左側に余白を追加 */
 }
 
-/* 検索バー全体を右側に固定する */
-.search-container {
-    position: absolute; /* 検索バー全体を右端に固定 */
-    top: 20px;
-    right: 200px; /* 右端から50pxに余白を設定 */
-    width: 300px; /* 検索バー全体の幅を調整 */
-}
-
 .search-form {
     display: flex; /* フレックスボックスを使用 */
     align-items: center; /* 縦方向の中央揃え */
@@ -220,6 +212,50 @@
     width: auto; /* 検索バーの幅を自動に */
 }
 
+/* サジェストの各アイテムのスタイル */
+.search-suggestions li {
+    padding: 10px; /* パディング */
+    cursor: pointer; /* カーソルをポインターに */
+}
+
+.search-suggestions li:hover {
+    background: #f0f0f0; /* ホバー時の背景色 */
+}
+
+/* アカウントリストのスタイル */
+.account-list {
+    margin-top: 20px; /* 検索バーとの余白 */
+    padding: 0;
+    list-style: none; /* リストスタイルを削除 */
+    width: 100%; /* 検索バーと同じ幅に */
+}
+
+.account-item {
+    padding: 10px 20px; /* パディングを追加 */
+    border-bottom: 1px solid #ccc; /* 下線を追加 */
+    cursor: pointer; /* カーソルをポインターに */
+    background-color: white; /* 背景色 */
+    border-radius: 5px; /* アイテムを丸める */
+}
+
+.account-item:hover {
+    background-color: #f0f0f0; /* ホバー時の背景色 */
+}
+
+/* スクロールが必要な場合 */
+.account-list {
+    max-height: 200px; /* 最大の高さを設定 */
+    overflow-y: auto; /* 縦方向のスクロールを可能に */
+}
+
+/* 検索バー全体を右側に固定する */
+.search-container {
+    position: absolute; /* 検索バー全体を右端に固定 */
+    top: 20px;
+    right: 200px; /* 右端から50pxに余白を設定 */
+    width: 300px; /* 検索バー全体の幅を調整 */
+}
+
 /* サジェストリストのスタイル */
 .search-suggestions {
     position: absolute; /* 検索バーの下に絶対配置 */
@@ -236,11 +272,14 @@
 }
 
 /* サジェストの各アイテムのスタイル */
-.search-suggestions li {
+.suggestion-item {
     padding: 10px; /* パディング */
     cursor: pointer; /* カーソルをポインターに */
 }
 
-.search-suggestions li:hover {
+.suggestion-item:hover {
     background: #f0f0f0; /* ホバー時の背景色 */
 }
+
+
+

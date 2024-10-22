@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { db } from '../firebase'; // Firestoreの設定をインポート
-import { collection, query, where, getDocs, orderBy, limit, startAt, endAt } from 'firebase/firestore'; // Firestoreのクエリ関連のメソッドをインポート
+import { collection, query, getDocs, orderBy, limit, startAt, endAt } from 'firebase/firestore'; // Firestoreのクエリ関連のメソッドをインポート
 import '../../Style/sidebar.css'; // 必要に応じて適切なCSSをインポート
 
 const Searchbar = () => {
@@ -27,28 +27,32 @@ const Searchbar = () => {
     const fetchUsers = async (queryString) => {
         const usersRef = collection(db, 'users'); // 'users' コレクションを指定
 
-        // Firestoreクエリ：queryStringで始まるユーザー名を検索
-        const q = query(
-            usersRef,
-            orderBy('name'),
-            startAt(queryString), // 検索クエリで始まる
-            endAt(queryString + '\uf8ff'), // クエリで始まる範囲
-            limit(10) // 取得するユーザーの最大数
-        );
-        
-        const querySnapshot = await getDocs(q);
-        const users = [];
-        querySnapshot.forEach((doc) => {
-            users.push({ name: doc.data().name, uid: doc.id }); // アカウント名とuidを配列に追加
-        });
+        try {
+            // Firestoreクエリ：queryStringで始まるユーザー名を検索
+            const q = query(
+                usersRef,
+                orderBy('name'),
+                startAt(queryString), // 検索クエリで始まる
+                endAt(queryString + '\uf8ff'), // クエリで始まる範囲
+                limit(10) // 取得するユーザーの最大数
+            );
 
-        return users; // 検索結果を返す
+            const querySnapshot = await getDocs(q);
+            const users = [];
+            querySnapshot.forEach((doc) => {
+                users.push({ name: doc.data().name, uid: doc.id }); // アカウント名とuidを配列に追加
+            });
+
+            return users; // 検索結果を返す
+        } catch (error) {
+            console.error("Error fetching users: ", error);
+            return []; // エラー発生時は空の配列を返す
+        }
     };
 
     // 検索の送信ハンドラ
     const handleSearchSubmit = (event) => {
         event.preventDefault(); // フォーム送信を防ぐ
-        alert(`Searching for: ${searchQuery}`); // 検索クエリをアラート表示
         setSuggestions([]); // 検索後にサジェストをクリア
     };
 
@@ -56,7 +60,6 @@ const Searchbar = () => {
     const handleSuggestionClick = (suggestion) => {
         setSearchQuery(suggestion.name); // 検索クエリをサジェストの内容に設定
         setSuggestions([]); // サジェストをクリア
-        // uidを使って他の操作が必要なら、ここでuidを利用可能（例：ユーザー詳細ページに遷移など）
         console.log(`Selected user ID: ${suggestion.uid}`);
     };
 
@@ -79,10 +82,11 @@ const Searchbar = () => {
                 </form>
             </div>
 
+            {/* 検索バーの下にサジェストを表示 */}
             {suggestions.length > 0 && (
                 <ul className="search-suggestions">
                     {suggestions.map((suggestion, index) => (
-                        <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
+                        <li key={index} onClick={() => handleSuggestionClick(suggestion)} className="suggestion-item">
                             {suggestion.name} {/* 表示にはユーザー名を使い、uidはバックエンド操作用に保持 */}
                         </li>
                     ))}
