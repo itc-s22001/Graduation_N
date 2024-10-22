@@ -1,10 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { db, auth } from "../firebase";
 import { collection, doc, setDoc, serverTimestamp, getDoc, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import '../../style/SuperDM.css';
+
+import Sou from '../Images/Sousin.png'
+import Image from "next/image";
 
 const DM = () => {
     const [user, setUser] = useState(null);
@@ -14,13 +18,14 @@ const DM = () => {
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
 
+    const messagesEndRef = useRef(null); // スクロールのための参照
+
     const router = useRouter();
 
-    // ログインユーザー情報を取得し、Firestoreに保存
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                setUser(currentUser); // ログインしたユーザー情報をセット
+                setUser(currentUser);
 
                 const userDocRef = doc(db, "users", currentUser.uid);
                 await setDoc(userDocRef, {
@@ -35,7 +40,6 @@ const DM = () => {
         return () => unsubscribe();
     }, []);
 
-    // Firestoreからユーザー情報を取得
     useEffect(() => {
         const q = collection(db, "users");
         const unsubscribe = onSnapshot(
@@ -53,17 +57,17 @@ const DM = () => {
         return () => unsubscribe();
     }, []);
 
-    // メッセージをFirestoreから取得
     useEffect(() => {
         if (!selectedUser || !user) return;
 
-        // ドキュメントIDを「ユーザーIDのソート」によって作成
         const docId = [user.uid, selectedUser.uid].sort().join('-');
         const unsubscribe = onSnapshot(
             doc(db, "direct_messages", docId),
             (docSnap) => {
                 if (docSnap.exists()) {
-                    setMessages(docSnap.data().messages || []);
+                    const loadedMessages = docSnap.data().messages || [];
+                    loadedMessages.sort((a, b) => a.timestamp - b.timestamp);
+                    setMessages(loadedMessages);
                 } else {
                     setMessages([]);
                 }
@@ -85,44 +89,41 @@ const DM = () => {
             return;
         }
 
-        // ユーザーのUIDを基にドキュメントIDを作成
         const docId = [user.uid, selectedUser.uid].sort().join('-');
         const docRef = doc(db, "direct_messages", docId);
+
+        const messageData = {
+            sender_id: user.uid,
+            receiver_id: selectedUser.uid,
+            message_content: newMessage,
+            timestamp: new Date().getTime(),
+        };
 
         try {
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
-                // ドキュメントが存在する場合、メッセージを追加
                 await updateDoc(docRef, {
-                    messages: arrayUnion({
-                        sender_id: user.uid,
-                        receiver_id: selectedUser.uid,
-                        message_content: newMessage,
-                        // timestampはここでは設定しない
-                    }),
-                    updated_at: serverTimestamp(), // メッセージが送信された後にupdated_atを更新
+                    messages: arrayUnion(messageData),
+                    updated_at: serverTimestamp(),
                 });
             } else {
-                // ドキュメントが存在しない場合、新規作成
                 await setDoc(docRef, {
-                    messages: [
-                        {
-                            sender_id: user.uid,
-                            receiver_id: selectedUser.uid,
-                            message_content: newMessage,
-                            // timestampはここでは設定しない
-                        }
-                    ],
+                    messages: [messageData],
                     created_at: serverTimestamp(),
-                    updated_at: serverTimestamp(), // 新規作成時のupdated_at
+                    updated_at: serverTimestamp(),
                 });
             }
 
-            setNewMessage(""); // メッセージ入力をクリア
+            setNewMessage("");
+            scrollToBottom(); // メッセージ送信後にスクロール
         } catch (error) {
             console.error("Error sending message:", error);
         }
+    };
+
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     const cancelMessage = async (message) => {
@@ -130,24 +131,21 @@ const DM = () => {
         const docRef = doc(db, "direct_messages", docId);
 
         try {
-            // まず、メッセージを取得
             const docSnap = await getDoc(docRef);
             if (docSnap.exists()) {
                 const currentMessages = docSnap.data().messages;
+                const updatedMessages = currentMessages.filter((msg) => msg.timestamp !== message.timestamp);
 
-                // 取り消したいメッセージをフィルタリングして削除
-                const updatedMessages = currentMessages.filter((msg) => msg.message_content !== message.message_content);
-
-                // 取り消しメッセージを追加
-                updatedMessages.push({
+                const cancelMessageData = {
                     sender_id: user.uid,
                     receiver_id: selectedUser.uid,
                     message_content: `${user.email}がメッセージを取り消しました。`,
-                    canceled: true, // メッセージが取り消されたことを示すフラグ
-                    original_message: message.message_content, // 取り消された元のメッセージ内容
-                });
+                    canceled: true,
+                    original_message: message.message_content,
+                    timestamp: message.timestamp,
+                };
 
-                // Firestoreを更新
+                updatedMessages.push(cancelMessageData);
                 await updateDoc(docRef, {
                     messages: updatedMessages,
                     updated_at: serverTimestamp(),
@@ -158,82 +156,122 @@ const DM = () => {
         }
     };
 
-
-    const handleLogout = () => {
-        signOut(auth).then(() => {
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+            setUser(null);
             router.push('/');
-        }).catch((error) => {
+        } catch (error) {
             console.error("Error logging out:", error);
-        });
+        }
     };
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+    useEffect(() => {
+        scrollToBottom(); // メッセージが更新されたときにスクロール
+    }, [messages]);
 
     return (
         <div>
-            <div style={{ marginBottom: "20px" }}>
-                {user ? (
+            <div className="container">
+                <div className="user-status">
+                    {user ? (
+                        <div>
+                            <p>ログイン中: {user.email}</p>
+                            <button onClick={handleLogout}>ログアウト</button>
+                        </div>
+                    ) : (
+                        <p>ログインしていません。</p>
+                    )}
+                </div>
+
+                {!selectedUser ? (
                     <div>
-                        <p>ログイン中: {user.email}</p>
-                        <button onClick={handleLogout}>ログアウト</button>
+                        <h2>DMを送る相手を選択してください</h2>
+                        <ul>
+                            {users.map((otherUser) => (
+                                otherUser.uid !== user?.uid && (
+                                    <li key={otherUser.uid}>
+                                        <button onClick={() => setSelectedUser(otherUser)}>
+                                            {otherUser.name}
+                                        </button>
+                                    </li>
+                                )
+                            ))}
+                        </ul>
                     </div>
                 ) : (
-                    <p>ログインしていません。</p>
+                    <div className="DMmain">
+                        <h1>{selectedUser.name}とのDM</h1>
+                        <button onClick={() => setSelectedUser(null)}>戻る</button>
+                        <div className="messageContainer">
+                            {messages.length === 0 ? (
+                                <p>メッセージはまだありません。</p>
+                            ) : (
+                                messages.map((message, index) => (
+                                    <div key={index}
+                                         className={`message ${message.sender_id === user?.uid ? 'self' : 'other'}`}>
+                                        <div style={{display: "flex", alignItems: "flex-start"}}>
+                                            {user && message.sender_id === user.uid && !message.canceled && (
+                                                <button onClick={() => cancelMessage(message)} style={{
+                                                    marginRight: "10px",
+                                                    fontSize: "12px",
+                                                    padding: "1px 1px"
+                                                }}>
+                                                    ︙
+                                                </button>
+                                            )}
+                                            <div style={{
+                                                marginTop: "5px",
+                                                margin: "auto",
+                                            }}>
+                                                {message.message_content}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                            <div ref={messagesEndRef}/>
+                            {/* スクロールのための参照を追加 */}
+                        </div>
+
+                        <form onSubmit={sendMessage}
+                              style={{display: "flex", alignItems: "center", marginTop: "10px", width: "400px"}}>
+                            <textarea
+                                style={{
+                                    textAlign: "center",
+                                    padding: "20px",
+                                    height: "30px"
+                                }}
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                rows="4"
+                                placeholder="メッセージを入力..."
+                                maxLength={100} // 文字数制限を追加
+                            />
+
+                            <button type="submit" className="send-button" style={{
+                                width: "50px",
+                                height: "50px",
+                                padding: 0, // ボタン内の余白を取り除く
+                                border: "none", // ボタンの枠線を消す（必要なら）
+                                background: "transparent", // 背景を透明に
+                                display: "flex", // 中央揃え
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}>
+                                <Image
+                                    src={Sou}
+                                    alt="送信"
+                                    width={50}
+                                    height={50}
+                                    style={{objectFit: "contain"}} // 画像をボタン内に収める
+                                />
+                            </button>
+
+                        </form>
+                    </div>
                 )}
             </div>
-
-            {!selectedUser ? (
-                <div>
-                    <h2>DMを送る相手を選択してください</h2>
-                    <ul>
-                        {users.map((otherUser) => (
-                            otherUser.uid !== user.uid && (
-                                <li key={otherUser.uid}>
-                                    <button onClick={() => setSelectedUser(otherUser)}>
-                                        {otherUser.name}
-                                    </button>
-                                </li>
-                            )
-                        ))}
-                    </ul>
-                </div>
-            ) : (
-                <div>
-                    <h1>{selectedUser.name}とのDM</h1>
-                    <button onClick={() => setSelectedUser(null)}>戻る</button>
-                    <div style={{ border: "1px solid #ccc", padding: "10px", height: "300px", overflowY: "scroll" }}>
-                        {messages.length === 0 ? (
-                            <p>メッセージはまだありません。</p>
-                        ) : (
-                            messages.map((message, index) => (
-                                <div key={index} style={{ marginBottom: "10px", textAlign: message.sender_id === user.uid ? "right" : "left" }}>
-                                    <strong>{message.sender_id === user.uid ? "自分" : selectedUser.name}:</strong> {message.message_content}
-                                    {message.sender_id === user.uid && (
-                                        <button onClick={() => cancelMessage(message)} style={{ marginLeft: "10px" }}>
-                                            取り消す
-                                        </button>
-                                    )}
-                                </div>
-                            ))
-                        )}
-                    </div>
-
-                    <form onSubmit={sendMessage} style={{ marginTop: "10px" }}>
-                        <textarea
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            rows="4"
-                            placeholder="メッセージを入力..."
-                            style={{ width: "100%", padding: "10px" }}
-                        />
-                        <button type="submit" style={{ marginTop: "10px" }}>
-                            送信
-                        </button>
-                    </form>
-                </div>
-            )}
         </div>
     );
 };
