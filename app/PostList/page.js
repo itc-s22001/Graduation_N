@@ -1,38 +1,49 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { HomeScreen } from "../Home_screen/page";
-import styles from "@/styles/PostList.module.css"
+import { query, collection, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
-const PostList = () => {
-    const [posts, setPosts] = useState([]);  // 投稿データを格納する状態
-    const [loading, setLoading] = useState(true); // ローディング状態を管理
+import { useState, useEffect } from "react";
+import { query, collection, orderBy, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 
+const PostPage = () => {
+    const [posts, setPosts] = useState([]); // 投稿データの状態管理
 
+    // リアルタイムで投稿データを取得するためのuseEffect
     useEffect(() => {
-        const fetchPosts = async () => {
-            try {
-                const fetchedPosts = await HomeScreen();  // データを取得 
-                setPosts(fetchedPosts) // 状態に投稿データを設定
-            } catch (e) {
-                console.log("エラーが発生しました", e);  // エラーハンドリング
-            }
-        };
-        fetchPosts(); // 関数を呼び出す
+        // Firestoreのコレクション 'post' を最新の順で取得するクエリを作成
+        const q = query(collection(db, "post"), orderBy("create_at", "desc"));
+
+        // リアルタイムでデータベースの変更を監視してデータを取得
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const postData = snapshot.docs.map(doc => ({
+                id: doc.id, // ドキュメントID
+                ...doc.data() // ドキュメント内のデータを取得
+            }));
+
+            setPosts(postData); // 取得した投稿データを状態にセット
+        });
+
+        // コンポーネントがアンマウントされたときにリスナーを解除
+        return () => unsubscribe();
     }, []);
 
     return (
-        <div className={styles.post_list}>
-                {posts.map(post => (
-                    <div key={post.id} className={styles.post}>
-                        <h3>{post.content}</h3> {/* 投稿内3000容を表示 */}
-                        <p>投稿日: {new Date(post.create_at.seconds * 1000).toLocaleString()}</p> {/* 投稿日時を表示 */}
-                        <p>投稿ID: {post.post_id}</p>
-                        <p>ユーザーID: {post.user_id}</p>
-                    </div>
-                ))}
+        <div>
+            {/* 投稿の表示 */}
+            {posts.map(post => (
+                <div key={post.id} style={{ border: "1px solid #ccc", padding: "10px", marginBottom: "10px" }}>
+                    <p>内容: {post.content}</p>
+                    <p>投稿日: {post.create_at ? new Date(post.create_at.seconds * 1000).toLocaleString() : "不明"}</p>
+                    <p>いいね: {post.likes}</p>
+                    <p>コメント数: {post.comments_count}</p>
+                </div>
+            ))}
         </div>
     );
 };
 
-export default PostList;
+export default PostPage;
+
