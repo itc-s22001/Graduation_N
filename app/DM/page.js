@@ -6,9 +6,9 @@ import { db, auth } from "../firebase";
 import { collection, doc, setDoc, serverTimestamp, getDoc, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import '../../style/SuperDM.css';
-
-import Sou from '../Images/Sousin.png'
+import Sou from '../Images/Sousin.png';
 import Image from "next/image";
+import Sidebar from "@/app/Sidebar/page";
 
 const DM = () => {
     const [user, setUser] = useState(null);
@@ -19,7 +19,6 @@ const DM = () => {
     const [loading, setLoading] = useState(true);
 
     const messagesEndRef = useRef(null); // スクロールのための参照
-
     const router = useRouter();
 
     useEffect(() => {
@@ -166,12 +165,25 @@ const DM = () => {
         }
     };
 
+    const handleKeyDown = (e) => {
+        if (e.shiftKey && e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage(e);
+        }
+    };
+
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    };
+
     useEffect(() => {
         scrollToBottom(); // メッセージが更新されたときにスクロール
     }, [messages]);
 
     return (
         <div>
+            <Sidebar />
             <div className="container">
                 <div className="user-status">
                     {user ? (
@@ -208,9 +220,8 @@ const DM = () => {
                                 <p>メッセージはまだありません。</p>
                             ) : (
                                 messages.map((message, index) => (
-                                    <div key={index}
-                                         className={`message ${message.sender_id === user?.uid ? 'self' : 'other'}`}>
-                                        <div style={{display: "flex", alignItems: "flex-start"}}>
+                                    <div key={index} className={`message ${message.sender_id === user?.uid ? 'self' : 'other'}`}>
+                                        <div style={{ display: "flex", alignItems: "flex-start" }}>
                                             {user && message.sender_id === user.uid && !message.canceled && (
                                                 <button onClick={() => cancelMessage(message)} style={{
                                                     marginRight: "10px",
@@ -225,37 +236,41 @@ const DM = () => {
                                                 margin: "auto",
                                             }}>
                                                 {message.message_content}
+                                                {!message.canceled && ( // メッセージがキャンセルされていない場合にタイムスタンプを表示
+                                                    <div style={{ fontSize: "12px", color: "gray" }}>
+                                                        {formatTimestamp(message.timestamp)}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                 ))
                             )}
                             <div ref={messagesEndRef}/>
-                            {/* スクロールのための参照を追加 */}
                         </div>
 
-                        <form onSubmit={sendMessage}
-                              style={{display: "flex", alignItems: "center", marginTop: "10px", width: "400px"}}>
-                            <textarea
-                                style={{
-                                    textAlign: "center",
-                                    padding: "20px",
-                                    height: "30px"
-                                }}
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                rows="4"
-                                placeholder="メッセージを入力..."
-                                maxLength={100} // 文字数制限を追加
-                            />
+                        <form onSubmit={sendMessage} style={{ display: "flex", alignItems: "center", marginTop: "10px", width: "400px" }}>
+                        <textarea
+                            style={{
+                                textAlign: "center",
+                                padding: "20px",
+                                height: "30px"
+                            }}
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            rows="4"
+                            placeholder="メッセージを入力..."
+                            maxLength={100} // 文字数制限を追加
+                            onKeyDown={handleKeyDown} // Shift + Enterの監視
+                        />
 
                             <button type="submit" className="send-button" style={{
                                 width: "50px",
                                 height: "50px",
-                                padding: 0, // ボタン内の余白を取り除く
-                                border: "none", // ボタンの枠線を消す（必要なら）
-                                background: "transparent", // 背景を透明に
-                                display: "flex", // 中央揃え
+                                padding: 0,
+                                border: "none",
+                                background: "transparent",
+                                display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center"
                             }}>
@@ -264,16 +279,16 @@ const DM = () => {
                                     alt="送信"
                                     width={50}
                                     height={50}
-                                    style={{objectFit: "contain"}} // 画像をボタン内に収める
+                                    style={{ objectFit: "contain" }}
                                 />
                             </button>
-
                         </form>
                     </div>
                 )}
             </div>
         </div>
     );
+
 };
 
 export default DM;
