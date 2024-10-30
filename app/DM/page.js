@@ -1,6 +1,5 @@
 'use client';
 
-// 'use client' は省略
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from 'next/navigation';
 import { db, auth } from "../firebase";
@@ -10,8 +9,7 @@ import '../../style/SuperDM.css';
 import Sou from '../Images/Sousin.png';
 import Image from "next/image";
 import Sidebar from "@/app/Sidebar/page";
-
-import Yaji from '../Images/Yajirusi.png'
+import Yaji from '../Images/Yajirusi.png';
 
 const DM = () => {
     const [user, setUser] = useState(null);
@@ -21,7 +19,7 @@ const DM = () => {
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
 
-    const messagesEndRef = useRef(null); // スクロールのための参照
+    const messagesEndRef = useRef(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -29,18 +27,19 @@ const DM = () => {
             if (currentUser) {
                 const userDocRef = doc(db, "users", currentUser.uid);
                 const userDocSnap = await getDoc(userDocRef);
-                let userName = currentUser.email; // デフォルトはメールアドレス
+                let userName = currentUser.email;
 
                 if (userDocSnap.exists()) {
-                    userName = userDocSnap.data().name || userName; // 名前がある場合は取得
+                    userName = userDocSnap.data().name || userName;
                     await setDoc(userDocRef, {
                         uid: currentUser.uid,
                         email: currentUser.email,
                         name: userName,
+                        followers: userDocSnap.data().followers || [],
                         lastLogin: serverTimestamp()
                     }, { merge: true });
                 }
-                setUser({ ...currentUser, name: userName });
+                setUser({ ...currentUser, name: userName, followers: userDocSnap.data().followers || [] });
             } else {
                 setUser(null);
             }
@@ -50,18 +49,11 @@ const DM = () => {
 
     useEffect(() => {
         const q = collection(db, "users");
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                const loadedUsers = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-                setUsers(loadedUsers);
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching users:", error);
-                setLoading(false);
-            }
-        );
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const loadedUsers = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            setUsers(loadedUsers);
+            setLoading(false);
+        });
         return () => unsubscribe();
     }, []);
 
@@ -91,15 +83,10 @@ const DM = () => {
     const sendMessage = async (e) => {
         e.preventDefault();
 
-        if (!newMessage.trim()) return;
-        if (!selectedUser || !selectedUser.uid) {
-            console.error("Error: receiver_uid is undefined");
-            return;
-        }
+        if (!newMessage.trim() || !selectedUser || !selectedUser.uid) return;
 
         const docId = [user.uid, selectedUser.uid].sort().join('-');
         const docRef = doc(db, "direct_messages", docId);
-
         const messageData = {
             sender_id: user.uid,
             receiver_id: selectedUser.uid,
@@ -109,7 +96,6 @@ const DM = () => {
 
         try {
             const docSnap = await getDoc(docRef);
-
             if (docSnap.exists()) {
                 await updateDoc(docRef, {
                     messages: arrayUnion(messageData),
@@ -209,15 +195,17 @@ const DM = () => {
                     <div>
                         <h2>DMを送る相手を選択してください</h2>
                         <ul>
-                            {users.map((otherUser) => (
-                                otherUser.uid !== user?.uid && (
+                            {users
+                                .filter((otherUser) => {
+                                    return user?.followers?.includes(otherUser.uid) && otherUser.uid !== user.uid;
+                                })
+                                .map((otherUser) => (
                                     <li key={otherUser.uid}>
                                         <button onClick={() => setSelectedUser(otherUser)}>
                                             {otherUser.name}
                                         </button>
                                     </li>
-                                )
-                            ))}
+                                ))}
                         </ul>
                     </div>
                 ) : (
@@ -233,13 +221,7 @@ const DM = () => {
                                     cursor: "pointer"
                                 }}
                             >
-                                <Image
-                                    src={Yaji} // 画像のパス
-                                    alt="back arrow"
-                                    width={30}
-                                    height={30}
-                                    margin="auto"
-                                />
+                                <Image src={Yaji} alt="back arrow" width={30} height={30} />
                             </button>
                             <h1 style={{ margin: 0 }}>{selectedUser.name}</h1>
                         </div>
@@ -260,10 +242,7 @@ const DM = () => {
                                                     ︙
                                                 </button>
                                             )}
-                                            <div style={{
-                                                marginTop: "5px",
-                                                margin: "auto",
-                                            }}>
+                                            <div style={{ marginTop: "5px", margin: "auto" }}>
                                                 {message.message_content}
                                                 {!message.canceled && (
                                                     <div style={{ fontSize: "12px", color: "gray" }}>
@@ -275,41 +254,20 @@ const DM = () => {
                                     </div>
                                 ))
                             )}
-                            <div ref={messagesEndRef}/>
+                            <div ref={messagesEndRef} />
                         </div>
 
                         <form onSubmit={sendMessage} style={{ display: "flex", alignItems: "center", marginTop: "10px", width: "400px" }}>
-                        <textarea
-                            style={{
-                                textAlign: "center",
-                                padding: "20px",
-                                height: "30px",
-                                overflow: "hidden"
-                            }}
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            rows="4"
-                            placeholder="メッセージを入力..."
-                            maxLength={100}
-                            onKeyDown={handleKeyDown}
-                        />
-
-                            <button type="submit" className="send-button" style={{
-                                width: "50px",
-                                height: "50px",
-                                padding: 0,
-                                border: "none",
-                                background: "transparent",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center"
-                            }}>
-                                <Image
-                                    src={Sou}
-                                    alt="send"
-                                    width={50}
-                                    height={50}
-                                />
+                            <textarea
+                                style={{ textAlign: "center", padding: "20px", height: "65px", overflow: "hidden" }}
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                rows="4"
+                                placeholder="メッセージを入力..."
+                                onKeyDown={handleKeyDown}
+                            />
+                            <button type="submit" style={{ marginLeft: "10px" }}>
+                                <Image src={Sou} alt="send icon" width={30} height={30} />
                             </button>
                         </form>
                     </div>
