@@ -1,0 +1,61 @@
+Style/profile.css
+.profile-page {
+    display: flex;
+    flex-direction: row; /* サイドバーと他のコンテンツを横並びに */
+}
+
+.right-section {
+    display: flex;
+    flex-direction: column; /* 検索バーとプロフィール情報を縦に並べる */
+    flex-grow: 1; /* サイドバーの横幅を適切に調整 */
+    margin-left: 20px;
+}
+
+.profile-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px; /* 検索バーの下に余白を追加 */
+}
+
+.profile-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+
+.profile-name {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+.profile-email {
+    font-size: 16px;
+    color: #666;
+}
+
+.profile-bio {
+    width: 80%;
+    text-align: center;
+}
+
+.profile-bio h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.profile-bio p {
+    font-size: 16px;
+    line-height: 1.5;
+}

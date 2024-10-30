@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Sidebar from "@/app/Sidebar/page";
 import '@/style/profile.css';
-import Search from "@/app/searchbar/page";
+// import Search from "@/app/searchbar/page";
 
 // カスタムモーダルコンポーネント
 const Modal = ({ isOpen, onClose, title, children }) => {
@@ -244,8 +244,8 @@ const ProfilePage = () => {
                 </Modal>
             </div>
             {/* <Search /> */}
-        </div>
-    );
+            </div>
+    )
 };
 
 export default ProfilePage;

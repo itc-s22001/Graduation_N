@@ -1,5 +1,4 @@
 'use client'; // Client component marker
-
 import { useState } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, serverTimestamp, getDoc, query, collection, where, getDocs } from 'firebase/firestore';

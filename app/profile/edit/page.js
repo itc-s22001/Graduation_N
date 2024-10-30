@@ -1,11 +1,10 @@
 'use client'; // Client component marker
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { storage, db, auth } from '@/app/firebase'; // Firebaseのインポート
 import { useRouter } from 'next/navigation';
 import '@/style/profileedit.css';
-
 
 const EditProfilePage = () => {
     const [uid, setUid] = useState('');
@@ -15,38 +14,6 @@ const EditProfilePage = () => {
     const [profileImageUrl, setProfileImageUrl] = useState(''); // プレビュー用
     const [error, setError] = useState('');
     const router = useRouter();
-
-    // プロフィールの初期データを取得する処理
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            const user = auth.currentUser; // 現在のユーザー情報を取得
-            if (!user) {
-                setError("ユーザーがログインしていません。");
-                return;
-            }
-
-            try {
-                // Firebaseからユーザー情報を取得
-                const docRef = doc(db, "users", user.uid);
-                const docSnap = await getDoc(docRef);
-
-                if (docSnap.exists()) {
-                    const userData = docSnap.data();
-                    setUid(userData.uid || '');
-                    setName(userData.name || '');
-                    setProfileDescription(userData.profile_description || '');
-                    setProfileImageUrl(userData.profile_image_url || '');
-                } else {
-                    setError("ユーザー情報が見つかりません。");
-                }
-            } catch (error) {
-                console.error("ユーザー情報の取得に失敗しました:", error);
-                setError("ユーザー情報の取得に失敗しました。");
-            }
-        };
-
-        fetchProfileData();
-    }, []);
 
     // ファイル選択の処理
     const handleFileChange = (e) => {
@@ -70,49 +37,29 @@ const EditProfilePage = () => {
             const user = auth.currentUser; // 現在のユーザー情報を取得
             if (!user) {
                 setError("ユーザーがログインしていません。");
-                console.error("User is not logged in.");
                 return;
             }
-    
-            let newProfileImageUrl = profileImageUrl;
+
+            let profileImageUrl = "";
             if (profileImageFile) {
-                newProfileImageUrl = await handleFileUpload(profileImageFile);
-                console.log("Profile image uploaded successfully:", newProfileImageUrl);
-            } else {
-                console.log("No new profile image selected.");
+                profileImageUrl = await handleFileUpload(profileImageFile);
             }
-    
-            // Firestoreのドキュメント参照を取得
-            const userDocRef = doc(db, "users", user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-    
-            // 保存するデータの準備
-            const dataToSave = {
-                uid: uid,
+
+            // Firebaseにユーザー情報を保存
+            await setDoc(doc(db, "users", user.uid), {
+                uid: uid, // 新しいユーザーID
                 email: user.email,
-                name: name,
+                name: name, // 入力された名前
                 profile_description: profileDescription || "よろしく",
-                profile_image_url: newProfileImageUrl,
-            };
-    
-            // ユーザーデータをFirestoreに保存
-            await setDoc(userDocRef, dataToSave, { merge: true });
-            console.log("User profile data saved successfully:", dataToSave);
-    
-            // プロフィールページにリダイレクト
-            // router.push(`/profile/@${uid}`);
-            router.push('/profile');
+                profile_image_url: profileImageUrl,
+            });
+
+            // プロフィール表示ページにリダイレクト
+            router.push("/profile");
         } catch (error) {
             console.error("ユーザー情報の更新に失敗しました:", error);
             setError("ユーザー情報の更新に失敗しました。");
         }
-    };
-    
-    
-
-    // キャンセルボタンの処理
-    const handleCancel = () => {
-        router.push("/profile");
     };
 
     return (
@@ -157,18 +104,13 @@ const EditProfilePage = () => {
                     )}
                 </div>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
-                <div className="button-container">
-                    <button type="button" onClick={handleCancel}>
-                        キャンセル
-                    </button>
-                    <button onClick={handleSave}>
-                        保存
-                    </button>
-                </div>
-
+                <button onClick={handleSave}>
+                    保存
+                </button>
             </form>
         </div>
-    );
+    );    
 };
 
 export default EditProfilePage;
+

@@ -1,0 +1,79 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.DMmain {
+    width: 100%;
+    display: flex; /* フレックスボックスを使用 */
+    flex-direction: column; /* 縦方向に配置 */
+    justify-content: center; /* 横方向の中央寄せ */
+    align-items: center;     /* 縦方向の中央寄せ */
+}
+
+.messageContainer {
+    border: 3px solid #ccc; /* ボーダー */
+    padding: 30px; /* 内側の余白 */
+    height: 500px;
+    width: 1000px;
+    overflow-y: auto; /* スクロールバーが必要な場合のみ表示 */
+    scrollbar-width: none; /* Firefox用 */
+    -ms-overflow-style: none; /* IEとEdge用 */
+}
+
+/* WebKit系ブラウザ用 */
+.messageContainer::-webkit-scrollbar {
+    display: none; /* スクロールバーを非表示にする */
+}
+
+/* SuperDM.css */
+
+.container {
+    margin-bottom: 20px;
+}
+
+.user-status {
+    margin-bottom: 20px;
+}
+
+.user-name {
+    margin-top: 5px;
+}
+
+.messageContainer {
+    margin-top: 10px;
+}
+
+.message {
+    margin-bottom: 10px;
+    max-width: 600px; /* 最大幅を600pxに設定 */
+    width: auto; /* 内容に合わせて自動的に幅を調整 */
+    padding: 10px;
+    border-radius: 10px;
+    position: relative;
+    /*display: flex;*/
+    align-items: center;
+    border: 3px solid #ccc;
+}
+
+.message.self {
+    background-color: #e1f5fe; /* 自分のメッセージの背景色 */
+    margin-left: auto;
+    width: auto;
+    /*margin-right: 0;!* 自分のメッセージは右寄せ *!*/
+}
+
+.message.other {
+    background-color: #fff; /* 相手のメッセージの背景色 */
+    border: 3px solid #ccc; /* 相手のメッセージにボーダーを追加 */
+    margin-right: auto; /* 相手のメッセージは左寄せ */
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+}
+
+.send-button {
+    margin-top: 10px;
+}
