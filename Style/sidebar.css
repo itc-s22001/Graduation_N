@@ -1,6 +1,6 @@
 /* sidebar.css */
 .sidebar {
-    width: 270px; /* サイドバーの幅 */
+    width: 300px; /* サイドバーの幅 */
     height: 100vh; /* ビューポートの高さ */
     background-color: #fff; /* サイドバーの背景色 */
     display: flex;
