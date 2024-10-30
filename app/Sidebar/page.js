@@ -3,7 +3,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import '../../Style/sidebar.css';
-import SearchBar from '../Searchbar/page';
 
 const Sidebar = () => {
     const router = useRouter();
@@ -92,7 +91,6 @@ const Sidebar = () => {
                 </div>
                 {/* 区切り線 */}
             </div>
-            <SearchBar />
         </div>
     );
 };
