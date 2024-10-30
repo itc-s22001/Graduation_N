@@ -10,7 +10,7 @@ const ProfilePage = () => {
         <div className="profile-page">
             <Sidebar /> {/* サイドバーを左側に配置 */}
 
-            <Searchbar /> {/* 検索バーを右側に配置 */}
+            {/*<Searchbar /> /!* 検索バーを右側に配置 *!/*/}
         </div>
     );
 };
