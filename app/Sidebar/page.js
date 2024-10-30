@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation'; // next/navigation から useRouter と usePathname をインポート
 import '../../Style/sidebar.css'; // CSSファイルのインポート
-import Searchbar from '@/app/searchbar/page'; // 検索バーのインポート
+import Searchbar from '@/app/Searchbar/page'; // 検索バーのインポート
 
 const Sidebar = () => {
     const router = useRouter(); // useRouterフックの呼び出し
@@ -34,7 +34,7 @@ const Sidebar = () => {
                         <svg className="home-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M12 3l10 9h-3v9h-6v-6h-4v6H5v-9H2z" />
                         </svg>
-                        <button className={`sidebar-button ${activePage === 'home' ? 'active' : ''}`} onClick={() => navigateTo('home')}>ホーム</button>
+                        <button className={`sidebar-button ${activePage === 'home' ? 'active' : ''}`} onClick={() => navigateTo('Sidebar')}>ホーム</button>
                     </div>
                     
                     {/* プロフィールボタン */}
@@ -58,7 +58,7 @@ const Sidebar = () => {
                         <svg className="dm-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M12 13.5l8.5-6.5H3.5l8.5 6.5zm0 2.5l-9 6v-12l9 6 9-6v12l-9 6z" />
                         </svg>
-                        <button className="sidebar-button">DM</button>
+                        <button className="sidebar-button" onClick={() => navigateTo('profile')}>DM</button>
                     </div>
 
                     {/* 投稿ボタン */}
