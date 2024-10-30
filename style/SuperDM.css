@@ -30,6 +30,7 @@
 
 .container {
     margin-bottom: 20px;
+    margin-left: 350px;
 }
 
 .user-status {
@@ -41,33 +42,34 @@
 }
 
 .messageContainer {
-    margin-top: 10px;
+    display: flex;
+    flex-direction: column; /* 縦に並べる */
+    padding: 30px;
+    height: 500px;
+    width: 1000px;
+    overflow-y: auto;
 }
 
 .message {
-    margin-bottom: 10px;
-    max-width: 600px; /* 最大幅を600pxに設定 */
-    width: auto; /* 内容に合わせて自動的に幅を調整 */
+    display: inline-block;
+    max-width: 60%; /* 最大幅を画面幅の60%に設定 */
     padding: 10px;
+    margin-bottom: 10px;
     border-radius: 10px;
-    position: relative;
-    /*display: flex;*/
-    align-items: center;
+    word-break: break-word;
     border: 3px solid #ccc;
 }
 
 .message.self {
-    background-color: #e1f5fe; /* 自分のメッセージの背景色 */
-    margin-left: auto;
-    width: auto;
-    /*margin-right: 0;!* 自分のメッセージは右寄せ *!*/
+    align-self: flex-end; /* 自分のメッセージを右寄せ */
+    background-color: #e1f5fe;
 }
 
 .message.other {
-    background-color: #fff; /* 相手のメッセージの背景色 */
-    border: 3px solid #ccc; /* 相手のメッセージにボーダーを追加 */
-    margin-right: auto; /* 相手のメッセージは左寄せ */
+    align-self: flex-start; /* 相手のメッセージを左寄せ */
+    background-color: #fff;
 }
+
 
 textarea {
     width: 100%;

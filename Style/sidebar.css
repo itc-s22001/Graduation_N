@@ -1,285 +1,83 @@
+/* sidebar.css */
 .sidebar {
+    width: 300px; /* サイドバーの幅 */
+    height: 100vh; /* ビューポートの高さ */
+    background-color: #fff; /* サイドバーの背景色 */
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* 左寄せの設定 */
-    padding: 20px;
-    padding-left: 80px; /* 左側の余白 */
-    background-color: #faf9f9; /* 背景色 */
-    height: 100vh;
+    padding: 20px; /* 内部の余白 */
+    border-right: 1px solid #e6ecf0; /* 右の境界線 */
+    position: fixed; /* サイドバーを固定 */
+    top: 0; /* 上部に配置 */
+    left: 0; /* 左側に配置 */
+    z-index: 1000; /* 他の要素の上に表示 */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 影をつける */
+}
+
+.button-container {
+    margin-top: 60px; /* ロゴボタンのスペース */
 }
 
 .logo-button {
-    font-size: 24px; /* ボタンの文字の大きさ */
-    font-weight: bold; /* 太文字 */
-    padding: 10px; /* パディング */
-    margin-bottom: 20px; /* ボタンの下の余白 */
-    margin-left: 200px; /* 左側に余白を追加 */
-    border: 2px solid black; /* 外側の枠線を黒に */
-    background-color: white; /* 内側の色を白に */
-    color: white; /* "N"の中の色を白に */
-    text-align: center; /* 中央揃え */
-    width: 50px; /* ボタンの幅 */
-    height: 50px; /* ボタンの高さ */
-    display: flex; /* フレックスボックスを使用 */
-    justify-content: center; /* 中央揃え */
-    align-items: center; /* 中央揃え */
-    border-radius: 5px; /* 角を少し丸める */
-    cursor: pointer; /* カーソルをポインターに */
-    -webkit-text-stroke: 1px black; /* "N"の枠線を黒に */
-}
-
-.logo-button:hover {
-    background-color: #f0f0f0; /* ホバー時の色を設定 */
-}
-
-.button-container {
-    display: flex;
-    margin-left: 200px; /* 左側に余白を追加 */
+    font-size: 24px; /* ロゴのフォントサイズ */
+    font-weight: bold; /* フォントの太さ */
+    color: #1da1f2; /* ロゴの色 */
+    background: none; /* 背景なし */
+    border: none; /* 境界線なし */
+    cursor: pointer; /* カーソルをポインタに変更 */
+    padding: 10px 0; /* 内部の余白 */
 }
 
 .buttons {
-    display: flex;
-    flex-direction: column; /* ボタンを縦に並べる */
+    display: flex; /* フレックスボックスを使用 */
+    flex-direction: column; /* 縦方向に配置 */
+    gap: 15px; /* ボタン間の隙間 */
 }
 
 .sidebar-button-container {
-    display: flex;
-    align-items: center; /* 縦方向の中央揃え */
-}
-
-.home-icon {
-    width: 24px; /* アイコンの幅 */
-    height: 24px; /* アイコンの高さ */
-    margin-right: 8px; /* ボタンとの間隔 */
-    fill: currentColor; /* ボタンの色に合わせる */
+    display: flex; /* フレックスボックスを使用 */
+    align-items: center; /* アイテムを中央に揃える */
 }
 
 .sidebar-button {
-    font-size: 25px; /* 文字の大きさ */
-    margin: 10px 0; /* ボタンの間隔 */
-    padding: 20px 30px; /* ボタンの高さと文字の配置 */
-    width: 290px; /* ボタンの幅 */
-    background-color: #faf9f9; /* 背景色 */
-    color: rgb(5, 5, 5); /* 文字色 */
-    border: none;
-    border-radius: 50px; /* ここでボタンを丸くする */
-    cursor: pointer;
-    text-align: left; /* テキストを左揃え */
+    background: none; /* 背景なし */
+    border: none; /* 境界線なし */
+    font-size: 18px; /* フォントサイズ */
+    font-weight: bold; /* フォントの太さ */
+    cursor: pointer; /* カーソルをポインタに変更 */
+    color: #333; /* 通常のボタンの色 */
+    margin-left: 15px; /* 左の余白 */
+    padding: 10px; /* 内部の余白 */
+    width: 100%; /* 幅を100%に */
+    text-align: left; /* 左揃え */
+    border-radius: 25px; /* 角を丸める */
+    transition: background-color 0.3s ease; /* 背景色のトランジション */
 }
 
 .sidebar-button:hover {
-    background-color: #f5cdfa; /* ホバー時の背景色 */
-    transition: background-color 0.3s, color 0.3s;
+    background-color: rgba(29, 161, 242, 0.1); /* ホバー時の背景色 */
 }
 
 .sidebar-button.active {
-    background-color: #e100ff; /* アクティブなボタンの背景色 */
-    color: white; /* アクティブなボタンの文字色 */
+    color: #1da1f2; /* アクティブなボタンの色 */
+    font-weight: bold; /* アクティブボタンの太さを強調 */
+    background-color: rgba(29, 161, 242, 0.1); /* アクティブなボタンの背景色 */
 }
 
-.separator {  /*Homeアイコン*/
-    width: 2px; /* 縦線の幅 */
-    background-color: black; /* 縦線の色 */
-    height: 100%; /* 縦線を全高に */
-    margin-left: 20px; /* ボタンとの間隔 */
+.separator {
+    height: 1px; /* 区切り線の高さ */
+    width: 100%; /* 幅を100%に */
+    background-color: #e6ecf0; /* 区切り線の色 */
+    margin: 20px 0; /* 上下のマージン */
 }
 
-.profile-icon {  /*プロフィールアイコン*/
+svg {
+    fill: #333; /* 通常のアイコンの色 */
     width: 24px; /* アイコンの幅 */
     height: 24px; /* アイコンの高さ */
-    margin-right: 8px; /* ボタンとの間隔 */
-    fill: currentColor; /* ボタンの色に合わせる */
 }
 
-.notification-icon { /*通知アイコン*/
-    width: 24px; /* アイコンの幅 */
-    height: 24px; /* アイコンの高さ */
-    margin-right: 8px; /* ボタンとの間隔 */
-    fill: currentColor; /* ボタンの色に合わせる */
+.sidebar-button.active svg,
+.sidebar-button:hover svg {
+    fill: #1da1f2; /* アクティブボタンとホバー時のアイコンの色 */
 }
-
-.dm-icon {  /*DMアイコン*/
-    width: 24px; /* アイコンの幅 */
-    height: 24px; /* アイコンの高さ */
-    margin-right: 8px; /* ボタンとの間隔 */
-    fill: currentColor; /* ボタンの色に合わせる */
-}
-
-.post-icon {  /*投稿アイコン*/
-    width: 24px; /* アイコンの幅 */
-    height: 24px; /* アイコンの高さ */
-    margin-right: 8px; /* ボタンとの間隔 */
-    fill: currentColor; /* ボタンの色に合わせる */
-}
-
-.community-icon {  /*コミュニティアイコン*/
-    width: 24px; /* アイコンの幅 */
-    height: 24px; /* アイコンの高さ */
-    margin-right: 8px; /* ボタンとの間隔 */
-    fill: currentColor; /* ボタンの色に合わせる */
-}
-
-.survey-icon {  /*アンケートアイコン*/
-    width: 24px; /* アイコンの幅 */
-    height: 24px; /* アイコンの高さ */
-    margin-right: 8px; /* ボタンとの間隔 */
-    fill: currentColor; /* ボタンの色に合わせる */
-}
-
-.settings-icon {  /* 設定アイコン */
-    width: 24px; /* アイコンの幅 */
-    height: 24px; /* アイコンの高さ */
-    margin-right: 8px; /* ボタンとの間隔 */
-    fill: currentColor; /* ボタンの色に合わせる */
-}
-
-
-
-/* ボタンコンテナの下部マージンを調整する */
-.button-container {
-    margin-top: 20px; /* 検索バーとボタンの間に余白を追加 */
-    display: flex;
-    margin-left: 200px; /* 左側に余白を追加 */
-}
-
-.search-form {
-    display: flex; /* フレックスボックスを使用 */
-    align-items: center; /* 縦方向の中央揃え */
-    margin-left: 30px; /* 縦線と検索バーの間に余白を追加 */
-    flex-grow: 3; /* 検索バーが縮まないようにする */
-    width: auto; /* 検索バーの幅を自動に */
-}
-
-
-.search-label {
-    font-size: 40px; /* ラベルの文字サイズ */
-    text-align: left; /* ラベルを左揃え */
-    margin-bottom: 30px; /* ラベルと入力ボックスの間に余白を追加 */
-    position: relative; /* 相対位置を使用 */
-    left: 100px; /* 左方向に移動（px単位で調整可能） */
-    top: -10px; /* 上方向に移動 */
-}
-
-
-.search-input {
-    padding: 12px 60px 12px 20px; /* 内側のパディングを調整（右側はボタンの余白分広め） */
-    font-size: 16px; /* 検索バーのテキストサイズを調整 */
-    border: 1px solid #ccc; /* 枠線の色 */
-    border-radius: 50px; /* 検索バーを丸く */
-    width: 100%; /* 検索バーの幅を100%に */
-    height: 50px; /* 検索バーの高さを調整 */
-    box-sizing: border-box; /* パディングとボーダーを含めて全体サイズを調整 */
-}
-
-.search-button {
-    position: absolute; /* ボタンを検索バーの中に配置 */
-    right: 2px; /* 検索バーの右端に配置 */
-    top: 50%; /* ボタンを検索バーの縦方向の中央に揃える */
-    transform: translateY(-50%); /* 縦方向の中央揃えを確実に */
-    padding: 15px 20px; /* ボタンのパディング（余白）を調整 */
-    background-color: #0070f3; /* ボタンの背景色 */
-    color: white; /* ボタンの文字色 */
-    font-size: 15px; /* ボタンの文字サイズ */
-    border: none; /* ボタンの枠線を削除 */
-    border-radius: 50px; /* ボタンを丸く */
-    cursor: pointer; /* ポインターに変更 */
-    height: 50px; /* ボタンの高さを検索バーと一致させる */
-    margin-left: 10px; /* ここを変更：検索バーと検索ボタンの間に余白を追加 */
-}
-
-
-.search-and-divider {
-    display: flex;
-    align-items: center;
-    position: relative; /* 縦線の位置を調整するために relative を設定 */
-}
-
-.vertical-line {
-    position: absolute; /* 縦線を絶対位置にして、他の要素に影響しないようにする */
-    left: 0; /* 左側に固定 */
-    border-left: 2px solid #000000; /* 線の太さ */
-    height: 750px; /* 縦線の長さ */
-    margin-right: 20px; /* 縦線と検索バーの間に余白を追加 */
-    top: 30px; /* 縦線の位置を調整（必要に応じて変更） */
-}
-
-
-.search-form {
-    display: flex;
-    align-items: center;
-    margin-left: 30px; /* 縦線と検索バーの間に余白を追加 */
-    flex-grow: 3; /* 検索バーが縮まないようにする */
-    width: auto; /* 検索バーの幅を自動に */
-}
-
-/* サジェストの各アイテムのスタイル */
-.search-suggestions li {
-    padding: 10px; /* パディング */
-    cursor: pointer; /* カーソルをポインターに */
-}
-
-.search-suggestions li:hover {
-    background: #f0f0f0; /* ホバー時の背景色 */
-}
-
-/* アカウントリストのスタイル */
-.account-list {
-    margin-top: 20px; /* 検索バーとの余白 */
-    padding: 0;
-    list-style: none; /* リストスタイルを削除 */
-    width: 100%; /* 検索バーと同じ幅に */
-}
-
-.account-item {
-    padding: 10px 20px; /* パディングを追加 */
-    border-bottom: 1px solid #ccc; /* 下線を追加 */
-    cursor: pointer; /* カーソルをポインターに */
-    background-color: white; /* 背景色 */
-    border-radius: 5px; /* アイテムを丸める */
-}
-
-.account-item:hover {
-    background-color: #f0f0f0; /* ホバー時の背景色 */
-}
-
-/* スクロールが必要な場合 */
-.account-list {
-    max-height: 200px; /* 最大の高さを設定 */
-    overflow-y: auto; /* 縦方向のスクロールを可能に */
-}
-
-/* 検索バー全体を右側に固定する */
-.search-container {
-    position: absolute; /* 検索バー全体を右端に固定 */
-    top: 20px;
-    right: 200px; /* 右端から50pxに余白を設定 */
-    width: 300px; /* 検索バー全体の幅を調整 */
-}
-
-/* サジェストリストのスタイル */
-.search-suggestions {
-    position: absolute; /* 検索バーの下に絶対配置 */
-    top: 70px; /* 検索バーの下に配置 */
-    right: 200px; /* サイドバーからの距離を調整 */
-    background: white; /* 背景色 */
-    border: 1px solid #ccc; /* 枠線 */
-    max-height: 200px; /* 最大の高さ */
-    overflow-y: auto; /* 縦方向のスクロール */
-    z-index: 1000; /* 他の要素の上に表示 */
-    width: 300px; /* サジェストの幅を検索バーと同じに */
-    border-radius: 5px; /* 角を丸く */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* 影を追加 */
-}
-
-/* サジェストの各アイテムのスタイル */
-.suggestion-item {
-    padding: 10px; /* パディング */
-    cursor: pointer; /* カーソルをポインターに */
-}
-
-.suggestion-item:hover {
-    background: #f0f0f0; /* ホバー時の背景色 */
-}
-
-
-

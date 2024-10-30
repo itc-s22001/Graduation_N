@@ -6,9 +6,10 @@ import { db, auth } from "../firebase";
 import { collection, doc, setDoc, serverTimestamp, getDoc, onSnapshot, updateDoc, arrayUnion } from "firebase/firestore";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import '../../style/SuperDM.css';
-
-import Sou from '../Images/Sousin.png'
+import Sou from '../Images/Sousin.png';
 import Image from "next/image";
+import Sidebar from "@/app/Sidebar/page";
+import Yaji from '../Images/Yajirusi.png';
 
 const DM = () => {
     const [user, setUser] = useState(null);
@@ -18,21 +19,27 @@ const DM = () => {
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
 
-    const messagesEndRef = useRef(null); // スクロールのための参照
-
+    const messagesEndRef = useRef(null);
     const router = useRouter();
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                setUser(currentUser);
-
                 const userDocRef = doc(db, "users", currentUser.uid);
-                await setDoc(userDocRef, {
-                    uid: currentUser.uid,
-                    email: currentUser.email,
-                    lastLogin: serverTimestamp()
-                }, { merge: true });
+                const userDocSnap = await getDoc(userDocRef);
+                let userName = currentUser.email;
+
+                if (userDocSnap.exists()) {
+                    userName = userDocSnap.data().name || userName;
+                    await setDoc(userDocRef, {
+                        uid: currentUser.uid,
+                        email: currentUser.email,
+                        name: userName,
+                        followers: userDocSnap.data().followers || [],
+                        lastLogin: serverTimestamp()
+                    }, { merge: true });
+                }
+                setUser({ ...currentUser, name: userName, followers: userDocSnap.data().followers || [] });
             } else {
                 setUser(null);
             }
@@ -42,18 +49,11 @@ const DM = () => {
 
     useEffect(() => {
         const q = collection(db, "users");
-        const unsubscribe = onSnapshot(
-            q,
-            (snapshot) => {
-                const loadedUsers = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-                setUsers(loadedUsers);
-                setLoading(false);
-            },
-            (error) => {
-                console.error("Error fetching users:", error);
-                setLoading(false);
-            }
-        );
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const loadedUsers = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            setUsers(loadedUsers);
+            setLoading(false);
+        });
         return () => unsubscribe();
     }, []);
 
@@ -83,15 +83,10 @@ const DM = () => {
     const sendMessage = async (e) => {
         e.preventDefault();
 
-        if (!newMessage.trim()) return;
-        if (!selectedUser || !selectedUser.uid) {
-            console.error("Error: receiver_uid is undefined");
-            return;
-        }
+        if (!newMessage.trim() || !selectedUser || !selectedUser.uid) return;
 
         const docId = [user.uid, selectedUser.uid].sort().join('-');
         const docRef = doc(db, "direct_messages", docId);
-
         const messageData = {
             sender_id: user.uid,
             receiver_id: selectedUser.uid,
@@ -101,7 +96,6 @@ const DM = () => {
 
         try {
             const docSnap = await getDoc(docRef);
-
             if (docSnap.exists()) {
                 await updateDoc(docRef, {
                     messages: arrayUnion(messageData),
@@ -116,7 +110,7 @@ const DM = () => {
             }
 
             setNewMessage("");
-            scrollToBottom(); // メッセージ送信後にスクロール
+            scrollToBottom();
         } catch (error) {
             console.error("Error sending message:", error);
         }
@@ -139,7 +133,7 @@ const DM = () => {
                 const cancelMessageData = {
                     sender_id: user.uid,
                     receiver_id: selectedUser.uid,
-                    message_content: `${user.email}がメッセージを取り消しました。`,
+                    message_content: `${user.name || user.email}がメッセージを取り消しました。`,
                     canceled: true,
                     original_message: message.message_content,
                     timestamp: message.timestamp,
@@ -166,17 +160,30 @@ const DM = () => {
         }
     };
 
+    const handleKeyDown = (e) => {
+        if (e.shiftKey && e.key === 'Enter') {
+            e.preventDefault();
+            sendMessage(e);
+        }
+    };
+
+    const formatTimestamp = (timestamp) => {
+        const date = new Date(timestamp);
+        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    };
+
     useEffect(() => {
-        scrollToBottom(); // メッセージが更新されたときにスクロール
+        scrollToBottom();
     }, [messages]);
 
     return (
         <div>
+            <Sidebar />
             <div className="container">
                 <div className="user-status">
                     {user ? (
                         <div>
-                            <p>ログイン中: {user.email}</p>
+                            <p>ログイン中: {user.name || user.email}</p>
                             <button onClick={handleLogout}>ログアウト</button>
                         </div>
                     ) : (
@@ -188,29 +195,44 @@ const DM = () => {
                     <div>
                         <h2>DMを送る相手を選択してください</h2>
                         <ul>
-                            {users.map((otherUser) => (
-                                otherUser.uid !== user?.uid && (
+                            {users
+                                .filter((otherUser) => {
+                                    return user?.followers?.includes(otherUser.uid) && otherUser.uid !== user.uid;
+                                })
+                                .map((otherUser) => (
                                     <li key={otherUser.uid}>
                                         <button onClick={() => setSelectedUser(otherUser)}>
                                             {otherUser.name}
                                         </button>
                                     </li>
-                                )
-                            ))}
+                                ))}
                         </ul>
                     </div>
                 ) : (
                     <div className="DMmain">
-                        <h1>{selectedUser.name}とのDM</h1>
-                        <button onClick={() => setSelectedUser(null)}>戻る</button>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                            <button
+                                onClick={() => setSelectedUser(null)}
+                                style={{
+                                    fontSize: "24px",
+                                    marginRight: "10px",
+                                    backgroundColor: "transparent",
+                                    border: "none",
+                                    cursor: "pointer"
+                                }}
+                            >
+                                <Image src={Yaji} alt="back arrow" width={30} height={30} />
+                            </button>
+                            <h1 style={{ margin: 0 }}>{selectedUser.name}</h1>
+                        </div>
+
                         <div className="messageContainer">
                             {messages.length === 0 ? (
                                 <p>メッセージはまだありません。</p>
                             ) : (
                                 messages.map((message, index) => (
-                                    <div key={index}
-                                         className={`message ${message.sender_id === user?.uid ? 'self' : 'other'}`}>
-                                        <div style={{display: "flex", alignItems: "flex-start"}}>
+                                    <div key={index} className={`message ${message.sender_id === user?.uid ? 'self' : 'other'}`}>
+                                        <div style={{ display: "flex", alignItems: "flex-start" }}>
                                             {user && message.sender_id === user.uid && !message.canceled && (
                                                 <button onClick={() => cancelMessage(message)} style={{
                                                     marginRight: "10px",
@@ -220,54 +242,33 @@ const DM = () => {
                                                     ︙
                                                 </button>
                                             )}
-                                            <div style={{
-                                                marginTop: "5px",
-                                                margin: "auto",
-                                            }}>
+                                            <div style={{ marginTop: "5px", margin: "auto" }}>
                                                 {message.message_content}
+                                                {!message.canceled && (
+                                                    <div style={{ fontSize: "12px", color: "gray" }}>
+                                                        {formatTimestamp(message.timestamp)}
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
                                     </div>
                                 ))
                             )}
-                            <div ref={messagesEndRef}/>
-                            {/* スクロールのための参照を追加 */}
+                            <div ref={messagesEndRef} />
                         </div>
 
-                        <form onSubmit={sendMessage}
-                              style={{display: "flex", alignItems: "center", marginTop: "10px", width: "400px"}}>
+                        <form onSubmit={sendMessage} style={{ display: "flex", alignItems: "center", marginTop: "10px", width: "400px" }}>
                             <textarea
-                                style={{
-                                    textAlign: "center",
-                                    padding: "20px",
-                                    height: "30px"
-                                }}
+                                style={{ textAlign: "center", padding: "20px", height: "65px", overflow: "hidden" }}
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 rows="4"
                                 placeholder="メッセージを入力..."
-                                maxLength={100} // 文字数制限を追加
+                                onKeyDown={handleKeyDown}
                             />
-
-                            <button type="submit" className="send-button" style={{
-                                width: "50px",
-                                height: "50px",
-                                padding: 0, // ボタン内の余白を取り除く
-                                border: "none", // ボタンの枠線を消す（必要なら）
-                                background: "transparent", // 背景を透明に
-                                display: "flex", // 中央揃え
-                                justifyContent: "center",
-                                alignItems: "center"
-                            }}>
-                                <Image
-                                    src={Sou}
-                                    alt="送信"
-                                    width={50}
-                                    height={50}
-                                    style={{objectFit: "contain"}} // 画像をボタン内に収める
-                                />
+                            <button type="submit" style={{ marginLeft: "10px" }}>
+                                <Image src={Sou} alt="send icon" width={30} height={30} />
                             </button>
-
                         </form>
                     </div>
                 )}
