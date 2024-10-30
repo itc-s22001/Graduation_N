@@ -1,0 +1,282 @@
+/* Main layout */
+.profile-layout {
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    margin-left: 500px;
+}
+
+/* Profile container */
+.profile-container {
+    flex: 1;
+    padding: 20px;
+    background-color: #f9f9f9;
+    max-width: 600px;
+    margin-right: auto;
+    position: relative; /* ここにもrelativeを追加 */
+}
+
+/* Profile header: Image + Name + ID + Bio */
+.profile-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    position: relative; /* ここにもrelativeを追加 */
+}
+
+/* Profile image */
+.profile-image {
+    width: 133.5px;
+    height: 133.5px;
+    border-radius: 50%;
+    margin-left: 10px;
+    margin-top: 50px;
+}
+
+/* Profile info */
+.profile-info {
+    display: flex;
+    flex-direction: column;
+    margin-left: 20px; /* アイコンと名前の間にスペースを追加 */
+    margin-top: 0px;
+}
+
+.username {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 0px; /* 名前とユーザーIDの間にスペースを追加 */
+    margin-top: 0px;
+}
+
+.user-id {
+    font-size: 14px;
+    color: #555;
+    margin-top: 0px;
+    margin-bottom: 5px; /* ユーザーIDと自己紹介の間にスペースを追加 */
+}
+
+.self-introduction {
+    font-size: 20px;
+    color: #333;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+
+.user-create {
+    color: #848383;
+    font-size: 15px;
+    margin-bottom: 0px;
+}
+
+.follow-info {
+    display: flex;
+    width: 100%;
+    max-width: 230px;
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
+.following, .follower {
+    width: 50%;
+}
+
+.edit-profile-button {
+    position: absolute; /* 絶対位置にする */
+    right: 0;
+    margin-left: 10px;
+    height: 50px; 
+    width: 170px;
+    border-radius: 20px; /* 角を丸くする */
+    background-color: #f8f4f4; /* 背景色 */
+    border: 1px solid #ddd; /* ボーダー */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer; 
+    transition: background-color 0.3s, color 0.3s;
+    text-align: center;
+    margin-top: 100px;
+    color: black;
+}
+
+/* ホバー時のスタイル */
+.edit-profile-button:hover {
+    background-color: #e0e0e0; /* ホバー時の背景色 */
+    color: #000; /* ホバー時のテキスト色 */
+}
+
+/* Logout button */
+.logout-button {
+    display: block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+/* Black line below the logout button */
+.logout-divider {
+    height: 2px;
+    background-color: black;
+    margin: 20px 0;
+}
+
+/* User posts section */
+.user-posts {
+    margin-top: 20px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+.follow-info {
+    display: flex;
+    width: 100%;
+    max-width: 230px;
+    margin-top: 0px;
+    margin-left: 0px;
+}
+
+.following, .follower {
+    width: 50%;
+}
+
+/* モーダルオーバーレイ */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* モーダルコンテンツ */
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+}
+
+/* モーダルヘッダー */
+.modal-header {
+    padding: 16px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    color: #666;
+}
+
+.modal-body {
+    padding: 16px;
+}
+
+/* フォローボタンとユーザーリストのスタイルは前回のまま */
+.following-button,
+.followers-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0.5rem;
+    transition: background-color 0.2s;
+    gap: 4px;
+    width: auto;
+    margin: 0;
+}
+
+.following-button:hover,
+.followers-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 0.5rem;
+}
+
+.follow-count {
+    font-weight: bold;
+    font-size: 15px;
+    color: #333;
+}
+
+.follow-text {
+    color: #555;
+    font-size: 15px;
+}
+
+.user-list {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.user-list-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+
+.user-list-item:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.user-list-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    margin-right: 1rem;
+    object-fit: cover;
+}
+
+.user-list-info {
+    flex: 1;
+}
+
+.user-list-name {
+    font-weight: bold;
+    margin: 0;
+    font-size: 15px;
+    color: #333;
+}
+
+.user-list-id {
+    color: #555;
+    font-size: 14px;
+    margin: 4px 0 0 0;
+}

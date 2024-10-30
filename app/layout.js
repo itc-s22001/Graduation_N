@@ -1,6 +1,5 @@
 import { Inter } from "next/font/google";
-import "./globals.css";
-
+import "./globals.css"; // 他の全体のスタイル
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -11,7 +10,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {/* サイドバーは各ページで管理するため、ここでは表示しない */}
+        {children}
+      </body>
     </html>
   );
 }

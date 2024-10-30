@@ -1,0 +1,83 @@
+/* sidebar.css */
+.sidebar {
+    width: 270px; /* サイドバーの幅 */
+    height: 100vh; /* ビューポートの高さ */
+    background-color: #fff; /* サイドバーの背景色 */
+    display: flex;
+    flex-direction: column;
+    padding: 20px; /* 内部の余白 */
+    border-right: 1px solid #e6ecf0; /* 右の境界線 */
+    position: fixed; /* サイドバーを固定 */
+    top: 0; /* 上部に配置 */
+    left: 0; /* 左側に配置 */
+    z-index: 1000; /* 他の要素の上に表示 */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 影をつける */
+}
+
+.button-container {
+    margin-top: 60px; /* ロゴボタンのスペース */
+}
+
+.logo-button {
+    font-size: 24px; /* ロゴのフォントサイズ */
+    font-weight: bold; /* フォントの太さ */
+    color: #1da1f2; /* ロゴの色 */
+    background: none; /* 背景なし */
+    border: none; /* 境界線なし */
+    cursor: pointer; /* カーソルをポインタに変更 */
+    padding: 10px 0; /* 内部の余白 */
+}
+
+.buttons {
+    display: flex; /* フレックスボックスを使用 */
+    flex-direction: column; /* 縦方向に配置 */
+    gap: 15px; /* ボタン間の隙間 */
+}
+
+.sidebar-button-container {
+    display: flex; /* フレックスボックスを使用 */
+    align-items: center; /* アイテムを中央に揃える */
+}
+
+.sidebar-button {
+    background: none; /* 背景なし */
+    border: none; /* 境界線なし */
+    font-size: 18px; /* フォントサイズ */
+    font-weight: bold; /* フォントの太さ */
+    cursor: pointer; /* カーソルをポインタに変更 */
+    color: #333; /* 通常のボタンの色 */
+    margin-left: 15px; /* 左の余白 */
+    padding: 10px; /* 内部の余白 */
+    width: 100%; /* 幅を100%に */
+    text-align: left; /* 左揃え */
+    border-radius: 25px; /* 角を丸める */
+    transition: background-color 0.3s ease; /* 背景色のトランジション */
+}
+
+.sidebar-button:hover {
+    background-color: rgba(29, 161, 242, 0.1); /* ホバー時の背景色 */
+}
+
+.sidebar-button.active {
+    color: #1da1f2; /* アクティブなボタンの色 */
+    font-weight: bold; /* アクティブボタンの太さを強調 */
+    background-color: rgba(29, 161, 242, 0.1); /* アクティブなボタンの背景色 */
+}
+
+.separator {
+    height: 1px; /* 区切り線の高さ */
+    width: 100%; /* 幅を100%に */
+    background-color: #e6ecf0; /* 区切り線の色 */
+    margin: 20px 0; /* 上下のマージン */
+}
+
+svg {
+    fill: #333; /* 通常のアイコンの色 */
+    width: 24px; /* アイコンの幅 */
+    height: 24px; /* アイコンの高さ */
+}
+
+.sidebar-button.active svg,
+.sidebar-button:hover svg {
+    fill: #1da1f2; /* アクティブボタンとホバー時のアイコンの色 */
+}
