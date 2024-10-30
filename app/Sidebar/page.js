@@ -1,8 +1,15 @@
 'use client';
 
+
+import React, { useEffect, useState } from 'react';
+import { useRouter, usePathname } from 'next/navigation'; // next/navigation から useRouter と usePathname をインポート
+import '../../Style/sidebar.css'; // CSSファイルのインポート
+import Searchbar from '@/app/Searchbar/page'; // 検索バーのインポート
+=======
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import '../../Style/sidebar.css';
+
 
 const SidebarButton = ({ children, push, isActive, onClick }) => {
     return (
@@ -36,6 +43,11 @@ const Sidebar = () => {
                 <div className="buttons">
                     {/* ホームボタン */}
                     <div className="sidebar-button-container">
+                        <svg className="home-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 3l10 9h-3v9h-6v-6h-4v6H5v-9H2z" />
+                        </svg>
+                        <button className={`sidebar-button ${activePage === 'home' ? 'active' : ''}`} onClick={() => navigateTo('Sidebar')}>ホーム</button>
+
                         <SidebarButton
                             push="/home"
                             isActive={activeButton === '/home'}
@@ -43,6 +55,7 @@ const Sidebar = () => {
                         >
                             ホーム
                         </SidebarButton>
+
                     </div>
 
                     {/* プロフィールボタン */}
@@ -69,6 +82,12 @@ const Sidebar = () => {
 
                     {/* DMボタン */}
                     <div className="sidebar-button-container">
+
+                        <svg className="dm-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 13.5l8.5-6.5H3.5l8.5 6.5zm0 2.5l-9 6v-12l9 6 9-6v12l-9 6z" />
+                        </svg>
+                        <button className="sidebar-button" onClick={() => navigateTo('profile')}>DM</button>
+
                         <SidebarButton
                             push="/DM"
                             isActive={activeButton === '/DM'}
