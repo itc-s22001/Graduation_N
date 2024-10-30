@@ -67,7 +67,7 @@ const EditProfilePage = () => {
     // プロフィールの保存処理
     const handleSave = async () => {
         try {
-            const user = auth.currentUser; // Get current user info
+            const user = auth.currentUser; // 現在のユーザー情報を取得
             if (!user) {
                 setError("ユーザーがログインしていません。");
                 console.error("User is not logged in.");
@@ -82,11 +82,11 @@ const EditProfilePage = () => {
                 console.log("No new profile image selected.");
             }
     
-            // Get the Firestore document reference for the user
+            // Firestoreのドキュメント参照を取得
             const userDocRef = doc(db, "users", user.uid);
             const userDocSnap = await getDoc(userDocRef);
     
-            // Prepare data to be saved
+            // 保存するデータの準備
             const dataToSave = {
                 uid: uid,
                 email: user.email,
@@ -95,17 +95,19 @@ const EditProfilePage = () => {
                 profile_image_url: newProfileImageUrl,
             };
     
-            // Save the user data to Firestore
+            // ユーザーデータをFirestoreに保存
             await setDoc(userDocRef, dataToSave, { merge: true });
             console.log("User profile data saved successfully:", dataToSave);
     
-            // Redirect to the profile page
-            router.push(`/profile/${uid}`);
+            // プロフィールページにリダイレクト
+            // router.push(`/profile/@${uid}`);
+            router.push('/profile');
         } catch (error) {
-            console.error("Failed to update user information:", error);
+            console.error("ユーザー情報の更新に失敗しました:", error);
             setError("ユーザー情報の更新に失敗しました。");
         }
     };
+    
     
 
     // キャンセルボタンの処理

@@ -1,8 +1,14 @@
 import React from "react";
+import Login from "@/app/login/page";
+import ProfileEdit from "@/app/profile/setup/page";
+// import '@/app/global.css';
 
 const Home = () => {
   return (
-    <h1>ようこそ</h1>
+    <div>
+      <Login />
+      {/* <ProfileEdit /> */}
+    </div>
   )
 };
 
