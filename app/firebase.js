@@ -2,7 +2,8 @@
 
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, doc, setDoc } from 'firebase/firestore';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'; // インポートを修正
 
 // 環境変数からFirebaseの設定を取得
 const firebaseConfig = {
@@ -22,6 +23,7 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const db = getFirestore(app);
+const storage = getStorage(app); // ストレージの初期化
 
 // Googleアカウントでログインする関数
 const loginWithGoogle = async () => {
@@ -40,5 +42,42 @@ const loginWithGoogle = async () => {
     }
 };
 
+// ファイルアップロードの処理
+const handleFileUpload = async (file) => {
+    if (!file) return;
+
+    // ファイル名をユニークにするために、ユーザーのUIDやタイムスタンプを使用
+    const storageRef = ref(storage, `profile_images/${file.name}`);
+
+    try {
+        // Firebase Storageにファイルをアップロード
+        const snapshot = await uploadBytes(storageRef, file);
+
+        // アップロードしたファイルのダウンロードURLを取得
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        console.log("File available at", downloadURL);
+
+        return downloadURL; // ダウンロードURLを返す
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        throw error; // エラーハンドリング
+    }
+};
+
+// ユーザー情報をFirestoreに保存する関数
+const saveUserData = async (userId, name, profileDescription, profileImageUrl) => {
+    try {
+        await setDoc(doc(db, "users", userId), {
+            uid: userId,
+            name: name,
+            profile_description: profileDescription,
+            profile_image_url: profileImageUrl,
+            created_at: new Date(), // 作成日時を追加
+        });
+    } catch (error) {
+        console.error("Error saving user data:", error);
+    }
+};
+
 // エクスポート
-export { auth, googleProvider, db, loginWithGoogle };
+export { auth, googleProvider, db, loginWithGoogle, handleFileUpload, saveUserData, storage };

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation'; // next/navigation から useRouter と usePathname をインポート
 import '../../Style/sidebar.css'; // CSSファイルのインポート
-import Searchbar from '../Searchbar/page'; // 検索バーのインポート
+import Searchbar from '@/app/searchbar/page'; // 検索バーのインポート
 
 const Sidebar = () => {
     const router = useRouter(); // useRouterフックの呼び出し
@@ -99,5 +99,5 @@ const Sidebar = () => {
         </div>
     );
 };
-
 export default Sidebar;
+

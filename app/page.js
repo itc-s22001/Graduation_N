@@ -1,15 +1,15 @@
-
-// app/Home/page.js
-import React from 'react';
-import Login from './login/page'; // Sidebarコンポーネントをインポート
-
-// import '../../Style/style.css'; // スタイルシートをインポート
+import React from "react";
+import Login from "@/app/login/page";
+import ProfileEdit from "@/app/profile/setup/page";
+// import '@/app/global.css';
 
 const Home = () => {
-    return (
-        <div>
-            <Login />
-        </div>
-    );}
+  return (
+    <div>
+      <Login />
+      {/* <ProfileEdit /> */}
+    </div>
+  )
+};
 
 export default Home;

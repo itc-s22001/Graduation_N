@@ -1,7 +1,7 @@
 'use client'; // Client component marker
 import { useState } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { doc, setDoc, serverTimestamp, getDoc, query, collection, where, getDocs } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { storage, db, auth } from '@/app/firebase'; // Firebaseのインポート
 import { useRouter } from 'next/navigation';
 import '@/style/profileedit.css';
@@ -10,8 +10,8 @@ const EditProfilePage = () => {
     const [uid, setUid] = useState('');
     const [name, setName] = useState('');
     const [profileDescription, setProfileDescription] = useState('');
-    const [profileImageFile, setProfileImageFile] = useState(null);
-    const [profileImageUrl, setProfileImageUrl] = useState('');
+    const [profileImageFile, setProfileImageFile] = useState(null); // ファイル用
+    const [profileImageUrl, setProfileImageUrl] = useState(''); // プレビュー用
     const [error, setError] = useState('');
     const router = useRouter();
 
@@ -19,6 +19,8 @@ const EditProfilePage = () => {
     const handleFileChange = (e) => {
         if (e.target.files[0]) {
             setProfileImageFile(e.target.files[0]);
+            const fileUrl = URL.createObjectURL(e.target.files[0]);
+            setProfileImageUrl(fileUrl); // プレビュー表示
         }
     };
 
@@ -29,61 +31,30 @@ const EditProfilePage = () => {
         return getDownloadURL(storageRef);
     };
 
-    // UIDの重複チェック
-    const checkUidExists = async (uidToCheck) => {
-        const usersRef = collection(db, "users");
-        const q = query(usersRef, where("uid", "==", uidToCheck));
-        const querySnapshot = await getDocs(q);
-        return !querySnapshot.empty;
-    };
-
     // プロフィールの保存処理
     const handleSave = async () => {
-        if (!name || !uid) {
-            setError("ユーザーIDと名前は必須項目です。");
-            return;
-        }
-
         try {
-            const user = auth.currentUser;
+            const user = auth.currentUser; // 現在のユーザー情報を取得
             if (!user) {
                 setError("ユーザーがログインしていません。");
                 return;
             }
 
-            // UIDの重複チェック
-            const uidExists = await checkUidExists(uid);
-            if (uidExists) {
-                setError("このUIDはすでに使用されています。");
-                return;
-            }
-
-            let newProfileImageUrl = profileImageUrl;
+            let profileImageUrl = "";
             if (profileImageFile) {
-                newProfileImageUrl = await handleFileUpload(profileImageFile);
+                profileImageUrl = await handleFileUpload(profileImageFile);
             }
 
-            // Firestore ドキュメント参照の取得
-            const userDocRef = doc(db, "users", user.uid);
-
-            // ドキュメントスナップショットの取得
-            const userDocSnap = await getDoc(userDocRef);
-
-            // 保存するデータの準備
-            const dataToSave = {
-                uid: uid,
+            // Firebaseにユーザー情報を保存
+            await setDoc(doc(db, "users", user.uid), {
+                uid: uid, // 新しいユーザーID
                 email: user.email,
-                name: name,
-                profile_description: profileDescription || "よろしくお願いします",
-                profile_image_url: newProfileImageUrl,
-                created_at: userDocSnap.exists() ? userDocSnap.data().created_at : serverTimestamp()
-            };
+                name: name, // 入力された名前
+                profile_description: profileDescription || "よろしく",
+                profile_image_url: profileImageUrl,
+            });
 
-            // Firestore にデータを保存
-            await setDoc(userDocRef, dataToSave, { merge: true });
-            console.log("ユーザープロファイルが正常に保存されました:", dataToSave);
-
-            // プロファイルページにリダイレクト
+            // プロフィール表示ページにリダイレクト
             router.push("/profile");
         } catch (error) {
             console.error("ユーザー情報の更新に失敗しました:", error);
@@ -138,7 +109,8 @@ const EditProfilePage = () => {
                 </button>
             </form>
         </div>
-    );
+    );    
 };
 
 export default EditProfilePage;
+
