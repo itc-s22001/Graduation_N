@@ -158,6 +158,15 @@ const PostPage = () => {
                         position: 'relative'
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {/* アイコン表示 */}
+                            {post.user_icon && (
+                                <img
+                                    src={post.user_icon} // 投稿データから取得したユーザーのアイコンを表示
+                                    alt="User Icon"
+                                    style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }}
+                                />
+                            )}
+                            {/* ユーザー名表示 */}
                             <p style={{ fontWeight: 'bold' }}>{post.user_name}</p>
                             {user?.uid === post.user_id && (
                                 <div style={{ marginLeft: 'auto', position: 'relative' }}>
@@ -185,6 +194,13 @@ const PostPage = () => {
                         </div>
                         <p>内容: {post.content}</p>
                         <p>投稿日: {post.create_at ? new Date(post.create_at.seconds * 1000).toLocaleString() : "不明"}</p>
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                            <button onClick={() => toggleLike(post.id, post.likes, post.likedByUser)}>
+                                {post.likedByUser ? "いいねを取り消す" : "いいね"}
+                            </button>
+                            <p>いいね: {post.likes}</p>
+                            <p>コメント数: {post.comments_count}</p>
+                        </div>
                     </div>
                 ))}
             </div>
