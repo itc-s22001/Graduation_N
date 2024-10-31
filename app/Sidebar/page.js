@@ -88,8 +88,6 @@ const Sidebar = () => {
                             <path d="M12 13.5l8.5-6.5H3.5l8.5 6.5zm0 2.5l-9 6v-12l9 6 9-6v12l-9 6z" />
                         </svg>
 
-//                         <button className="sidebar-button" onClick={() => navigateTo('profile')}>DM</button>
-
 
                         <SidebarButton
                             push="/DM"

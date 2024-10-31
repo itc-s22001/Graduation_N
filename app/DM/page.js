@@ -178,8 +178,9 @@ const DM = () => {
 
     return (
         <div className="container">
-            <Sidebar className="sidebar" />
-            <div className="dm-content">
+            <Sidebar />
+            <div >
+
                 <div className="user-status">
                     {user ? (
                         <div>
@@ -202,6 +203,7 @@ const DM = () => {
                                 .map((otherUser) => (
                                     <li key={otherUser.uid} className="dm-list-item">
                                         <button onClick={() => setSelectedUser(otherUser)}>
+
                                             <div style={{ display: 'flex', marginTop: '15px' }}>
                                                 <img
                                                     src={otherUser.profile_image_url}
@@ -210,14 +212,16 @@ const DM = () => {
                                                 />
                                                 <p className="DMusername">{otherUser.name}</p>
                                             </div>
+
                                         </button>
                                     </li>
                                 ))}
                         </ul>
+
                     </div>
                 ) : (
                     <div className="DMmain">
-                        <div style={{ display: "flex", alignItems: "center" }}>
+                        <div style={{display: "flex", alignItems: "center"}}>
                             <button
                                 onClick={() => setSelectedUser(null)}
                                 style={{
