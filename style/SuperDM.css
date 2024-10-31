@@ -6,11 +6,13 @@
     display: flex;
     height: 100vh; /* ビューポートの高さを100%に設定 */
 }
+
 .sidebar {
     width: 250px; /* Sidebarの幅を設定 */
     background-color: #f0f0f0; /* Sidebarの背景色 */
     padding: 10px; /* 内側の余白 */
 }
+
 .dm-content {
     flex: 1; /* 残りのスペースを占有 */
     padding: 20px; /* 内側の余白 */
@@ -47,6 +49,7 @@
     margin-bottom: 20px;
     margin-left: 400px;
     height: auto;
+
 }
 
 .user-status {
@@ -95,9 +98,13 @@ textarea {
 .send-button {
     margin-top: 10px;
 }
+
 .DMfirstmessage {
     margin: auto;
 }
+
+
+
 .DMList {
     list-style-type: none;
     padding: 0;
@@ -105,12 +112,14 @@ textarea {
     width: 100%;
     max-width: 400px;
 }
+
 .DMList li {
     padding: 10px 15px;
     border-bottom: 1px solid #ddd;
     text-align: left;
     margin: auto;
 }
+
 .DMList button {
     background: none;
     border: none;
@@ -122,23 +131,29 @@ textarea {
     width: 100%;
     margin: auto;
 }
+
 .DMusername{
     margin:auto;
     width: 100px;
     text-align: center;
     font-weight: bold;
 }
+
 .DMList li:hover {
     background-color: #dfdfdf;
 }
+
 .dm-user-icon {
     width: 50px;
     height: 50px;
     border-radius: 50%;
 }
+
 .dm-list-item {
     display: flex;
     align-items: center;
     padding-right: 20px;
+
     width: 500px;
 }
+

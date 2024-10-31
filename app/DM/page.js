@@ -8,7 +8,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import '../../style/SuperDM.css';
 import Sou from '../Images/Sousin.png';
 import Image from "next/image";
-import Sidebar from "@/app/Sidebar/page";
+import Sidebar from "@/app/Sidebar/page"; // Sidebarをインポート
 import Yaji from '../Images/Yajirusi.png';
 
 const DM = () => {
@@ -180,6 +180,7 @@ const DM = () => {
         <div className="container">
             <Sidebar />
             <div >
+
                 <div className="user-status">
                     {user ? (
                         <div>
@@ -202,7 +203,7 @@ const DM = () => {
                                 .map((otherUser) => (
                                     <li key={otherUser.uid} className="dm-list-item">
                                         <button onClick={() => setSelectedUser(otherUser)}>
-                                            {/* アイコンを表示 */}
+
                                             <div style={{ display: 'flex', marginTop: '15px' }}>
                                                 <img
                                                     src={otherUser.profile_image_url}
@@ -241,44 +242,28 @@ const DM = () => {
                                 <p className="DMfirstmessage">メッセージはまだありません。</p>
                             ) : (
                                 messages.map((message, index) => (
-                                    <div key={index} className={`message ${message.sender_id === user?.uid ? 'self' : 'other'}`}>
-                                        <div style={{ display: "flex", alignItems: "flex-start" }}>
-                                            {user && message.sender_id === user.uid && !message.canceled && (
-                                                <button onClick={() => cancelMessage(message)} style={{
-                                                    marginRight: "10px",
-                                                    fontSize: "12px",
-                                                    padding: "1px 1px"
-                                                }}>
-                                                    ︙
-                                                </button>
-                                            )}
-                                            <div style={{ marginTop: "5px", margin: "auto" }}>
-                                                {message.message_content}
-                                                {!message.canceled && (
-                                                    <div style={{ fontSize: "12px", color: "gray" }}>
-                                                        {formatTimestamp(message.timestamp)}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </div>
+                                    <div key={index} className={`message ${message.sender_id === user.uid ? "sent" : "received"}`}>
+                                        <p>{message.message_content}</p>
+                                        <span className="timestamp">{formatTimestamp(message.timestamp)}</span>
+                                        {message.sender_id === user.uid && (
+                                            <button onClick={() => cancelMessage(message)}>取り消す</button>
+                                        )}
                                     </div>
                                 ))
                             )}
                             <div ref={messagesEndRef} />
                         </div>
 
-                        <form onSubmit={sendMessage} style={{ display: "flex", alignItems: "center", marginTop: "10px", width: "400px" }}>
+                        <form onSubmit={sendMessage} className="messageInputContainer">
                             <textarea
-                                style={{ textAlign: "center", padding: "20px", height: "65px", overflow: "hidden" }}
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
-                                rows="4"
-                                placeholder="メッセージを入力..."
                                 onKeyDown={handleKeyDown}
+                                placeholder="メッセージを入力..."
+                                required
+                                style={{ resize: 'none' }}
                             />
-                            <button type="submit" style={{ marginLeft: "10px" }}>
-                                <Image src={Sou} alt="send icon" width={30} height={30} />
-                            </button>
+                            <button type="submit">送信</button>
                         </form>
                     </div>
                 )}
