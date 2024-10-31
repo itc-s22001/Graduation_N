@@ -1,7 +1,8 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
+import Modal from '../Modal/page';
 // import SearchBar from '../SearchBar/page';
-import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation'; // next/navigation から useRouter と usePathname をインポート
 import '../../Style/sidebar.css'; // CSSファイルのインポート
 
@@ -45,9 +46,9 @@ const Sidebar = () => {
 
 
                         <SidebarButton
-                            push="/home"
-                            isActive={activeButton === '/home'}
-                            onClick={() => handleButtonClick('/home')}
+                            push="/PostList"
+                            isActive={activeButton === '/PostList'}
+                            onClick={() => handleButtonClick('/PostList')}
                         >
                             ホーム
                         </SidebarButton>
@@ -100,6 +101,8 @@ const Sidebar = () => {
 
                     {/* 投稿ボタン */}
                     <div className="sidebar-button-container">
+                        <Modal />
+                        {/* <SidebarButton
                         <svg className="post-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M3 17.25V21h3.75L16.88 12.88l-3.75-3.75L3 17.25zm15.41-10.83L20.25 4l-2.58-2.59c-.39-.39-1.02-.39-1.41 0L14.41 3.17l3.75 3.75z" />
                         </svg>
@@ -109,7 +112,7 @@ const Sidebar = () => {
                             onClick={() => handleButtonClick('/post')}
                         >
                             投稿
-                        </SidebarButton>
+                        </SidebarButton> */}
                     </div>
 
                     {/* コミュニティボタン */}
