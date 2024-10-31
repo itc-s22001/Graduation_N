@@ -7,6 +7,7 @@ import { handleLikePost } from "../handleLikePost/page";
 import { handleCommentPost } from "../handleCommentPost/page"
 import { onAuthStateChanged } from 'firebase/auth';
 import Sidebar from "../Sidebar/page";
+import Searchdummy from "../Searchdummy/page";
 
 
 const PostPage = () => {
@@ -223,7 +224,9 @@ const PostPage = () => {
                     <button onClick={closeConfirmPopup}>キャンセル</button>
                 </div>
             )}
+            <Searchdummy />
         </div>
+
     );
 
     // return (
