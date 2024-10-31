@@ -195,8 +195,9 @@ const DM = () => {
 
                 {!selectedUser ? (
                     <div>
-                        <h2>DM</h2>
+
                         <ul className="DMList">
+                            <h2>DM</h2>
                             {users
                                 .filter((otherUser) => {
                                     return user?.followers?.includes(otherUser.uid) && otherUser.uid !== user.uid;
@@ -205,7 +206,7 @@ const DM = () => {
                                     <li key={otherUser.uid} className="dm-list-item">
                                         <button onClick={() => setSelectedUser(otherUser)}>
                                             {/* アイコンを表示 */}
-                                            <div style={{ display: 'flex', marginTop: '15px' }}>
+                                            <div style={{display: 'flex', marginTop: '15px'}}>
                                                 <img
                                                     src={otherUser.profile_image_url}
                                                     alt={`${otherUser.name}'s profile`}

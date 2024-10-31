@@ -101,9 +101,10 @@ textarea {
 }
 .DMList {
     list-style-type: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
+    /*padding: 0;*/
+    padding-right: 100px;
+    margin: auto;
+    width: 50%;
     max-width: 400px;
 }
 .DMList li {
