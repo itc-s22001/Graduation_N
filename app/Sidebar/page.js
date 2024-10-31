@@ -4,11 +4,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation'; // next/navigation から useRouter と usePathname をインポート
 import '../../Style/sidebar.css'; // CSSファイルのインポート
-import Searchbar from '@/app/Searchbar/page'; // 検索バーのインポート
-=======
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import '../../Style/sidebar.css';
 
 
 const SidebarButton = ({ children, push, isActive, onClick }) => {
