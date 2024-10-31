@@ -1,13 +1,13 @@
-'use client'; // Client component marker
-import { useState } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { doc, setDoc, serverTimestamp, getDoc, query, collection, where, getDocs } from 'firebase/firestore';
-import { storage, db, auth } from '@/app/firebase'; // Firebaseのインポート
+import { storage, db, auth } from '@/app/firebase';
 import { useRouter } from 'next/navigation';
 import '@/style/profileedit.css';
 
 const EditProfilePage = () => {
-    const [uid, setUid] = useState('');
+    const [customUid, setCustomUid] = useState(''); // ユーザーが設定する独自のID
     const [name, setName] = useState('');
     const [profileDescription, setProfileDescription] = useState('');
     const [profileImageFile, setProfileImageFile] = useState(null);
@@ -15,31 +15,65 @@ const EditProfilePage = () => {
     const [error, setError] = useState('');
     const router = useRouter();
 
-    // ファイル選択の処理
+    // 初期データの読み込み
+    useEffect(() => {
+        const loadUserData = async () => {
+            try {
+                const user = auth.currentUser;
+                if (!user) {
+                    setError("ログインしていません。");
+                    return;
+                }
+
+                // ユーザードキュメントを確認
+                const userDocRef = doc(db, "users", user.uid);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    const userData = userDocSnap.data();
+                    // 既存のデータがある場合は読み込む
+                    setCustomUid(userData.uid || '');
+                    setName(userData.name || '');
+                    setProfileDescription(userData.profile_description || '');
+                    setProfileImageUrl(userData.profile_image_url || '');
+                }
+            } catch (error) {
+                console.error("データの読み込みに失敗しました:", error);
+                setError("プロフィール情報の読み込みに失敗しました。");
+            }
+        };
+
+        loadUserData();
+    }, []);
+
     const handleFileChange = (e) => {
         if (e.target.files[0]) {
             setProfileImageFile(e.target.files[0]);
+            const fileUrl = URL.createObjectURL(e.target.files[0]);
+            setProfileImageUrl(fileUrl);
         }
     };
 
-    // ファイルのアップロード処理
     const handleFileUpload = async (file) => {
-        const storageRef = ref(storage, `profile_images/${file.name}`);
+        const storageRef = ref(storage, `profile_images/${auth.currentUser.uid}/${file.name}`);
         await uploadBytes(storageRef, file);
         return getDownloadURL(storageRef);
     };
 
-    // UIDの重複チェック
-    const checkUidExists = async (uidToCheck) => {
+    // カスタムUIDの重複チェック
+    const checkCustomUidExists = async (uidToCheck) => {
+        if (!uidToCheck) return false;
+        
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("uid", "==", uidToCheck));
         const querySnapshot = await getDocs(q);
-        return !querySnapshot.empty;
+        
+        // 自分のドキュメント以外で重複がないかチェック
+        return querySnapshot.docs.some(doc => doc.id !== auth.currentUser?.uid);
     };
 
-    // プロフィールの保存処理
     const handleSave = async () => {
-        if (!name || !uid) {
+        if (!customUid || !name) {
             setError("ユーザーIDと名前は必須項目です。");
             return;
         }
@@ -47,14 +81,14 @@ const EditProfilePage = () => {
         try {
             const user = auth.currentUser;
             if (!user) {
-                setError("ユーザーがログインしていません。");
+                setError("ログインしていません。");
                 return;
             }
 
-            // UIDの重複チェック
-            const uidExists = await checkUidExists(uid);
+            // カスタムUIDの重複チェック
+            const uidExists = await checkCustomUidExists(customUid);
             if (uidExists) {
-                setError("このUIDはすでに使用されています。");
+                setError("このユーザーIDは既に使用されています。別のIDを入力してください。");
                 return;
             }
 
@@ -63,77 +97,88 @@ const EditProfilePage = () => {
                 newProfileImageUrl = await handleFileUpload(profileImageFile);
             }
 
-            // Firestore ドキュメント参照の取得
+            // ユーザードキュメントの参照を取得
             const userDocRef = doc(db, "users", user.uid);
-
-            // ドキュメントスナップショットの取得
             const userDocSnap = await getDoc(userDocRef);
 
             // 保存するデータの準備
             const dataToSave = {
-                uid: uid,
+                uid: customUid,                // ユーザーが設定した独自のID
+                gid: user.uid,                // GoogleのログインID
                 email: user.email,
                 name: name,
                 profile_description: profileDescription || "よろしくお願いします",
                 profile_image_url: newProfileImageUrl,
-                created_at: userDocSnap.exists() ? userDocSnap.data().created_at : serverTimestamp()
+                lastLogin: serverTimestamp()
             };
 
-            // Firestore にデータを保存
-            await setDoc(userDocRef, dataToSave, { merge: true });
-            console.log("ユーザープロファイルが正常に保存されました:", dataToSave);
+            // 新規ユーザーの場合のみcreated_atを設定
+            if (!userDocSnap.exists()) {
+                dataToSave.created_at = serverTimestamp();
+            }
 
-            // プロファイルページにリダイレクト
+            await setDoc(userDocRef, dataToSave, { merge: true });
+            console.log("プロフィールを保存しました:", dataToSave);
+
             router.push("/profile");
         } catch (error) {
-            console.error("ユーザー情報の更新に失敗しました:", error);
-            setError("ユーザー情報の更新に失敗しました。");
+            console.error("保存に失敗しました:", error);
+            setError("プロフィールの保存に失敗しました。");
         }
     };
 
     return (
         <div className="profile-edit-container">
-            <h1>プロフィール編集</h1>
+            <h1>プロフィール設定</h1>
             <form onSubmit={(e) => e.preventDefault()}>
                 <div>
-                    <label>ユーザーID</label>
+                    <label>ユーザーID（必須）</label>
                     <input
                         type="text"
-                        value={uid}
-                        onChange={(e) => setUid(e.target.value)}
+                        value={customUid}
+                        onChange={(e) => setCustomUid(e.target.value)}
                         required
                     />
                 </div>
                 <div>
-                    <label>名前</label>
+                    <label>名前（必須）</label>
                     <input
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
+                        placeholder="あなたの名前を入力してください"
                         required
                     />
                 </div>
                 <div>
                     <label>自己紹介</label>
-                    <input
-                        type="text"
+                    <textarea
                         value={profileDescription}
                         onChange={(e) => setProfileDescription(e.target.value)}
+                        placeholder="自己紹介を入力してください"
                     />
                 </div>
                 <div>
-                    <label>アイコン</label>
+                    <label>プロフィール画像</label>
                     <input
                         type="file"
                         accept="image/*"
                         onChange={handleFileChange}
                     />
                     {profileImageUrl && (
-                        <img src={profileImageUrl} alt="Preview" style={{ maxWidth: '100px', marginTop: '10px' }} />
+                        <img 
+                            src={profileImageUrl} 
+                            alt="プロフィール画像プレビュー" 
+                            style={{ maxWidth: '100px', marginTop: '10px' }} 
+                        />
                     )}
                 </div>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-                <button onClick={handleSave}>
+                {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
+                <button 
+                    type="button" 
+                    onClick={handleSave}
+                    className="save-button"
+                >
                     保存
                 </button>
             </form>
