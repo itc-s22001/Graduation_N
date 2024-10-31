@@ -1,6 +1,6 @@
 'use client';
 
-import SearchBar from '../SearchBar/page';
+// import SearchBar from '../SearchBar/page';
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation'; // next/navigation から useRouter と usePathname をインポート
 import '../../Style/sidebar.css'; // CSSファイルのインポート
@@ -33,7 +33,7 @@ const Sidebar = () => {
 
     return (
         <div className="sidebar">
-            <SearchBar />
+            {/*<SearchBar />*/}
             <button className="logo-button">N</button> {/* ロゴボタン */}
             <div className="button-container">
                 <div className="buttons">
@@ -42,7 +42,6 @@ const Sidebar = () => {
                         <svg className="home-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                             <path d="M12 3l10 9h-3v9h-6v-6h-4v6H5v-9H2z" />
                         </svg>
-//                         <button className={`sidebar-button ${activePage === 'home' ? 'active' : ''}`} onClick={() => navigateTo('Sidebar')}>ホーム</button>
 
 
                         <SidebarButton
