@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { collection, addDoc, serverTimestamp, query, onSnapshot, orderBy, doc, getDocs, where, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
-import Modal from '../Modal/page'; // モーダルコンポーネントをインポート
+// import Modal from '../Modal/page'; // モーダルコンポーネントをインポート
 import { onAuthStateChanged } from 'firebase/auth';
+import Sidebar from '../Sidebar/page';
+
 
 const PostPage = () => {
     const [posts, setPosts] = useState([]); // 投稿データの状態管理
@@ -141,6 +143,7 @@ const PostPage = () => {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+            {/* <Sidebar /> */}
             {/* 投稿フォーム */}
             <form onSubmit={handlePostSubmit} style={{ width: '100%', maxWidth: '600px', marginBottom: '20px' }}>
                 <textarea

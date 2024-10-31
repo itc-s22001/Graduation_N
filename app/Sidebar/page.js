@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import '../../Style/sidebar.css';
+import Modal from '../Modal/page';
 
 const SidebarButton = ({ children, push, isActive, onClick }) => {
     return (
@@ -37,9 +38,9 @@ const Sidebar = () => {
                     {/* ホームボタン */}
                     <div className="sidebar-button-container">
                         <SidebarButton
-                            push="/home"
-                            isActive={activeButton === '/home'}
-                            onClick={() => handleButtonClick('/home')}
+                            push="/PostList"
+                            isActive={activeButton === '/PostList'}
+                            onClick={() => handleButtonClick('/PostList')}
                         >
                             ホーム
                         </SidebarButton>
@@ -80,13 +81,14 @@ const Sidebar = () => {
 
                     {/* 投稿ボタン */}
                     <div className="sidebar-button-container">
-                        <SidebarButton
+                        <Modal />
+                        {/* <SidebarButton
                             push="/post"
                             isActive={activeButton === '/post'}
                             onClick={() => handleButtonClick('/post')}
                         >
                             投稿
-                        </SidebarButton>
+                        </SidebarButton> */}
                     </div>
 
                     {/* コミュニティボタン */}
