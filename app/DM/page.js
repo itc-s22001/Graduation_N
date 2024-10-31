@@ -177,14 +177,14 @@ const DM = () => {
     }, [messages]);
 
     return (
-        <div>
+        <div className="container">
             <Sidebar />
-            <div className="container">
+            <div >
                 <div className="user-status">
                     {user ? (
                         <div>
                             <p>ログイン中: {user.name || user.email}</p>
-                            <button onClick={handleLogout}>ログアウト</button>
+                            {/*<button onClick={handleLogout}>ログアウト</button>*/}
                         </div>
                     ) : (
                         <p>ログインしていません。</p>
@@ -193,24 +193,34 @@ const DM = () => {
 
                 {!selectedUser ? (
                     <div>
-                        <h2>DMを送る相手を選択してください</h2>
-                        <ul>
+                        <h2>DM</h2>
+                        <ul className="DMList">
                             {users
                                 .filter((otherUser) => {
                                     return user?.followers?.includes(otherUser.uid) && otherUser.uid !== user.uid;
                                 })
                                 .map((otherUser) => (
-                                    <li key={otherUser.uid}>
+                                    <li key={otherUser.uid} className="dm-list-item">
                                         <button onClick={() => setSelectedUser(otherUser)}>
-                                            {otherUser.name}
+                                            {/* アイコンを表示 */}
+                                            <div style={{ display: 'flex', marginTop: '15px' }}>
+                                                <img
+                                                    src={otherUser.profile_image_url}
+                                                    alt={`${otherUser.name}'s profile`}
+                                                    className="dm-user-icon"
+                                                />
+                                                <p className="DMusername">{otherUser.name}</p>
+                                            </div>
+
                                         </button>
                                     </li>
                                 ))}
                         </ul>
+
                     </div>
                 ) : (
                     <div className="DMmain">
-                        <div style={{ display: "flex", alignItems: "center" }}>
+                        <div style={{display: "flex", alignItems: "center"}}>
                             <button
                                 onClick={() => setSelectedUser(null)}
                                 style={{
@@ -228,7 +238,7 @@ const DM = () => {
 
                         <div className="messageContainer">
                             {messages.length === 0 ? (
-                                <p>メッセージはまだありません。</p>
+                                <p className="DMfirstmessage">メッセージはまだありません。</p>
                             ) : (
                                 messages.map((message, index) => (
                                     <div key={index} className={`message ${message.sender_id === user?.uid ? 'self' : 'other'}`}>
