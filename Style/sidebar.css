@@ -11,8 +11,9 @@
     top: 0; /* 上部に配置 */
     left: 0; /* 左側に配置 */
     z-index: 1000; /* 他の要素の上に表示 */
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* 影をつける */
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5); /* 左に影をつける */
 }
+
 
 .button-container {
     margin-top: 60px; /* ロゴボタンのスペース */

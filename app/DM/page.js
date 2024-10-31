@@ -9,6 +9,8 @@ import '../../style/SuperDM.css';
 import Sou from '../Images/Sousin.png';
 import Image from "next/image";
 import Sidebar from "@/app/Sidebar/page";
+import Searchdummy from "@/app/Searchdummy/page"; // Searchdummyをインポート
+
 import Yaji from '../Images/Yajirusi.png';
 
 const DM = () => {
@@ -283,6 +285,7 @@ const DM = () => {
                     </div>
                 )}
             </div>
+            <Searchdummy/>
         </div>
     );
 };

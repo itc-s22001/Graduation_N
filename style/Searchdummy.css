@@ -1,0 +1,78 @@
+.search-container {
+    position: fixed; /* 画面右に固定 */
+    right: 0;
+    top: 0;
+    width: 300px;
+    height: 100vh; /* 上から下まで表示 */
+    margin: 0; /* マージンを 0 に設定 */
+    z-index: 1000;
+    border-left: 2px solid #e6ecf0; /* 右の境界線 */
+    background-color: #fff;
+    padding: 20px; /* 内側の余白 */
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e1e8ed;
+    border-radius: 20px;
+    background-color: #ffffff;
+    color: #14171a;
+    font-size: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.search-input::placeholder {
+    color: #657786;
+}
+
+.search-results {
+    list-style-type: none;
+    padding: 0;
+    margin: 5px 0 0;
+    /*border: 1px solid #e1e8ed;*/
+    border-radius: 0 0 20px 20px;
+    background-color: #ffffff;
+    position: absolute;
+    width: 100%;
+    z-index: 1000;
+}
+
+.search-results li {
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-results li:hover {
+    background-color: #f5f8fa;
+}
+
+/* 検索バー用の小さなアイコン */
+.search-profile-image {
+    width: 30px; /* 必要に応じて調整 */
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+/* 既存のプロファイルページ用のスタイルはそのままに */
+.search-profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+.search-result-item {
+    width: auto;
+    height: auto;
+    border-bottom: 1px solid #d0d0d0;
+    border-left: none;
+}
+
+.searchname {
+    font-weight: bold;
+    margin-top: 10px;
+}
