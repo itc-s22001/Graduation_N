@@ -22,30 +22,58 @@ const DM = () => {
     const messagesEndRef = useRef(null);
     const router = useRouter();
 
+    // useEffect(() => {
+    //     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    //         if (currentUser) {
+    //             const userDocRef = doc(db, "users", currentUser.uid);
+    //             const userDocSnap = await getDoc(userDocRef);
+    //             let userName = currentUser.email;
+
+    //             if (userDocSnap.exists()) {
+    //                 userName = userDocSnap.data().name || userName;
+    //                 await setDoc(userDocRef, {
+    //                     uid: currentUser.uid,
+    //                     email: currentUser.email,
+    //                     name: userName,
+    //                     followers: userDocSnap.data().followers || [],
+    //                     lastLogin: serverTimestamp()
+    //                 }, { merge: true });
+    //             }
+    //             setUser({ ...currentUser, name: userName, followers: userDocSnap.data().followers || [] });
+    //         } else {
+    //             setUser(null);
+    //         }
+    //     });
+    //     return () => unsubscribe();
+    // }, []);
+
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
-                const userDocRef = doc(db, "users", currentUser.uid);
+                const gid = currentUser.uid;
+                const userDocRef = doc(db, "users", gid);
                 const userDocSnap = await getDoc(userDocRef);
-                let userName = currentUser.email;
-
+    
                 if (userDocSnap.exists()) {
-                    userName = userDocSnap.data().name || userName;
-                    await setDoc(userDocRef, {
-                        uid: currentUser.uid,
-                        email: currentUser.email,
-                        name: userName,
-                        followers: userDocSnap.data().followers || [],
-                        lastLogin: serverTimestamp()
-                    }, { merge: true });
+                    const userData = userDocSnap.data();
+                    setUser({
+                        ...currentUser,
+                        gid: gid,
+                        uid: userData.uid,  // カスタムUIDをセット
+                        name: userData.name || currentUser.email,
+                        followers: userData.followers || []
+                    });
+                } else {
+                    setUser({ ...currentUser, gid: gid, uid: null });
                 }
-                setUser({ ...currentUser, name: userName, followers: userDocSnap.data().followers || [] });
             } else {
                 setUser(null);
             }
         });
+    
         return () => unsubscribe();
     }, []);
+    
 
     useEffect(() => {
         const q = collection(db, "users");
