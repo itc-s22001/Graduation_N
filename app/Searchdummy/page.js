@@ -41,6 +41,7 @@ const Searchdummy = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
             <ul className="search-results">
+                <h3> user </h3>
                 {filteredUsers.map(user => (
                     <li key={user.uid} className="search-result-item">
                         <div style={{ display: "flex" }}>
