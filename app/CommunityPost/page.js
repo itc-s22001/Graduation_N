@@ -2,28 +2,34 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { db } from "@/app/firebase";
-import { doc, getDoc, collection, addDoc, updateDoc, setDoc } from "firebase/firestore";
+import { doc, onSnapshot, setDoc, updateDoc } from "firebase/firestore";
 import { auth } from "@/app/firebase"; // Firebaseのauthもインポート
 
 const CommunityPosts = ({ communityId }) => {
     const [posts, setPosts] = useState([]);
     const [newPostContent, setNewPostContent] = useState("");
 
-    const fetchPosts = useCallback(async () => {
-        const docRef = doc(db, "community_posts", communityId); // communityIdを使って特定のドキュメントを参照
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            setPosts(data.posts || []);
-        } else {
-            // ドキュメントが存在しない場合は初期化
-            await setDoc(docRef, { community_id: communityId, posts: [] });
-            setPosts([]); // 初期化した後、空の配列を設定
-        }
+    const fetchPosts = useCallback(() => {
+        const docRef = doc(db, "community_posts", communityId);
+
+        // リアルタイムリスナーを設定
+        const unsubscribe = onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                setPosts(data.posts || []);
+            } else {
+                // ドキュメントが存在しない場合は初期化
+                setDoc(docRef, { community_id: communityId, posts: [] });
+                setPosts([]); // 初期化した後、空の配列を設定
+            }
+        });
+
+        return unsubscribe; // クリーンアップ用の関数を返す
     }, [communityId]);
 
     useEffect(() => {
-        fetchPosts();
+        const unsubscribe = fetchPosts(); // fetchPostsを呼び出し、リスナーを登録
+        return () => unsubscribe(); // コンポーネントがアンマウントされたときにリスナーを解除
     }, [fetchPosts]); // fetchPostsが変更されたときに再実行
 
     const handleNewPost = async () => {
@@ -50,7 +56,6 @@ const CommunityPosts = ({ communityId }) => {
         });
 
         setNewPostContent("");
-        fetchPosts(); // 投稿を再取得
     };
 
     return (
@@ -64,7 +69,7 @@ const CommunityPosts = ({ communityId }) => {
             />
             <button onClick={handleNewPost}>投稿</button>
             <div>
-                {posts.map((post, index) => (
+                {posts.map((post) => (
                     <div key={post.post_id}> {/* post_idをキーに使用 */}
                         <p>{post.content}</p>
                         <p>投稿者: {post.user_name}</p>
