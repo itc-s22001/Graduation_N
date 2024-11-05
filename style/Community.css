@@ -1,0 +1,20 @@
+.community-card {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.community-icon {
+    width: 50px; /* アイコンの幅 */
+    height: 50px; /* アイコンの高さ */
+    border-radius: 50%; /* 丸くする */
+    margin-right: 10px; /* アイコンとテキストの間のスペース */
+}
+
+.community-card h3 {
+    margin: 0; /* h3 のマージンをリセット */
+}
+
+.community-card p {
+    margin: 5px 0; /* 説明文のマージン */
+}
