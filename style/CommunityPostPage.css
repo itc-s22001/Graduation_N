@@ -1,0 +1,153 @@
+.community-post-page {
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.posts-list {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 800px; /* 最大幅を設定して、リストが広がりすぎないように */
+    overflow-y: auto; /* 投稿リストが長くなったときにスクロールできるように */
+    padding-bottom: 60px; /* 下部の余白を作成（投稿フォームが重ならないように） */
+}
+
+.post {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+.post:hover {
+    background-color: #f1f1f1; /* 投稿にホバーしたときの背景色 */
+}
+
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.user-info {
+    font-weight: bold;
+}
+
+.post-content {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.likes {
+    display: flex;
+    align-items: center;
+}
+
+.like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.heart-icon {
+    color: gray;
+    font-size: 20px;
+}
+
+.heart-icon.liked {
+    color: red;
+}
+
+.like-count {
+    margin-left: 10px;
+}
+
+/* 新しい投稿フォーム */
+.new-post-form {
+    position: fixed;
+    display: flex;             /* フォーム全体をflexにする */
+    flex-direction: column;
+    text-align: center;
+    bottom: 0;
+    width: 100%;
+    height: 230px;
+    max-width: 800px;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid #000000;
+    z-index: 1000;
+    box-sizing: border-box;
+    gap: 10px;                  /* 内部要素の間隔を確保 */
+}
+
+.new-post-form h3  {
+    margin: 0;
+}
+
+form {
+    display: flex;             /* フォーム全体をflexにする */
+    flex-direction: column;    /* 中身を縦並びにする */
+    gap: 10px;                 /* 要素間のスペース */
+    margin-bottom: 20px;       /* 投稿ボタンとの間隔を開ける */
+}
+
+.submit-button {
+    margin-top: auto;          /* 投稿ボタンを下に寄せる */
+    align-self: flex-end;      /* ボタンを右端に配置 */
+}
+
+
+.new-post-form textarea {
+    width: 600px;
+    margin: auto;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    border: 1px solid #656262;
+    resize: none;
+    height: 80px; /* 高さを固定 */
+    text-align: center;
+}
+
+.new-post-form button {
+    padding: 10px 20px;
+    width: 100px;
+    margin: auto;
+    background-color: #1DA1F2; /* Twitterの青色 */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.new-post-form button:hover {
+    background-color: #1A91DA; /* ホバー時の色 */
+}
+
+/* ボタンのレスポンシブ対応 */
+@media (max-width: 600px) {
+    .new-post-form {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .new-post-form button {
+        width: 100%; /* モバイルではボタンを横幅いっぱいに広げる */
+    }
+}
