@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { query, collection, orderBy, onSnapshot, where, getDocs, updateDoc, deleteDoc, doc,getDoc } from "firebase/firestore";
+import { query, collection, orderBy, onSnapshot, where, getDocs, updateDoc, deleteDoc, doc, getDoc } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { onAuthStateChanged } from 'firebase/auth';
 import Sidebar from "../Sidebar/page";
+import '@/styles/PostList.css';
 
 
 const PostPage = () => {
@@ -123,57 +124,36 @@ const PostPage = () => {
         }
     };
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh' }}>
+        <div className="continer">
             <Sidebar />
-            <div style={{ width: '100%', maxWidth: '600px' }}>
+            <div className="post_all">
                 {posts.map((post) => (
-                    <div key={post.id} style={{
-                        border: '1px solid #ccc',
-                        borderRadius: '10px',
-                        padding: '10px',
-                        marginBottom: '10px',
-                        backgroundColor: 'white',
-                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                        position: 'relative'
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div key={post.id} className="single_post">
+                        <div className="post_icon_name">
                             {/* アイコン表示 */}
                             {post.user_icon && (
                                 <img
                                     src={post.user_icon} // 投稿データから取得したユーザーのアイコンを表示
                                     alt="User Icon"
-                                    style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }}
+                                    className="post_icon"
                                 />
                             )}
                             {/* ユーザー名表示 */}
-                            <p style={{ fontWeight: 'bold' }}>{post.user_name}</p>
+                            <p className="post_name">{post.user_name}</p>
                             {user?.uid === post.user_id && (
-                                <div style={{ marginLeft: 'auto', position: 'relative' }}>
+                                <div className="post_name_distance">
                                     <button onClick={() => setIsDeleteMenuOpen(prev => ({ ...prev, [post.id]: !prev[post.id] }))}>
                                         ⋮
                                     </button>
                                     {isDeleteMenuOpen[post.id] && (
-                                        <div style={{
-                                            position: 'absolute',
-                                            right: 0,
-                                            backgroundColor: 'white',
-                                            border: '1px solid #ccc',
-                                            borderRadius: '5px',
-                                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-                                            padding: '5px',
-                                            cursor: 'pointer'
-                                        }}
-                                            onClick={() => openConfirmPopup(post.id)}
-                                        >
-                                            削除
-                                        </div>
+                                        <div className="post_delete" onClick={() => openConfirmPopup(post.id)}> 削除</div>
                                     )}
                                 </div>
                             )}
                         </div>
                         <p>{post.content}</p> {/* 内容 */}
                         <p>投稿日: {post.create_at ? new Date(post.create_at.seconds * 1000).toLocaleString() : "不明"}</p>
-                        <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                        <div className="post_nice_comment">
                             <button onClick={() => toggleLike(post.id, post.likes, post.likedByUser)}>
                                 {post.likedByUser ? "いいねを取り消す" : "いいね"}
                             </button>
@@ -186,17 +166,7 @@ const PostPage = () => {
 
             {/* 削除確認ポップアップ */}
             {isConfirmPopupOpen && (
-                <div style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    backgroundColor: 'white',
-                    padding: '20px',
-                    borderRadius: '8px',
-                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-                    zIndex: 1000
-                }}>
+                <div className="post_delete_confirmation">
                     <p>本当にこの投稿を削除しますか？</p>
                     <button onClick={handleDeletePost}>削除</button>
                     <button onClick={closeConfirmPopup}>キャンセル</button>
