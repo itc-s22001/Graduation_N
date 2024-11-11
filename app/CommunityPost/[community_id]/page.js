@@ -201,8 +201,8 @@ const CommunityPostPage = ({ params }) => {
         <div style={{ display: "flex" }}>
             <Sidebar />
             <div className="community-post-page">
-                <h1>{community ? community.community_name : "コミュニティ情報を取得中"}</h1>
-                <p>{community ? community.community_profile : ""}</p>
+                <h1 className="community-name">{community ? community.community_name : "コミュニティ情報を取得中"}</h1>
+                <p className="community-pro">{community ? community.community_profile : ""}</p>
 
                 <div className="posts-list">
                     {posts.length === 0 ? (

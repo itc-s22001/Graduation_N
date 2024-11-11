@@ -200,6 +200,7 @@ form {
     font-size: 20px;
 }
 
+
 /* 投稿フォーム内のテキストエリア */
 .popup-textarea {
     width: 100%;
@@ -280,6 +281,20 @@ form {
     margin-top: 10px; /* 投稿ボタンの間隔 */
     transition: background-color 0.3s ease;
 }
+
+.community-name {
+/*   */
+}
+
+
+.post-list {
+    z-index: 10000; /* 他の要素の上に表示 */
+}
+.community-pro {
+    margin-top: 10px;
+}
+
+
 
 /* 投稿ボタンのホバー時 */
 .submit-post-button:hover {
