@@ -1,3 +1,4 @@
+/* メインページ */
 .community-post-page {
     width: 100%;
     margin: 0 auto;
@@ -11,9 +12,9 @@
 .posts-list {
     margin-top: 20px;
     width: 100%;
-    max-width: 800px; /* 最大幅を設定して、リストが広がりすぎないように */
-    overflow-y: auto; /* 投稿リストが長くなったときにスクロールできるように */
-    padding-bottom: 60px; /* 下部の余白を作成（投稿フォームが重ならないように） */
+    max-width: 800px;
+    overflow-y: auto;
+    padding-bottom: 60px;
 }
 
 .post {
@@ -26,7 +27,7 @@
 }
 
 .post:hover {
-    background-color: #f1f1f1; /* 投稿にホバーしたときの背景色 */
+    background-color: #f1f1f1;
 }
 
 .post-header {
@@ -77,7 +78,7 @@
 /* 新しい投稿フォーム */
 .new-post-form {
     position: fixed;
-    display: flex;             /* フォーム全体をflexにする */
+    display: flex;
     flex-direction: column;
     text-align: center;
     bottom: 0;
@@ -88,28 +89,27 @@
     padding: 20px;
     border-radius: 30px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #000000;
+    border: 1px solid #000;
     z-index: 1000;
     box-sizing: border-box;
-    gap: 10px;                  /* 内部要素の間隔を確保 */
+    gap: 10px;
 }
 
-.new-post-form h3  {
+.new-post-form h3 {
     margin: 0;
 }
 
 form {
-    display: flex;             /* フォーム全体をflexにする */
-    flex-direction: column;    /* 中身を縦並びにする */
-    gap: 10px;                 /* 要素間のスペース */
-    margin-bottom: 20px;       /* 投稿ボタンとの間隔を開ける */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
 .submit-button {
-    margin-top: auto;          /* 投稿ボタンを下に寄せる */
-    align-self: flex-end;      /* ボタンを右端に配置 */
+    margin-top: auto;
+    align-self: flex-end;
 }
-
 
 .new-post-form textarea {
     width: 600px;
@@ -119,7 +119,7 @@ form {
     border-radius: 5px;
     border: 1px solid #656262;
     resize: none;
-    height: 80px; /* 高さを固定 */
+    height: 80px;
     text-align: center;
 }
 
@@ -127,7 +127,7 @@ form {
     padding: 10px 20px;
     width: 100px;
     margin: auto;
-    background-color: #1DA1F2; /* Twitterの青色 */
+    background-color: #1DA1F2;
     color: white;
     border: none;
     border-radius: 5px;
@@ -137,17 +137,167 @@ form {
 }
 
 .new-post-form button:hover {
-    background-color: #1A91DA; /* ホバー時の色 */
+    background-color: #1A91DA;
 }
 
-/* ボタンのレスポンシブ対応 */
+/* ポップアップの背景 */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6); /* 背景色を少し濃くして、ポップアップが目立つように */
+    display: none; /* 初期状態では非表示 */
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* 投稿フォーム */
+.post-form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+/* ポップアップのスタイル */
+.post-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 背景を少し暗くしてポップアップを際立たせる */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* ポップアップ内容 */
+.popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 30px; /* 丸みを増して、Twitterのようなデザイン */
+    width: 500px; /* 少し広めに */
+    max-width: 90%; /* モバイル対応 */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* 薄い影を付けて浮き上がった印象 */
+    font-size: 16px;
+    color: #14171A; /* Twitterのフォントカラー */
+    text-align: center; /* 左寄せにして、投稿フォームの自然な感じに */
+}
+
+.popup-content h2 {
+    text-align: center;
+}
+.post-input{
+    width: 400px;
+    height: 100px;
+    text-align: center;
+    resize: none;  /* テキストエリアのリサイズを無効にする場合 */
+    font-size: 20px;
+}
+
+/* 投稿フォーム内のテキストエリア */
+.popup-textarea {
+    width: 100%;
+    height: 120px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #E1E8ED;
+    background-color: #F5F8FA; /* Twitterっぽい背景色 */
+    font-size: 16px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.3s ease;
+    color: #14171A; /* フォントカラー */
+}
+
+/* フォーカス時のエフェクト */
+.popup-textarea:focus {
+    border-color: #1DA1F2; /* Twitterの青 */
+    background-color: white;
+}
+
+/* クロスボタン */
+.close-popup-button {
+    /*position: absolute; !* 絶対位置指定 *!*/
+    top: 10px;
+    right: 0;
+    width: auto;
+    height: 10px;
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.close-popup-button:hover {
+    color: #1DA1F2; /* マウスオーバー時の色をTwitterの青に変更 */
+}
+
+/* 新規投稿ボタン */
+.new-post-button {
+    background-color: #1DA1F2; /* Twitterの青 */
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 60px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 200px; /* ボタンを広めに */
+    transition: background-color 0.3s ease;
+    position: fixed;
+    bottom: 20px; /* ボタンを画面下部から少し上に */
+        z-index: 1000; /* 他の要素の上に表示 */
+}
+
+.new-post-button:hover {
+    background-color: #1A91DA;
+}
+
+
+/* 新規投稿ボタンのホバー時 */
+.new-post-button:hover {
+    background-color: #1A91DA;
+}
+
+/* 投稿ボタン */
+.submit-post-button {
+    background-color: #1A91DA;
+    width: 200px;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px; /* 投稿ボタンの間隔 */
+    transition: background-color 0.3s ease;
+}
+
+/* 投稿ボタンのホバー時 */
+.submit-post-button:hover {
+    background-color: #1A91DA;
+}
+
+/* レスポンシブ対応 */
 @media (max-width: 600px) {
-    .new-post-form {
-        width: 100%;
+    .popup-content {
+        width: 90%; /* モバイル対応の幅調整 */
         padding: 15px;
     }
 
-    .new-post-form button {
-        width: 100%; /* モバイルではボタンを横幅いっぱいに広げる */
+    .popup-textarea {
+        height: 100px; /* モバイル用にテキストエリアの高さを調整 */
+    }
+
+    .new-post-button, .submit-post-button {
+        width: 100%; /* モバイルではボタンを広く */
     }
 }

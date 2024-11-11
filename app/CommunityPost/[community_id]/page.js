@@ -19,6 +19,7 @@ const CommunityPostPage = ({ params }) => {
     const [user, setUser] = useState(null);
     const [userIcons, setUserIcons] = useState({}); // ユーザーのアイコンを保持するオブジェクト
     const [userNames, setUserNames] = useState({}); // ユーザー名を保持するオブジェクト
+    const [showPostPopup, setShowPostPopup] = useState(false); // ポップアップ表示用の状態
 
     useEffect(() => {
         const auth = getAuth();
@@ -93,7 +94,6 @@ const CommunityPostPage = ({ params }) => {
         }
 
         try {
-            // users コレクションから gid を取得
             const userDocRef = doc(db, "users", user.uid);
             const userDoc = await getDoc(userDocRef);
 
@@ -103,9 +103,7 @@ const CommunityPostPage = ({ params }) => {
             }
 
             const userId = userDoc.data().gid;  // gid を userId として設定
-
-            // いいね処理の実行
-            const postIndex = posts.findIndex(post => post.id === postId);  // postId で検索
+            const postIndex = posts.findIndex(post => post.id === postId);
             if (postIndex === -1) {
                 console.error("指定された投稿が見つかりません");
                 return;
@@ -115,13 +113,12 @@ const CommunityPostPage = ({ params }) => {
             const postsDocRef = doc(db, "community_posts", community_id);
 
             if (post.likedBy.includes(userId)) {
-                // いいねを取り消す
                 const updatedLikedBy = post.likedBy.filter(gid => gid !== userId);
                 const updatedLikes = post.likes - 1;
 
                 await updateDoc(postsDocRef, {
                     posts: [
-                        ...posts.filter(p => p.id !== postId), // 他の投稿はそのまま
+                        ...posts.filter(p => p.id !== postId),
                         {
                             ...post,
                             likes: updatedLikes,
@@ -130,13 +127,12 @@ const CommunityPostPage = ({ params }) => {
                     ],
                 });
             } else {
-                // いいねを追加
                 const updatedLikedBy = [...post.likedBy, userId];
                 const updatedLikes = post.likes + 1;
 
                 await updateDoc(postsDocRef, {
                     posts: [
-                        ...posts.filter(p => p.id !== postId), // 他の投稿はそのまま
+                        ...posts.filter(p => p.id !== postId),
                         {
                             ...post,
                             likes: updatedLikes,
@@ -150,7 +146,6 @@ const CommunityPostPage = ({ params }) => {
         }
     };
 
-
     const handleNewPost = async (event) => {
         event.preventDefault();
 
@@ -163,7 +158,7 @@ const CommunityPostPage = ({ params }) => {
                 content: newPostContent,
                 user_id: currentUser.uid,
                 user_name: currentUser.displayName || currentUser.email,
-                user_icon: currentUser.photoURL || "default_icon_url",  // アイコンURL
+                user_icon: currentUser.photoURL || "default_icon_url",
                 likes: 0,
                 likedBy: [],
                 created_at: new Date(),
@@ -183,6 +178,7 @@ const CommunityPostPage = ({ params }) => {
             }
 
             setNewPostContent("");
+            setShowPostPopup(false); // 投稿後にポップアップを閉じる
         } catch (error) {
             console.error("投稿エラー:", error);
         }
@@ -194,7 +190,7 @@ const CommunityPostPage = ({ params }) => {
 
     const formatTime = (timestamp) => {
         const date = new Date(timestamp.seconds * 1000);
-        return date.toLocaleString();  // 日時をローカルフォーマットで表示
+        return date.toLocaleString();
     };
 
     if (loading) {
@@ -213,8 +209,7 @@ const CommunityPostPage = ({ params }) => {
                         <p>投稿はまだありません。</p>
                     ) : (
                         posts.map((post) => (
-                            <div key={post.id || post.created_at}
-                                 className="post">  {/* Use post.id if available, or fallback to post.created_at */}
+                            <div key={post.id || post.created_at} className="post">
                                 <div className="post-header">
                                     <div className="user-info" style={{display: "flex", alignItems: "center"}}>
                                         <img style={{width: "50px", borderRadius: "60px"}}
@@ -237,28 +232,34 @@ const CommunityPostPage = ({ params }) => {
                                         </button>
                                         <span className="like-count">{post.likes} いいね</span>
                                     </div>
-                                    <span className="post-time">{formatTime(post.created_at)}</span>
+                                    <span className="created-at">{formatTime(post.created_at)}</span>
                                 </div>
                             </div>
                         ))
                     )}
                 </div>
 
+                {/* 投稿ボタン */}
+                <button onClick={() => setShowPostPopup(true)} className="new-post-button">コミュニティに投稿</button>
 
-                <div className="new-post-form">
-                    <h3>ポストする</h3>
-                    <form onSubmit={handleNewPost}>
-                        <textarea
-                            value={newPostContent}
-                            onChange={handleNewPostChange}
-                            placeholder="新しい投稿を入力"
-                            rows="4"
-                        />
-                        <button type="submit">投稿</button>
-                    </form>
-                </div>
+                {/* ポップアップ（モーダル） */}
+                {showPostPopup && (
+                    <div className="post-popup">
+                        <div className="popup-content">
+                            <button onClick={() => setShowPostPopup(false)} className="close-popup-button">✕</button>
+                            <h2>新しい投稿</h2>
+                            <textarea
+                                value={newPostContent}
+                                onChange={handleNewPostChange}
+                                placeholder="投稿内容を入力..."
+                                className="post-input"
+                            />
+                            <button onClick={handleNewPost} className="submit-post-button">投稿する</button>
+                        </div>
+                    </div>
+                )}
             </div>
-            <Searchdummy/>
+            <Searchdummy />
         </div>
     );
 };
