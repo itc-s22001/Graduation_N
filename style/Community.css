@@ -1,20 +1,132 @@
-.community-card {
+/* Community.css */
+
+/* .CommunityContent クラスにスコープ */
+.CommunityContent {
+    font-family: Arial, sans-serif;
+    background-color: #f5f8fa;
+    color: #14171a;
+    justify-content: space-between;
+    margin: auto;
+    height: 100%;
+}
+
+.CommunityContent h2 {
+    font-size: 20px;
+    color: #1da1f2;
+    margin-bottom: 15px;
+}
+
+.CommunityContent h3 {
+    font-size: 18px;
+    margin: 0;
+    color: #14171a;
+}
+
+.CommunityContent p {
+    font-size: 14px;
+    color: #657786;
+}
+
+/* ボタンのスタイル */
+.CommunityContent button {
+    background-color: #1da1f2;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: background-color 0.2s;
+}
+
+.CommunityContent button:hover {
+    background-color: #0a95dd;
+}
+
+.CommunityContent button:disabled {
+    background-color: #aab8c2;
+    cursor: not-allowed;
+}
+
+/* 各セクションのスタイル */
+.CommunityContent div {
+    background-color: #ffffff;
+    }
+
+.CommunityContent div > div:last-child {
+    border-bottom: none;
+}
+
+/* コミュニティ作成フォーム */
+.CommunityContent input[type="text"],
+.CommunityContent textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.CommunityContent textarea {
+    resize: vertical;
+}
+
+.CommunityContent label {
+    font-size: 14px;
+    color: #657786;
+    margin-right: 10px;
+}
+
+.CommunityContent input[type="file"] {
+    font-size: 14px;
+}
+
+.CommunityContent input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-left: 10px;
+}
+
+/* 全体のレイアウト調整 */
+.CommunityContent .container {
     display: flex;
-    align-items: center;
-    margin: 10px 0;
+    justify-content: space-between;
+    padding: 30px;
 }
 
-.community-icon {
-    width: 50px; /* アイコンの幅 */
-    height: 50px; /* アイコンの高さ */
-    border-radius: 50%; /* 丸くする */
-    margin-right: 10px; /* アイコンとテキストの間のスペース */
+.CommunityContent .container > div {
+    flex: 1;
+    margin: 0 10px;
 }
 
-.community-card h3 {
-    margin: 0; /* h3 のマージンをリセット */
+.CommunityContent .container > div:first-child {
+    flex: 0.6;
 }
 
-.community-card p {
-    margin: 5px 0; /* 説明文のマージン */
+.CommunityContent .container > div:last-child {
+    flex: 0.6;
+}
+
+.CommunityContent .container h2 {
+    border-bottom: 2px solid #e1e8ed;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.CommunityBox {
+    display: flex;
+    padding: 0 50px;
+    margin-bottom: 0;
+    width: 100%;
+    height: 100vw;
+}
+
+.CommunityImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    top: 0;
 }

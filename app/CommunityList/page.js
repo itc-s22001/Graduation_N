@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import "../../style/CommunityList.css";
 
 function CommunityList({ onJoinCommunity }) {
     const [communities, setCommunities] = useState([]);
@@ -25,14 +26,19 @@ function CommunityList({ onJoinCommunity }) {
     }, []);
 
     return (
-        <div>
-            <h2>コミュニティ一覧</h2>
+        <div className="community-list-container">
+            <h2 className="community-list-title">コミュニティ一覧</h2>
             <ul>
                 {communities.map((community) => (
-                    <li key={community.id}>
+                    <li key={community.id} className="community-item">
                         <h3>{community.community_name}</h3>
                         <p>{community.community_profile}</p>
-                        <button onClick={() => onJoinCommunity(community.id)}>参加する</button>
+                        <button
+                            className="join-button"
+                            onClick={() => onJoinCommunity(community.id)}
+                        >
+                            参加する
+                        </button>
                     </li>
                 ))}
             </ul>

@@ -1,0 +1,57 @@
+/* CommunityList.css */
+.community-list-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f7f9fa;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+}
+
+.community-list-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1da1f2;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.community-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #e1e8ed;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.community-item h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #14171a;
+    margin: 0;
+}
+
+.community-item p {
+    font-size: 14px;
+    color: #657786;
+    margin: 5px 0;
+}
+
+.join-button {
+    font-size: 14px;
+    font-weight: bold;
+    color: #1da1f2;
+    background-color: #ffffff;
+    border: 1px solid #1da1f2;
+    border-radius: 20px;
+    padding: 5px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.join-button:hover {
+    background-color: #1da1f2;
+    color: #ffffff;
+}

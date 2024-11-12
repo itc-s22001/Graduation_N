@@ -17,9 +17,9 @@ const CommunityPostPage = ({ params }) => {
     const [loading, setLoading] = useState(true);
     const [newPostContent, setNewPostContent] = useState("");
     const [user, setUser] = useState(null);
-    const [userIcons, setUserIcons] = useState({}); // ユーザーのアイコンを保持するオブジェクト
-    const [userNames, setUserNames] = useState({}); // ユーザー名を保持するオブジェクト
-    const [showPostPopup, setShowPostPopup] = useState(false); // ポップアップ表示用の状態
+    const [userIcons, setUserIcons] = useState({});
+    const [userNames, setUserNames] = useState({});
+    const [showPostPopup, setShowPostPopup] = useState(false);
 
     useEffect(() => {
         const auth = getAuth();
@@ -54,19 +54,18 @@ const CommunityPostPage = ({ params }) => {
                         const postsData = docSnapshot.data().posts || [];
                         setPosts(postsData.sort((a, b) => b.created_at.seconds - a.created_at.seconds));
 
-                        // 投稿の user_id に基づいて userIcons と userNames を更新
                         postsData.forEach(async (post) => {
                             if (post.user_id && !userIcons[post.user_id]) {
                                 const userDocRef = doc(db, "users", post.user_id);
                                 const userDoc = await getDoc(userDocRef);
                                 if (userDoc.exists()) {
-                                    setUserIcons(prevIcons => ({
+                                    setUserIcons((prevIcons) => ({
                                         ...prevIcons,
-                                        [post.user_id]: userDoc.data().profile_image_url || "default_icon_url"
+                                        [post.user_id]: userDoc.data().profile_image_url || "default_icon_url",
                                     }));
-                                    setUserNames(prevNames => ({
+                                    setUserNames((prevNames) => ({
                                         ...prevNames,
-                                        [post.user_id]: userDoc.data().name || "名無し"  // `name` フィールドを使用
+                                        [post.user_id]: userDoc.data().name || "名無し",
                                     }));
                                 }
                             }
@@ -102,8 +101,8 @@ const CommunityPostPage = ({ params }) => {
                 return;
             }
 
-            const userId = userDoc.data().gid;  // gid を userId として設定
-            const postIndex = posts.findIndex(post => post.id === postId);
+            const userId = userDoc.data().gid;
+            const postIndex = posts.findIndex((post) => post.id === postId);
             if (postIndex === -1) {
                 console.error("指定された投稿が見つかりません");
                 return;
@@ -112,35 +111,21 @@ const CommunityPostPage = ({ params }) => {
             const post = posts[postIndex];
             const postsDocRef = doc(db, "community_posts", community_id);
 
-            if (post.likedBy.includes(userId)) {
-                const updatedLikedBy = post.likedBy.filter(gid => gid !== userId);
-                const updatedLikes = post.likes - 1;
+            const updatedLikedBy = post.likedBy.includes(userId)
+                ? post.likedBy.filter((gid) => gid !== userId)
+                : [...post.likedBy, userId];
+            const updatedLikes = post.likedBy.includes(userId) ? post.likes - 1 : post.likes + 1;
 
-                await updateDoc(postsDocRef, {
-                    posts: [
-                        ...posts.filter(p => p.id !== postId),
-                        {
-                            ...post,
-                            likes: updatedLikes,
-                            likedBy: updatedLikedBy,
-                        },
-                    ],
-                });
-            } else {
-                const updatedLikedBy = [...post.likedBy, userId];
-                const updatedLikes = post.likes + 1;
-
-                await updateDoc(postsDocRef, {
-                    posts: [
-                        ...posts.filter(p => p.id !== postId),
-                        {
-                            ...post,
-                            likes: updatedLikes,
-                            likedBy: updatedLikedBy,
-                        },
-                    ],
-                });
-            }
+            await updateDoc(postsDocRef, {
+                posts: [
+                    ...posts.filter((p) => p.id !== postId),
+                    {
+                        ...post,
+                        likes: updatedLikes,
+                        likedBy: updatedLikedBy,
+                    },
+                ],
+            });
         } catch (error) {
             console.error("いいねの更新に失敗しました:", error);
         }
@@ -148,7 +133,6 @@ const CommunityPostPage = ({ params }) => {
 
     const handleNewPost = async (event) => {
         event.preventDefault();
-
         if (!newPostContent.trim()) return;
 
         try {
@@ -178,7 +162,7 @@ const CommunityPostPage = ({ params }) => {
             }
 
             setNewPostContent("");
-            setShowPostPopup(false); // 投稿後にポップアップを閉じる
+            setShowPostPopup(false);
         } catch (error) {
             console.error("投稿エラー:", error);
         }
@@ -211,23 +195,24 @@ const CommunityPostPage = ({ params }) => {
                         posts.map((post) => (
                             <div key={post.id || post.created_at} className="post">
                                 <div className="post-header">
-                                    <div className="user-info" style={{display: "flex", alignItems: "center"}}>
-                                        <img style={{width: "50px", borderRadius: "60px"}}
-                                             src={userIcons[post.user_id] || "default_icon_url"}
-                                             alt={`${post.user_name}のアイコン`}
-                                             className="user-icon"
+                                    <div className="user-info" style={{ display: "flex", alignItems: "center" }}>
+                                        <img
+                                            style={{ width: "50px", borderRadius: "60px" }}
+                                            src={userIcons[post.user_id] || "default_icon_url"}
+                                            alt={`${post.user_name}のアイコン`}
+                                            className="user-icon"
                                         />
                                         <span className="user-name">{userNames[post.user_id] || post.user_name}</span>
                                     </div>
                                 </div>
                                 <p className="post-content">{post.content}</p>
-                                <div className="post-footer" style={{display: "flex", justifyContent: "space-between"}}>
+                                <div className="post-footer" style={{ display: "flex", justifyContent: "space-between" }}>
                                     <div className="likes">
                                         <button onClick={() => handleLikePost(post.id)} className="like-button">
                                             {post.likedBy.includes(user?.uid) ? (
-                                                <FaHeart className="heart-icon liked"/>
+                                                <FaHeart className="heart-icon liked" />
                                             ) : (
-                                                <FaRegHeart className="heart-icon"/>
+                                                <FaRegHeart className="heart-icon" />
                                             )}
                                         </button>
                                         <span className="like-count">{post.likes} いいね</span>
@@ -239,10 +224,8 @@ const CommunityPostPage = ({ params }) => {
                     )}
                 </div>
 
-                {/* 投稿ボタン */}
                 <button onClick={() => setShowPostPopup(true)} className="new-post-button">コミュニティに投稿</button>
 
-                {/* ポップアップ（モーダル） */}
                 {showPostPopup && (
                     <div className="post-popup">
                         <div className="popup-content">
