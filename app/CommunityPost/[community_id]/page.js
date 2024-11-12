@@ -21,6 +21,10 @@ const CommunityPostPage = ({ params }) => {
     const [userNames, setUserNames] = useState({});
     const [showPostPopup, setShowPostPopup] = useState(false);
 
+    const generatePostId = () => {
+        return Math.floor(10000 + Math.random() * 90000).toString();  // 10000〜99999の範囲でランダムな整数
+    };
+
     useEffect(() => {
         const auth = getAuth();
         const unsubscribe = auth.onAuthStateChanged(setUser);
@@ -95,37 +99,45 @@ const CommunityPostPage = ({ params }) => {
         try {
             const userDocRef = doc(db, "users", user.uid);
             const userDoc = await getDoc(userDocRef);
-
             if (!userDoc.exists()) {
                 console.error("ユーザー情報が見つかりません");
                 return;
             }
 
-            const userId = userDoc.data().gid;
-            const postIndex = posts.findIndex((post) => post.id === postId);
-            if (postIndex === -1) {
+            const userGid = userDoc.data().gid;
+
+            // 投稿をpost_idで取得
+            const post = posts.find((p) => p.post_id === postId);
+            if (!post) {
                 console.error("指定された投稿が見つかりません");
                 return;
             }
 
-            const post = posts[postIndex];
+            // いいねの状態を更新
+            const updatedLikedBy = post.likedBy.includes(userGid)
+                ? post.likedBy.filter((gid) => gid !== userGid)  // いいねを取り消す
+                : [...post.likedBy, userGid];  // いいねを追加
+
+            const updatedLikes = updatedLikedBy.length;
+
+            // Firestoreでの投稿更新
             const postsDocRef = doc(db, "community_posts", community_id);
-
-            const updatedLikedBy = post.likedBy.includes(userId)
-                ? post.likedBy.filter((gid) => gid !== userId)
-                : [...post.likedBy, userId];
-            const updatedLikes = post.likedBy.includes(userId) ? post.likes - 1 : post.likes + 1;
-
             await updateDoc(postsDocRef, {
-                posts: [
-                    ...posts.filter((p) => p.id !== postId),
-                    {
-                        ...post,
-                        likes: updatedLikes,
-                        likedBy: updatedLikedBy,
-                    },
-                ],
+                posts: posts.map((p) =>
+                    p.post_id === postId  // post_idで特定の投稿を更新
+                        ? { ...p, likes: updatedLikes, likedBy: updatedLikedBy }
+                        : p
+                ),
             });
+
+            // ローカルステートで更新
+            setPosts((prevPosts) =>
+                prevPosts.map((p) =>
+                    p.post_id === postId  // post_idで特定の投稿を更新
+                        ? { ...p, likes: updatedLikes, likedBy: updatedLikedBy }
+                        : p
+                )
+            );
         } catch (error) {
             console.error("いいねの更新に失敗しました:", error);
         }
@@ -138,7 +150,12 @@ const CommunityPostPage = ({ params }) => {
         try {
             const currentUser = user || { uid: "guest", displayName: "ゲストユーザー" };
 
+            // 5桁のランダムなpost_idを生成
+            const postId = generatePostId();
+
+            // 新しい投稿オブジェクト
             const newPost = {
+                post_id: postId,  // post_idを追加
                 content: newPostContent,
                 user_id: currentUser.uid,
                 user_name: currentUser.displayName || currentUser.email,
@@ -153,14 +170,15 @@ const CommunityPostPage = ({ params }) => {
 
             if (docSnap.exists()) {
                 await updateDoc(postsDocRef, {
-                    posts: [...docSnap.data().posts, newPost],
+                    posts: [...docSnap.data().posts, newPost],  // 新しい投稿を追加
                 });
             } else {
                 await setDoc(postsDocRef, {
-                    posts: [newPost],
+                    posts: [newPost],  // 新しい投稿を初めて保存
                 });
             }
 
+            // 投稿内容をリセット
             setNewPostContent("");
             setShowPostPopup(false);
         } catch (error) {
@@ -193,11 +211,11 @@ const CommunityPostPage = ({ params }) => {
                         <p>投稿はまだありません。</p>
                     ) : (
                         posts.map((post) => (
-                            <div key={post.id || post.created_at} className="post">
+                            <div key={post.post_id || post.created_at} className="post">  {/* post_idを使用 */}
                                 <div className="post-header">
-                                    <div className="user-info" style={{ display: "flex", alignItems: "center" }}>
+                                    <div className="user-info" style={{display: "flex", alignItems: "center"}}>
                                         <img
-                                            style={{ width: "50px", borderRadius: "60px" }}
+                                            style={{width: "50px", borderRadius: "60px"}}
                                             src={userIcons[post.user_id] || "default_icon_url"}
                                             alt={`${post.user_name}のアイコン`}
                                             className="user-icon"
@@ -206,13 +224,14 @@ const CommunityPostPage = ({ params }) => {
                                     </div>
                                 </div>
                                 <p className="post-content">{post.content}</p>
-                                <div className="post-footer" style={{ display: "flex", justifyContent: "space-between" }}>
+                                <div className="post-footer" style={{display: "flex", justifyContent: "space-between"}}>
                                     <div className="likes">
-                                        <button onClick={() => handleLikePost(post.id)} className="like-button">
+                                        <button onClick={() => handleLikePost(post.post_id)}
+                                                className="like-button">  {/* post_idを使用 */}
                                             {post.likedBy.includes(user?.uid) ? (
-                                                <FaHeart className="heart-icon liked" />
+                                                <FaHeart className="heart-icon liked"/>
                                             ) : (
-                                                <FaRegHeart className="heart-icon" />
+                                                <FaRegHeart className="heart-icon"/>
                                             )}
                                         </button>
                                         <span className="like-count">{post.likes} いいね</span>
@@ -242,7 +261,7 @@ const CommunityPostPage = ({ params }) => {
                     </div>
                 )}
             </div>
-            <Searchdummy />
+            <Searchdummy/>
         </div>
     );
 };
