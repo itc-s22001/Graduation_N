@@ -70,10 +70,46 @@ const Modal = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%' }}>
             {/* 投稿ボタン */}
-            <button onClick={openModal} style={{ padding: '10px 20px', marginBottom: '20px' }}>投稿する</button>
+            <div 
+            className="sidebar-button-container" 
+            style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '0px', width: '100%' }}  // marginBottomを0に
+        >
+            {/* アイコン */}
+            <svg 
+                className="post-icon" 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                style={{ width: '24px', height: '24px', fill: '#333', cursor: 'pointer' }}
+            >
+                <path d="M3 17.25V21h3.75L16.88 12.88l-3.75-3.75L3 17.25zm15.41-10.83L20.25 4l-2.58-2.59c-.39-.39-1.02-.39-1.41 0L14.41 3.17l3.75 3.75z" />
+            </svg>
 
+            {/* 投稿ボタン */}
+            <button 
+                onClick={openModal} 
+                style={{ 
+                    background: 'none', 
+                    border: 'none', 
+                    fontSize: '16px',  
+                    fontWeight: 'bold', 
+                    cursor: 'pointer', 
+                    color: '#333', 
+                    padding: '10px',  // paddingを0に
+                    width: '100%',  
+                    textAlign: 'left', 
+                    borderRadius: '20px',  
+                    transition: 'background-color 0.3s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'rgba(29, 161, 242, 0.1)'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+            >
+                投稿する
+            </button>
+        </div>
+
+    
             {/* 投稿モーダル */}
             {isModalOpen && (
                 <div style={{
@@ -102,7 +138,7 @@ const Modal = () => {
                 </div>
             )}
         </div>
-    );
+    );      
 };
 
 export default Modal;

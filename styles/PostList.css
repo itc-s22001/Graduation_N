@@ -1,0 +1,170 @@
+
+/* 基本的なレイアウト */
+.post-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.post-container {
+  width: 100%;
+  max-width: 600px;
+}
+
+.post-item {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.post-item-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.post-item-header p {
+  font-weight: bold;
+}
+
+.post-item-question {
+  margin: 10px 0;
+}
+
+.vote-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.vote-button {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.vote-button[disabled] {
+  background-color: #f0f0f0;
+  cursor: default;
+}
+
+.vote-progress-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background-color: rgba(0, 123, 255, 0.2);
+  z-index: 1;
+  transition: width 1s ease-out;
+}
+
+.vote-button-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+}
+
+.no-login-message {
+  color: #666;
+  margin-top: 10px;
+}
+
+.vote-done-message {
+  color: #666;
+  margin-top: 10px;
+}
+
+.post-item-footer {
+  font-size: 0.8em;
+  color: #666;
+  margin-top: 10px;
+}
+
+.delete-menu-container {
+  margin-left: auto;
+  position: relative;
+}
+
+.delete-button {
+  cursor: pointer;
+}
+
+.delete-menu {
+  position: absolute;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  cursor: pointer;
+}
+
+.like-button-container {
+  display: flex;
+  align-items: center;
+}
+
+.like-button {
+  margin-right: 10px;
+}
+
+.confirm-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.confirm-popup-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.confirm-popup-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.confirm-popup-buttons button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.confirm-popup-buttons .confirm-button {
+  background-color: red;
+}
+
+.confirm-popup-buttons .cancel-button {
+  background-color: gray;
+}
+
