@@ -9,7 +9,7 @@
 /* 投稿リスト全体 */
 .post_all {
   width: 100%;
-  max-Width: 600px;
+  max-width: 600px;
 }
 
 /* 投稿カード */
@@ -105,6 +105,24 @@
   color: #1da1f2;
   cursor: pointer;
 }
+.post_like_icon {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+/* .like-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+.like-button:hover .fa-heart {
+  transform: scale(1.1); /* ボタンを少し拡大 */
+  /* transition: transform 0.2s ease-in-out;
+} */ */
 
 /* 削除確認ポップアップ */
 .post_delete_confirmation {

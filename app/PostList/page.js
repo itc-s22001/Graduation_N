@@ -5,6 +5,7 @@ import { query, collection, orderBy, onSnapshot, where, getDocs, updateDoc, dele
 import { db, auth } from "../firebase";
 import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation'; // useRouterのインポート
+import { FaHeart } from "react-icons/fa";  // ハートアイコンをインポート
 import Sidebar from "../Sidebar/page";
 import '@/styles/PostList.css';
 
@@ -245,11 +246,14 @@ const PostPage = () => {
                             </p>
                         </div>
 
+                        {/* 修正後のいいねボタン */}
                         <div className="post_nice_comment">
-                            <button onClick={() => toggleLike(post.id, post.likes, post.likedByUser)}>
-                                {post.likedByUser ? "いいねを取り消す" : "ボタン"}
+                            <button
+                                onClick={() =>toggleLike(post.id, post.likes, post.likedByUser)}
+                                className="post_like_icon"
+                            >
+                                {post.likedByUser ? "❤️" : "🤍"} {post.likes} いいね
                             </button>
-                            <p>いいね: {post.likes}</p>
                             <p>コメント数: {post.comments_count}</p>
                         </div>
                     </div>
@@ -265,8 +269,103 @@ const PostPage = () => {
                 </div>
             )}
         </div>
-
     );
+    // return (
+    //     <div className="container">
+    //         <Sidebar />
+    //         <div className="post_all">
+    //             {posts.map((post) => (
+    //                 <div key={post.id} className="single_post">
+    //                     <div className="post_icon_name">
+    //                         {/* アイコン表示 */}
+    //                         {post.user_icon && (
+    //                             <img
+    //                                 src={post.user_icon}
+    //                                 alt="User Icon"
+    //                                 className="post_icon"
+    //                             />
+    //                         )}
+    //                         {/* ユーザー名表示 */}
+    //                         <p className="post_name">{post.user_name}</p>
+    //                         {user?.uid === post.user_id && (
+    //                             <div className="post_name_distance">
+    //                                 <button
+    //                                     onClick={(e) => {
+    //                                         e.stopPropagation(); // クリックが投稿内容に伝播しないように設定
+    //                                         setIsDeleteMenuOpen((prev) => ({
+    //                                             ...prev,
+    //                                             [post.id]: !prev[post.id],
+    //                                         }));
+    //                                     }}
+    //                                 >
+    //                                     ⋮
+    //                                 </button>
+    //                                 {isDeleteMenuOpen[post.id] && (
+    //                                     <div
+    //                                         className="post_delete"
+    //                                         onClick={(e) => {
+    //                                             e.stopPropagation(); // クリックが投稿内容に伝播しないように設定
+    //                                             openConfirmPopup(post.id);
+    //                                         }}
+    //                                     >
+    //                                         削除
+    //                                     </div>
+    //                                 )}
+    //                             </div>
+    //                         )}
+    //                     </div>
+
+    //                     {/* 投稿内容のみをクリック可能に設定 */}
+    //                     <div
+    //                         className="post_content_clickable"
+    //                         onClick={() => handlePostClick(post.id)}
+    //                     >
+    //                         <p>{post.content}</p>
+    //                         <p>
+    //                             投稿日:{" "}
+    //                             {post.create_at
+    //                                 ? new Date(post.create_at.seconds * 1000).toLocaleString()
+    //                                 : "不明"}
+    //                         </p>
+    //                     </div>
+
+    //                     <div className="post_nice_comment">
+    //                         <button
+    //                             className="like-button"
+    //                             onClick={() => toggleLike(post.id, post.likes, post.likedByUser)}
+    //                         >
+    //                             <FaHeart
+    //                                 style={{
+    //                                     color: post.likedByUser ? "red" : "gray", // いいね済みの場合は赤色、そうでない場合はグレー
+    //                                     fontSize: "20px",
+    //                                 }}
+    //                             />
+    //                         </button>
+    //                         <p>いいね: {post.likes}</p>
+    //                         <p>コメント数: {post.comments_count}</p>
+    //                     </div>
+    //                     {/* <div className="post_nice_comment">
+    //                         <button onClick={() => toggleLike(post.id, post.likes, post.likedByUser)}>
+    //                             {post.likedByUser ? "いいねを取り消す" : "ボタン"}
+    //                         </button>
+    //                         <p>いいね: {post.likes}</p>
+    //                         <p>コメント数: {post.comments_count}</p>
+    //                     </div> */}
+    //                 </div>
+    //             ))}
+    //         </div>
+
+    //         {/* 削除確認ポップアップ */}
+    //         {isConfirmPopupOpen && (
+    //             <div className="post_delete_confirmation">
+    //                 <p>本当にこの投稿を削除しますか？</p>
+    //                 <button onClick={handleDeletePost}>削除</button>
+    //                 <button onClick={closeConfirmPopup}>キャンセル</button>
+    //             </div>
+    //         )}
+    //     </div>
+
+    // );
 }
 //     <div className="continer">
 //         <Sidebar />
