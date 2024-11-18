@@ -123,7 +123,7 @@ const Sidebar = () => {
                         <SidebarButton
                             push="/community"
                             isActive={activeButton === '/community'}
-                            onClick={() => handleButtonClick('/community')}
+                            onClick={() => handleButtonClick('/Community')}
                         >
                             コミュニティ
                         </SidebarButton>

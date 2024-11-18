@@ -255,7 +255,7 @@ form {
     transition: background-color 0.3s ease;
     position: fixed;
     bottom: 20px; /* ボタンを画面下部から少し上に */
-        z-index: 1000; /* 他の要素の上に表示 */
+    z-index: 1000; /* 他の要素の上に表示 */
 }
 
 .new-post-button:hover {
@@ -283,9 +283,15 @@ form {
 }
 
 .community-name {
-/*   */
+    /*   */
 }
-
+.admin-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #f4f6f9;
+    font-family: Arial, sans-serif;
+}
 
 .post-list {
     z-index: 10000; /* 他の要素の上に表示 */

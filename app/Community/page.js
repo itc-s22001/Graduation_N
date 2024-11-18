@@ -114,28 +114,32 @@ const CommunityPage = () => {
                             paddingLeft: '20px',
                             paddingRight: '20px'
                         }}>参加済みのコミュニティ</h2>
-                        {communities
-                            .filter((community) => joinedCommunities.includes(community.id))
-                            .map((community) => (
-                                <div key={community.id} style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
-                                    {/* コミュニティのアイコン */}
-                                    {community.community_image_url && (
-                                        <img src={community.community_image_url} alt="コミュニティアイコン"
-                                        className="CommunityImage"/>
-                                    )}
-                                    <div>
-                                        <h3>{community.community_name}</h3>
-                                        <p>{community.community_profile}</p>
-                                        <button
-                                            onClick={() => router.push(`/CommunityPost/${community.id}`)}>コミュニティを見る
-                                        </button>
-                                        <button onClick={leaveCommunity}>退出</button>
+                        <div>
+                            {communities
+                                .filter((community) => joinedCommunities.includes(community.id))
+                                .map((community) => (
+                                    <div key={community.id} className="CommunitysBOX">
+                                        {/* コミュニティのアイコン */}
+                                        {community.community_image_url && (
+                                            <img src={community.community_image_url} alt="コミュニティアイコン"
+                                                 className="CommunityImage"/>
+                                        )}
+                                        <div className="CommunityContent">
+                                            <h3 className="CommunityName">{community.community_name}</h3>
+                                            <p className="CommunityProfile">{community.community_profile}</p>
+                                            <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
+                                            <button className="JoinButton"
+                                                    onClick={() => joinCommunity(community.id)}>コミュニティを見る
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+
+                                ))}
+                        </div>
+
                     </div>
 
-                    <div style={{borderLeft: "1px solid black", paddingLeft: "50px", marginLeft: '50px'}}>
+                    <div className="LeftCommunityBox">
                         <h2 style={{
                             borderBottom: '1px solid black',
                             paddingLeft: '20px',
@@ -144,18 +148,22 @@ const CommunityPage = () => {
                         {communities
                             .filter((community) => !joinedCommunities.includes(community.id))
                             .map((community) => (
-                                <div key={community.id} style={{display: 'flex', alignItems: 'center', gap: '10px'}}>
+                                <div key={community.id} className="CommunitysBOX">
                                     {/* コミュニティのアイコン */}
                                     {community.community_image_url && (
                                         <img src={community.community_image_url} alt="コミュニティアイコン"
-                                             style={{width: '50px', height: '50px', borderRadius: '50%'}}/>
+                                             className="CommunityImage"/>
                                     )}
-                                    <div>
-                                        <h3>{community.community_name}</h3>
-                                        <p>{community.community_profile}</p>
-                                        <button onClick={() => joinCommunity(community.id)}>参加</button>
+                                    <div className="CommunityContent">
+                                        <h3 className="CommunityName">{community.community_name}</h3>
+                                        <p className="CommunityProfile">{community.community_profile}</p>
+                                        <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
+                                        <button className="JoinButton"
+                                                onClick={() => joinCommunity(community.id)}>参加
+                                        </button>
                                     </div>
                                 </div>
+
                             ))}
                     </div>
                 </div>
@@ -171,9 +179,8 @@ const CommunityPage = () => {
                         zIndex: 1000,
                     }} onClick={() => setShowPopup(false)}/>
                 )}
-                <div style={{position: "fixed", bottom: 0, zIndex: 1001}}>
-                    <CommunityModal/>
-                </div>
+                <CommunityModal/>
+
             </div>
             <Searchdummy/>
         </div>
