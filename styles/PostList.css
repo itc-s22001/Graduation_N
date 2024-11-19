@@ -1,111 +1,65 @@
-
-/* 基本的なレイアウト */
-.post-list-container {
+/* 投稿リストを中央に配置 */
+.container {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-self: center;
   min-height: 100vh;
+  margin-left: 500px;
 }
-
-.post-container {
+/* 投稿リスト全体 */
+.post_all {
   width: 100%;
   max-width: 600px;
 }
 
-.post-item {
+/* 投稿カード */
+.single_post {
   border: 1px solid #ccc;
   border-radius: 10px;
-  padding: 15px;
-  margin-bottom: 15px;
+  padding: 10px;
+  margin-bottom: 10px;
   background-color: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
-.post-item-header {
+.single_post:hover {
+  background-color: #f5f8fa;
+}
+
+/* 投稿のアイコンと名前 */
+.post_icon_name {
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
 }
 
-.user-icon {
+.post_icon {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   margin-right: 10px;
 }
 
-.post-item-header p {
+.post_name {
   font-weight: bold;
 }
 
-.post-item-question {
-  margin: 10px 0;
-}
-
-.vote-options {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.vote-button {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  background-color: #f8f9fa;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.vote-button[disabled] {
-  background-color: #f0f0f0;
-  cursor: default;
-}
-
-.vote-progress-bar {
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  background-color: rgba(0, 123, 255, 0.2);
-  z-index: 1;
-  transition: width 1s ease-out;
-}
-
-.vote-button-content {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  justify-content: space-between;
-}
-
-.no-login-message {
-  color: #666;
-  margin-top: 10px;
-}
-
-.vote-done-message {
-  color: #666;
-  margin-top: 10px;
-}
-
-.post-item-footer {
-  font-size: 0.8em;
-  color: #666;
-  margin-top: 10px;
-}
-
-.delete-menu-container {
+.post_name_distance {
   margin-left: auto;
   position: relative;
 }
 
-.delete-button {
+/* 削除ボタン */
+.post_name_distance button {
+  background: none;
+  border: none;
+  font-size: 20px;
   cursor: pointer;
+  color: #657786;
+  padding: 0;
 }
 
-.delete-menu {
+.post_delete {
   position: absolute;
   right: 0;
   background-color: white;
@@ -114,57 +68,95 @@
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 5px;
   cursor: pointer;
-}
-
-.like-button-container {
-  display: flex;
-  align-items: center;
-}
-
-.like-button {
-  margin-right: 10px;
-}
-
-.confirm-popup {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
+  /* position: absolute;
   right: 0;
+  top: 20px;
+  background: #e0245e;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px; */
+}
+
+/* 投稿内容 */
+.post_content_clickable {
+  padding: 8px 0;
+  color: #14171a;
+}
+
+/* 投稿の日付 */
+.single_post p {
+  font-size: 14px;
+  color: #657786;
+  margin: 4px 0;
+}
+
+/* いいねとコメント数のエリア */
+.post_nice_comment {
   display: flex;
-  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.post_nice_comment button {
+  background: none;
+  border: none;
+  color: #1da1f2;
+  cursor: pointer;
+}
+.post_like_icon {
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+}
+/* .like-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.5);
+  padding: 5px;
+}
+
+.like-button:hover .fa-heart {
+  transform: scale(1.1); /* ボタンを少し拡大 */
+  /* transition: transform 0.2s ease-in-out;
+} */ */
+
+/* 削除確認ポップアップ */
+.post_delete_confirmation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
 }
 
-.confirm-popup-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.post_delete_confirmation p {
+  margin-bottom: 16px;
+  font-size: 16px;
 }
 
-.confirm-popup-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.confirm-popup-buttons button {
-  padding: 10px;
+.post_delete_confirmation button {
+  margin: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
   border: none;
-  border-radius: 5px;
-  color: white;
+  border-radius: 4px;
   cursor: pointer;
 }
 
-.confirm-popup-buttons .confirm-button {
-  background-color: red;
+.post_delete_confirmation button:first-of-type {
+  background-color: #e0245e;
+  color: white;
 }
 
-.confirm-popup-buttons .cancel-button {
-  background-color: gray;
+.post_delete_confirmation button:last-of-type {
+  background-color: #f5f8fa;
+  color: #14171a;
 }
-
