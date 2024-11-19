@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { db } from "../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
+import { useRouter } from 'next/navigation';  // useRouterをインポート
 import '../../style/Searchdummy.css';
 
 const Searchdummy = () => {
     const [users, setUsers] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filteredUsers, setFilteredUsers] = useState([]);
+    const router = useRouter();  // useRouterのインスタンスを作成
 
     useEffect(() => {
         // Firebaseからユーザー情報を取得
@@ -31,6 +33,11 @@ const Searchdummy = () => {
         );
     }, [searchTerm, users]);
 
+    const handleUserClick = (uid) => {
+        const encodedUid = encodeURIComponent(uid); // UIDをエンコード
+        router.push(`/profile/${encodedUid}`); // プロフィールページに遷移
+    };
+
     return (
         <div className="search-container">
             <input
@@ -41,16 +48,20 @@ const Searchdummy = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
             <ul className="search-results">
+                <h3> user </h3>
                 {filteredUsers.map(user => (
-                    <li key={user.uid} className="search-result-item">
+                    <li
+                        key={user.uid}
+                        className="search-result-item"
+                        onClick={() => handleUserClick(user.uid)}  // ユーザーをクリックしたときの処理
+                    >
                         <div style={{ display: "flex" }}>
                             <img src={user.profile_image_url} alt={`${user.name}のプロフィール画像`}
                                  className="search-profile-image"/>
                             <p className="searchname">{user.name || "No Name"}</p>
                             {/*<p>{user.email}</p>*/}
                         </div>
-                        <p>profile:{user.profile_description}</p>
-
+                        <p>profile: {user.profile_description}</p>
                     </li>
                 ))}
             </ul>

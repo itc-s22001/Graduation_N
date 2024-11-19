@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import Modal from '../Modal/page';
-// import SearchBar from '../SearchBar/page';
+import Searchdummy from '../Searchdummy/page';
 import { useRouter, usePathname } from 'next/navigation'; // next/navigation から useRouter と usePathname をインポート
+import { auth } from '@/app/firebase'; // Firebaseのauthをインポート
 import '../../Style/sidebar.css'; // CSSファイルのインポート
 
 
@@ -21,10 +22,21 @@ const SidebarButton = ({ children, push, isActive, onClick }) => {
 const Sidebar = () => {
     const router = useRouter();
     const [activeButton, setActiveButton] = useState('/home'); // 初期アクティブボタン
+    const [userEmail, setUserEmail] = useState(''); // ユーザーのメールアドレスを格納するステート
+
 
     // 初期レンダリング時に現在のパスを取得
     useEffect(() => {
-        setActiveButton(window.location.pathname); // 現在のパスをアクティブに設定
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                setUserEmail(user.email); // ユーザーのメールアドレスを取得
+                setActiveButton(window.location.pathname);
+            } else {
+                setUserEmail(''); // ユーザーがいない場合はメールアドレスをリセット
+            }
+        });
+
+        return () => unsubscribe(); // コンポーネントのアンマウント時にリスナーを解除
     }, []);
 
     const handleButtonClick = (path) => {
@@ -32,9 +44,12 @@ const Sidebar = () => {
         router.push(path); // ルートを変更
     };
 
+    const targetEmail = ["s22022@std.it-college.ac.jp", "s22026@std.it-college.ac.jp", "s22001@std.it-college.ac.jp", "s22028@std.it-college.ac.jp"]; // 一致させたいメールアドレスに変更
+
+
     return (
         <div className="sidebar">
-            {/*<SearchBar />*/}
+            < Searchdummy />
             <button className="logo-button">N</button> {/* ロゴボタン */}
             <div className="button-container">
                 <div className="buttons">
@@ -123,7 +138,7 @@ const Sidebar = () => {
                         <SidebarButton
                             push="/community"
                             isActive={activeButton === '/community'}
-                            onClick={() => handleButtonClick('/community')}
+                            onClick={() => handleButtonClick('/Community')}
                         >
                             コミュニティ
                         </SidebarButton>
@@ -142,6 +157,21 @@ const Sidebar = () => {
                             アンケート
                         </SidebarButton>
                     </div>
+                    {/* お題ボタン */}
+                                    {targetEmail.includes(userEmail) && ( // メールアドレスが配列に含まれている場合のみ表示
+                    <div className="sidebar-button-container">
+                        <svg className="topic-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12c0 4.41 3.59 8 8 8 2.21 0 4.21-.89 5.66-2.34l3.73 3.73c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-3.73-3.73C19.11 16.21 20 14.21 20 12c0-5.52-4.48-10-10-10zm0 18c-1.11 0-2.16-.27-3.1-.75l4.82-4.82c.37 1.05.59 2.2.59 3.45 0 1.11-.27 2.16-.75 3.1l-3.72-3.72c.21-.15.41-.31.59-.49l4.75-4.75c-.18.18-.34.38-.49.59l-3.72 3.72c1.05.37 2.2.59 3.45.59 1.11 0 2.16-.27 3.1-.75l4.82 4.82c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-3.73-3.73C19.11 16.21 20 14.21 20 12c0-5.52-4.48-10-10-10zm0 4c-1.11 0-2.16.27-3.1.75l4.82 4.82c.37-1.05.59-2.2.59-3.45 0-1.11-.27-2.16-.75-3.1l-3.72 3.72c.21.15.41.31.59.49l4.75-4.75c-.18.18-.34.38-.49.59l-3.72 3.72c1.05.37 2.2.59 3.45.59 1.11 0 2.16-.27 3.1-.75l4.82 4.82c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-3.73-3.73C19.11 16.21 20 14.21 20 12c0-5.52-4.48-10-10-10z"/>
+                        </svg>
+                        <SidebarButton
+                            isActive={activeButton === '/Theme'} // 遷移先のパスを設定
+                            onClick={() => handleButtonClick('/Theme')}
+                        >
+                            お題
+                        </SidebarButton>
+                    </div>
+                )}
+
 
                     {/* 設定ボタン */}
                     <div className="sidebar-button-container">

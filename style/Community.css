@@ -1,0 +1,216 @@
+/* Community.css */
+
+/* .CommunityContent クラスにスコープ */
+.CommunityContent {
+    font-family: Arial, sans-serif;
+    background-color: #f5f8fa;
+    color: #14171a;
+    justify-content: space-between;
+    margin: auto;
+}
+
+
+.CommunityContent h2 {
+    font-size: 20px;
+    color: #1da1f2;
+    margin-bottom: 15px;
+}
+
+.CommunityContent h3 {
+    font-size: 18px;
+    margin: 0;
+    color: #14171a;
+}
+
+.CommunityContent p {
+    font-size: 14px;
+    color: #657786;
+}
+
+/* ボタンのスタイル */
+.CommunityContent button {
+    background-color: #1da1f2;
+    color: #fff;
+    border: none;
+    padding: 8px 15px;
+    font-size: 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: background-color 0.2s;
+}
+
+.CommunityContent button:hover {
+    background-color: #0a95dd;
+}
+
+.CommunityContent button:disabled {
+    background-color: #aab8c2;
+    cursor: not-allowed;
+}
+
+/* 各セクションのスタイル */
+.CommunityContent div {
+    background-color: #ffffff;
+    }
+
+.CommunityContent div > div:last-child {
+    border-bottom: none;
+}
+
+/* コミュニティ作成フォーム */
+.CommunityContent input[type="text"],
+.CommunityContent textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.CommunityContent textarea {
+    resize: vertical;
+}
+
+.CommunityContent label {
+    font-size: 14px;
+    color: #657786;
+    margin-right: 10px;
+}
+
+.CommunityContent input[type="file"] {
+    font-size: 14px;
+}
+
+.CommunityContent input[type="checkbox"] {
+    transform: scale(1.2);
+    margin-left: 10px;
+}
+
+/* 全体のレイアウト調整 */
+.CommunityContent .container {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px;
+}
+
+.CommunityContent .container > div {
+    flex: 1;
+    margin: 0 10px;
+}
+
+.CommunityContent .container > div:first-child {
+    flex: 0.6;
+}
+
+.CommunityContent .container > div:last-child {
+    flex: 0.6;
+}
+
+.CommunityContent .container h2 {
+    border-bottom: 2px solid #e1e8ed;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.CommunityBox {
+    display: flex;
+    padding: 0 50px;
+    margin-bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+
+    /*height: 100vw;*/
+}
+
+.CommunityImage {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    top: 0;
+}
+
+.CommunitysBOX {
+    display: flex;
+    flex-direction: column;      /* 子要素が縦に並ぶように設定 */
+    align-items: center;
+    gap: 15px;
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 15px;
+    transition: box-shadow 0.3s ease;
+}
+
+.LeftCommunityBox {
+    position: relative;
+    padding: 0 0 0 70px;
+    margin: 0 0 0 70px;
+    border-left: 1px solid black;
+    min-height: 100vh; /* 画面全体の高さ */
+    box-sizing: border-box;
+}
+
+.LeftCommunityBox::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 100vh; /* 画面下まで伸ばす */
+    background-color: black;
+    z-index: -1;
+}
+
+
+.CommunitysBOX:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.CommunityImage {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+
+
+.CommunityName {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.CommunityProfile {
+    font-size: 14px;
+    color: #999; /* 色を薄めるために少し淡いグレーに */
+    font-weight: 300; /* フォントウェイトを軽めに調整 */
+    margin: 0;
+}
+
+.CommunityNOP {
+    font-size: 14px;
+    color: #888;
+}
+
+.JoinButton {
+    background-color: #3897f0;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.JoinButton:hover {
+    background-color: #287dc9;
+}
+
