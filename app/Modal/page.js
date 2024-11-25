@@ -15,12 +15,7 @@ const Modal = () => {
 
     // 投稿モーダルを開く
     const openModal = () => setIsModalOpen(true);
-    const closeModal = () => {
-        setContent("");
-        setImage(null);
-        setImageUrl(null);
-        setIsModalOpen(false);
-    };
+
 
     // 投稿モーダルを閉じる
     const closeModal = () => setIsModalOpen(false);
@@ -122,7 +117,7 @@ const Modal = () => {
             </button>
         </div>
 
-//             <button onClick={openModal} style={{ padding: '10px 20px', marginBottom: '20px' }}>投稿する</button>
+             <button onClick={openModal} style={{ padding: '10px 20px', marginBottom: '20px' }}>投稿する</button>
 
             {isModalOpen && (
                 <div style={{
