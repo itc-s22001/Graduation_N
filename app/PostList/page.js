@@ -1,23 +1,30 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { query, collection, orderBy, onSnapshot, where, getDocs, doc, updateDoc, deleteDoc, addDoc } from "firebase/firestore";
+import { query, collection, orderBy, onSnapshot, where, getDocs, updateDoc, deleteDoc, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db, auth } from "../firebase";
 import { onAuthStateChanged } from 'firebase/auth';
+import { useRouter } from 'next/navigation'; // useRouterのインポート
+import { FaHeart } from "react-icons/fa";  // ハートアイコンをインポート
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage"; // Firebase Storageのインポート
 import { storage } from '../firebase'; // 追加: Firebase Storageの初期化をインポート
-import Sidebar from "../Sidebar/page";
 import Searchdummy from "../Searchdummy/page";
+import Sidebar from "../Sidebar/page";
+import '@/styles/PostList.css';
+
 
 const PostPage = () => {
-    const [posts, setPosts] = useState([]);
-    const [user, setUser] = useState(null);
+    const router = useRouter(); // useRouterフックを使ってルーターを取得
+    const [posts, setPosts] = useState([]); // 投稿データの状態管理
+    const [user, setUser] = useState(null); // ログイン中のユーザー情報の状態管理
+    const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState({}); // 削除メニューの状態管理
     const [isConfirmPopupOpen, setIsConfirmPopupOpen] = useState(false);
     const [postToDelete, setPostToDelete] = useState(null);
     const [loading, setLoading] = useState(true); // Loading state
-    const [content, setContent] = useState(""); // 投稿内容の状態
-    const [image, setImage] = useState(null); // 画像の状態
+//     const [content, setContent] = useState(""); // 投稿内容の状態
+//     const [image, setImage] = useState(null); // 画像の状態
 
+    // ログイン中のユーザーを取得
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
@@ -38,16 +45,38 @@ const PostPage = () => {
         return () => unsubscribe();
     }, []);
 
+    // 投稿データをリアルタイムで取得
     useEffect(() => {
         const q = query(collection(db, "post"), orderBy("create_at", "desc"));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const postData = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-                likedByUser: doc.data().likedBy && doc.data().likedBy.includes(user?.id),
-            }));
-            setPosts(postData);
-            setLoading(false); // Stop loading when data is fetched
+        const unsubscribe = onSnapshot(q, async (snapshot) => {
+            const postData = await Promise.all(
+                snapshot.docs.map(async (docSnapshot) => {
+                    const post = docSnapshot.data();
+
+                    // ユーザーデータを取得
+                    const userDocRef = doc(db, "users", post.user_id);
+                    const userDoc = await getDoc(userDocRef);
+                    let userData = {};
+                    if (userDoc.exists()) {
+                        userData = userDoc.data();
+                    }
+
+                    // コメント数を取得
+                    const commentsSnapshot = await getDocs(collection(docSnapshot.ref, "comments"));
+                    const commentsCount = commentsSnapshot.size;
+
+                    return {
+                        id: docSnapshot.id,
+                        ...post,
+                        user_name: userData.name || "名無し",
+                        user_icon: userData.profile_image_url || "/default_icon.png",
+                        likedByUser: (post.likedBy || []).includes(user?.id),
+                        comments_count: commentsCount, // コメント数を追加
+                    };
+                })
+            );
+
+            setPosts(postData); // 投稿データをセット    
         });
         return () => unsubscribe();
     }, [user]);
@@ -63,18 +92,32 @@ const PostPage = () => {
     };
 
     const handleDeletePost = async () => {
-        if (postToDelete) {
-            try {
-                await deleteDoc(doc(db, "post", postToDelete));
-                closeConfirmPopup();
-                alert("投稿が削除されました"); // User feedback after deletion
-            } catch (error) {
-                console.error("削除に失敗しました: ", error);
-                alert("投稿の削除に失敗しました");
-            }
+        if (!postToDelete) return;
+
+        // バッチ処理を開始
+        const batch = writeBatch(db);
+        const postRef = doc(db, "post", postToDelete);
+
+        // 1. 投稿ドキュメントの削除を追加
+        batch.delete(postRef);
+
+        // 2. 関連するコメントを取得して削除をバッチに追加
+        const commentsSnapshot = await getDocs(collection(postRef, "comments"));
+        commentsSnapshot.forEach((commentDoc) => {
+            batch.delete(commentDoc.ref);
+        });
+
+        // 3. バッチのコミット（全ての削除を実行）
+        try {
+            await batch.commit();
+            console.log("投稿および関連するコメントが削除されました");
+            closeConfirmPopup(); // 削除確認ポップアップを閉じる
+        } catch (error) {
+            console.error("投稿の削除に失敗しました: ", error);
         }
     };
 
+    // いいねボタンの処理
     const toggleLike = async (postId, currentLikes, likedByUser) => {
         if (!user) return;
 
@@ -94,118 +137,94 @@ const PostPage = () => {
             });
         } catch (error) {
             console.error("いいねの更新に失敗しました: ", error);
-            alert("いいねの更新に失敗しました");
         }
     };
-
-    const handleImageChange = (event) => {
-        setImage(event.target.files[0]);
+    // クリックされた投稿の詳細ページに遷移する関数
+    const handlePostClick = (postId) => {
+        router.push(`/PostDetailPage2/${postId}`); // 投稿詳細ページに遷移
     };
-
-    const handlePostSubmit = async () => {
-        if (!content) {
-            alert("投稿内容を入力してください");
-            return;
-        }
-
-        let imageUrl = null;
-        if (image) {
-            const storageRef = ref(storage, `images/${image.name}`);
-            await uploadBytes(storageRef, image);
-            imageUrl = await getDownloadURL(storageRef);
-        }
-
-        // 投稿データの追加
-        const newPost = {
-            content,
-            user_id: user.id,
-            user_name: user.name,
-            user_icon: user.user_icon || "", // user_iconがundefinedの場合は空文字列を設定
-            create_at: new Date(),
-            likes: 0,
-            likedBy: [],
-            comments_count: 0,
-            imageUrl, // 画像URLを追加
-        };
-
-        await addDoc(collection(db, "post"), newPost);
-        setContent("");
-        setImage(null);
-    };
-
-
-
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', minHeight: '100vh' }}>
+        <div className="container">
             <Sidebar />
-            <div style={{ width: '100%', maxWidth: '600px' }}>
-
-
-                {loading ? (
-                    <p>Loading...</p>
-                ) : (
-                    posts.map((post) => (
-                        <div key={post.id} style={{
-                            border: '1px solid #ccc',
-                            borderRadius: '10px',
-                            padding: '10px',
-                            marginBottom: '10px',
-                            backgroundColor: 'white',
-                            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                            position: 'relative'
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                {post.user_icon && (
-                                    <img
-                                        src={post.user_icon}
-                                        alt="User Icon"
-                                        style={{ width: '40px', height: '40px', borderRadius: '50%', marginRight: '10px' }}
-                                    />
-                                )}
-                                <p style={{ fontWeight: 'bold' }}>{post.user_name}</p>
-                                {user?.uid === post.user_id && (
-                                    <div style={{ marginLeft: 'auto', position: 'relative' }}>
-                                        <button onClick={() => openConfirmPopup(post.id)}>
-                                            ⋮
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
-                            <p>内容: {post.content}</p>
-                            {post.imageUrl && <img src={post.imageUrl} alt="Post" style={{ maxWidth: '100%', borderRadius: '10px', marginTop: '10px' }} />}
-                            <p>投稿日: {post.create_at ? new Date(post.create_at.seconds * 1000).toLocaleString() : "不明"}</p>
-                            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
-                                <button onClick={() => toggleLike(post.id, post.likes, post.likedByUser)}>
-                                    {post.likedByUser ? "いいねを取り消す" : "いいね"}
-                                </button>
-                                <p>いいね: {post.likes}</p>
-                                <p>コメント数: {post.comments_count}</p>
-                            </div>
+            <div className="post_all">
+                {posts.map((post) => (
+                    <div key={post.id} className="single_post">
+                        <div className="post_icon_name">
+                            {/* アイコン表示 */}
+                            {post.user_icon && (
+                                <img
+                                    src={post.user_icon}
+                                    alt="User Icon"
+                                    className="post_icon"
+                                />
+                            )}
+                            {/* ユーザー名表示 */}
+                            <p className="post_name">{post.user_name}</p>
+                            {user?.uid === post.user_id && (
+                                <div className="post_name_distance">
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // クリックが投稿内容に伝播しないように設定
+                                            setIsDeleteMenuOpen((prev) => ({
+                                                ...prev,
+                                                [post.id]: !prev[post.id],
+                                            }));
+                                        }}
+                                    >
+                                        ⋮
+                                    </button>
+                                    {isDeleteMenuOpen[post.id] && (
+                                        <div
+                                            className="post_delete"
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // クリックが投稿内容に伝播しないように設定
+                                                openConfirmPopup(post.id);
+                                            }}
+                                        >
+                                            削除
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                    ))
-                )}
+
+                        {/* 投稿内容のみをクリック可能に設定 */}
+                        <div
+                            className="post_content_clickable"
+                            onClick={() => handlePostClick(post.id)}
+                        >
+                            <p>{post.content}</p>
+                            <p>
+                                投稿日:{" "}
+                                {post.create_at
+                                    ? new Date(post.create_at.seconds * 1000).toLocaleString()
+                                    : "不明"}
+                            </p>
+                        </div>
+
+                        {/* 修正後のいいねボタン */}
+                        <div className="post_nice_comment">
+                            <button
+                                onClick={() =>toggleLike(post.id, post.likes, post.likedByUser)}
+                                className="post_like_icon"
+                            >
+                                {post.likedByUser ? "❤️" : "🤍"} {post.likes} いいね
+                            </button>
+                            <p>コメント数: {post.comments_count}</p>
+                        </div>
+                    </div>
+                ))}
             </div>
 
+            {/* 削除確認ポップアップ */}
             {isConfirmPopupOpen && (
-                <div style={{
-                    position: 'fixed',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    backgroundColor: 'white',
-                    padding: '20px',
-                    borderRadius: '8px',
-                    boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-                    zIndex: 1000
-                }}>
+                <div className="post_delete_confirmation">
                     <p>本当にこの投稿を削除しますか？</p>
                     <button onClick={handleDeletePost}>削除</button>
                     <button onClick={closeConfirmPopup}>キャンセル</button>
                 </div>
             )}
-            <Searchdummy />
         </div>
     );
 };
-
 export default PostPage;
