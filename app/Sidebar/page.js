@@ -49,7 +49,7 @@ const Sidebar = () => {
 
     return (
         <div className="sidebar">
-            < Searchdummy />
+            {/*< Searchdummy />*/}
             <button className="logo-button">N</button> {/* ロゴボタン */}
             <div className="button-container">
                 <div className="buttons">

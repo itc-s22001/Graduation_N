@@ -6,8 +6,9 @@ import { db, auth, storage } from "../firebase";
 import { useRouter } from "next/navigation";
 import '../../style/Community.css'
 import Sidebar from "../Sidebar/page";
-import Searchdummy from "../Searchdummy/page";
+// import Searchdummy from "../Searchdummy/page";
 import CommunityModal from "../CommunityModal/page";
+import CommunitySearchBar from "../CommunitySearchBar/page";
 
 const CommunityPage = () => {
     const [currentCommunity, setCurrentCommunity] = useState(null);
@@ -19,10 +20,12 @@ const CommunityPage = () => {
     useEffect(() => {
         const fetchCommunities = async () => {
             try {
+                // 全てのコミュニティを取得
                 const querySnapshot = await getDocs(collection(db, "communities"));
                 const communityList = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
                 setCommunities(communityList);
 
+                // ユーザーが参加しているコミュニティを取得
                 const userDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
                 if (userDoc.exists()) {
                     setJoinedCommunities(userDoc.data().joined_communities || []);
@@ -34,7 +37,7 @@ const CommunityPage = () => {
         fetchCommunities();
     }, []);
 
-
+    // コミュニティに参加
     const joinCommunity = async (communityId) => {
         const communityRef = doc(db, "community_members", communityId);
         const userCommunityRef = doc(db, "users", auth.currentUser.uid);
@@ -46,6 +49,7 @@ const CommunityPage = () => {
                 await setDoc(communityRef, { members: [], community_NOP: 0 });
             }
 
+            // 参加時のみ人数を増加
             await updateDoc(communityRef, {
                 community_NOP: increment(1),
                 members: arrayUnion(auth.currentUser.uid),
@@ -67,7 +71,7 @@ const CommunityPage = () => {
         }
     };
 
-
+    // コミュニティから退出
     const leaveCommunity = async () => {
         if (!currentCommunity) return;
 
@@ -81,6 +85,7 @@ const CommunityPage = () => {
                 await setDoc(communityRef, { members: [], community_NOP: 0 });
             }
 
+            // 退出時のみ人数を減少
             await updateDoc(communityRef, {
                 community_NOP: increment(-1),
                 members: arrayRemove(auth.currentUser.uid),
@@ -101,10 +106,8 @@ const CommunityPage = () => {
         }
     };
 
-
-
     return (
-        <div style={{display:"flex", position: "relative"}}>
+        <div style={{ display: "flex", position: "relative" }}>
             <Sidebar />
             <div className="CommunityContent">
                 <div className="CommunityBox">
@@ -122,21 +125,22 @@ const CommunityPage = () => {
                                         {/* コミュニティのアイコン */}
                                         {community.community_image_url && (
                                             <img src={community.community_image_url} alt="コミュニティアイコン"
-                                                 className="CommunityImage"/>
+                                                 className="CommunityImage" />
                                         )}
                                         <div className="CommunityContent">
                                             <h3 className="CommunityName">{community.community_name}</h3>
                                             <p className="CommunityProfile">{community.community_profile}</p>
                                             <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
-                                            <button className="JoinButton"
-                                                    onClick={() => joinCommunity(community.id)}>コミュニティを見る
+                                            <button className="ViewButton"
+                                                    onClick={() => {
+                                                        setCurrentCommunity(community.id);
+                                                        router.push(`/CommunityPost/${community.id}`);
+                                                    }}>コミュニティを見る
                                             </button>
                                         </div>
                                     </div>
-
                                 ))}
                         </div>
-
                     </div>
 
                     <div className="LeftCommunityBox">
@@ -152,7 +156,7 @@ const CommunityPage = () => {
                                     {/* コミュニティのアイコン */}
                                     {community.community_image_url && (
                                         <img src={community.community_image_url} alt="コミュニティアイコン"
-                                             className="CommunityImage"/>
+                                             className="CommunityImage" />
                                     )}
                                     <div className="CommunityContent">
                                         <h3 className="CommunityName">{community.community_name}</h3>
@@ -163,7 +167,6 @@ const CommunityPage = () => {
                                         </button>
                                     </div>
                                 </div>
-
                             ))}
                     </div>
                 </div>
@@ -177,12 +180,12 @@ const CommunityPage = () => {
                         height: '100vh',
                         backgroundColor: 'rgba(0, 0, 0, 0.7)',
                         zIndex: 1000,
-                    }} onClick={() => setShowPopup(false)}/>
+                    }} onClick={() => setShowPopup(false)} />
                 )}
-                <CommunityModal/>
-
+                <CommunityModal />
             </div>
-            <Searchdummy/>
+            {/*<Searchdummy />*/}
+            <CommunitySearchBar />
         </div>
     );
 };

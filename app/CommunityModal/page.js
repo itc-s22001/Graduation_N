@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth, storage } from "@/app/firebase";
 import { addDoc, collection, doc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
@@ -12,7 +12,8 @@ const CommunityModal = () => {
     const [communityName, setCommunityName] = useState("");
     const [description, setDescription] = useState("");
     const [communityIcon, setCommunityIcon] = useState(null);
-    const [isPublic, setIsPublic] = useState(true); // 公開・非公開設定
+    const [isPublic, setIsPublic] = useState(true);
+    const [category, setCategory] = useState("おもしろ");
     const [uploading, setUploading] = useState(false);
     const router = useRouter();
 
@@ -30,7 +31,8 @@ const CommunityModal = () => {
         }
     };
 
-    const handleCreateCommunity = async () => {
+    const handleCreateCommunity = async (e) => {
+        e.preventDefault();
         if (!communityName || !description) {
             alert("コミュニティ名と説明文は必須です");
             return;
@@ -57,15 +59,16 @@ const CommunityModal = () => {
                 setUploading(false);
             },
             async () => {
-                const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-
                 try {
+                    const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+
                     const communityRef = await addDoc(collection(db, "communities"), {
                         community_NOP: 0,
                         community_name: communityName,
                         community_profile: description,
                         community_public_private: isPublic ? "公開" : "非公開",
                         community_image_url: downloadURL,
+                        Cate: category,
                         created_at: new Date().toISOString(),
                         created_by: auth.currentUser.uid,
                     });
@@ -74,7 +77,6 @@ const CommunityModal = () => {
                         community_id: communityRef.id,
                     });
 
-                    // 作成者を自動的に参加させる
                     const userCommunityRef = doc(db, "users", auth.currentUser.uid);
                     await updateDoc(userCommunityRef, {
                         joined_communities: arrayUnion(communityRef.id),
@@ -86,13 +88,13 @@ const CommunityModal = () => {
                         community_NOP: 1,
                     });
 
+                    router.push(`/CommunityPost/${communityRef.id}`);
+
                     setCommunityName("");
                     setDescription("");
                     setCommunityIcon(null);
                     setUploading(false);
                     closeModal();
-
-                    router.push(`/CommunityPost/${communityRef.id}`);
                 } catch (error) {
                     console.error("コミュニティ作成エラー:", error);
                     setUploading(false);
@@ -102,8 +104,32 @@ const CommunityModal = () => {
     };
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <button onClick={openModal} style={{ padding: '10px 20px', marginBottom: '20px' }}>コミュニティ作成</button>
+        <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+            <div style={{position: 'fixed', bottom: '20px', left: '400px', zIndex: 1000}}>
+                <button
+                    onClick={openModal}
+                    style={{
+                        padding: '10px 20px',
+                        backgroundColor: '#1d9bf0',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50px',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)', // 影を控えめに
+                        transition: 'transform 0.2s, box-shadow 0.2s', // ホバー時の動き
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                        e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.3)';
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.2)';
+                    }}
+                >
+                    コミュニティ作成
+                </button>
+            </div>
 
             {isModalOpen && (
                 <>
@@ -130,21 +156,43 @@ const CommunityModal = () => {
                         zIndex: 100000,
                     }}>
                         <h2>新しいコミュニティを作成</h2>
-                        <form onSubmit={(e) => { e.preventDefault(); handleCreateCommunity(); }}>
+                        <form onSubmit={handleCreateCommunity}>
                             <input
                                 type="text"
                                 value={communityName}
                                 onChange={(e) => setCommunityName(e.target.value)}
                                 placeholder="コミュニティ名"
-                                style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
+                                style={{width: '100%', padding: '10px', marginBottom: '10px'}}
                             />
                             <textarea
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 placeholder="コミュニティの説明"
-                                style={{ width: '100%', padding: '10px', marginBottom: '10px', resize: 'none' }}
+                                style={{width: '100%', padding: '10px', marginBottom: '10px', resize: 'none'}}
                             />
-                            <input type="file" onChange={handleImageChange} accept="image/*" style={{ marginTop: '10px' }} />
+                            <select
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                style={{width: '100%', padding: '10px', marginBottom: '10px'}}
+                            >
+                                <option value="おもしろ">おもしろ</option>
+                                <option value="かわいい">かわいい</option>
+                                <option value="動物">動物</option>
+                                <option value="アイドル">アイドル</option>
+                                <option value="知識">知識</option>
+                            </select>
+                            <div style={{marginBottom: '10px'}}>
+                                <label>
+                                    <input
+                                        type="checkbox"
+                                        checked={isPublic}
+                                        onChange={(e) => setIsPublic(e.target.checked)}
+                                    />
+                                    公開
+                                </label>
+                            </div>
+                            <input type="file" onChange={handleImageChange} accept="image/*"
+                                   style={{marginTop: '10px'}}/>
                             <button type="submit" style={{
                                 padding: '10px',
                                 width: '100%',
@@ -152,9 +200,13 @@ const CommunityModal = () => {
                                 color: 'white',
                                 border: 'none',
                                 borderRadius: '5px',
-                                marginTop: '10px'
-                            }}>作成</button>
-                            <button onClick={closeModal} style={{ marginTop: '10px', color: '#555' }}>閉じる</button>
+                                marginTop: '10px',
+                                cursor: uploading ? 'not-allowed' : 'pointer',
+                                opacity: uploading ? 0.5 : 1
+                            }} disabled={uploading}>
+                                {uploading ? "アップロード中..." : "作成"}
+                            </button>
+                            <button onClick={closeModal} style={{marginTop: '10px', color: '#555'}}>閉じる</button>
                         </form>
                     </div>
                 </>
