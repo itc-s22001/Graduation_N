@@ -170,17 +170,39 @@ const CommunityModal = () => {
                                 placeholder="コミュニティの説明"
                                 style={{width: '100%', padding: '10px', marginBottom: '10px', resize: 'none'}}
                             />
-                            <select
+
+                            <textarea
                                 value={category}
-                                onChange={(e) => setCategory(e.target.value)}
-                                style={{width: '100%', padding: '10px', marginBottom: '10px'}}
-                            >
-                                <option value="おもしろ">おもしろ</option>
-                                <option value="かわいい">かわいい</option>
-                                <option value="動物">動物</option>
-                                <option value="アイドル">アイドル</option>
-                                <option value="知識">知識</option>
-                            </select>
+                                onChange={(e) => {
+                                    // 入力を10文字まで制限
+                                    if (e.target.value.length <= 10) {
+                                        setCategory(e.target.value);
+                                    }
+                                }}
+                                placeholder="コミュニティのカテゴリー"
+                                style={{
+                                    width: '100%',
+                                    height: '45px',
+                                    padding: '10px',
+                                    marginBottom: '10px',
+                                    resize: 'none',
+                                    overflow: 'hidden', // スクロールを無効化
+                                }}
+                                maxLength={10} // HTMLレベルで10文字制限
+                            />
+
+
+                            {/*<select*/}
+                            {/*    value={category}*/}
+                            {/*    onChange={(e) => setCategory(e.target.value)}*/}
+                            {/*    style={{width: '100%', padding: '10px', marginBottom: '10px'}}*/}
+                            {/*>*/}
+                            {/*    <option value="おもしろ">おもしろ</option>*/}
+                            {/*    <option value="かわいい">かわいい</option>*/}
+                            {/*    <option value="動物">動物</option>*/}
+                            {/*    <option value="アイドル">アイドル</option>*/}
+                            {/*    <option value="知識">知識</option>*/}
+                            {/*</select>*/}
                             <div style={{marginBottom: '10px'}}>
                                 <label>
                                     <input

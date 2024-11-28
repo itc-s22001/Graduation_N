@@ -14,17 +14,32 @@ const CommunitySearchBar = () => {
         }
 
         try {
-            const q = query(
+            // `community_name`に基づくクエリ
+            const nameQuery = query(
                 collection(db, 'communities'),
                 where('community_name', '>=', term),
                 where('community_name', '<=', term + '\uf8ff')
             );
-            const querySnapshot = await getDocs(q);
-            const results = [];
-            querySnapshot.forEach((doc) => {
-                results.push({ id: doc.id, ...doc.data() });
-            });
-            setSearchResults(results);
+
+            // `Cate`に基づくクエリ
+            const cateQuery = query(
+                collection(db, 'communities'),
+                where('Cate', '>=', term),
+                where('Cate', '<=', term + '\uf8ff')
+            );
+
+            // 両方のクエリを実行
+            const [nameSnapshot, cateSnapshot] = await Promise.all([
+                getDocs(nameQuery),
+                getDocs(cateQuery),
+            ]);
+
+            // 結果をマージ（重複を排除）
+            const results = new Map();
+            nameSnapshot.forEach((doc) => results.set(doc.id, { id: doc.id, ...doc.data() }));
+            cateSnapshot.forEach((doc) => results.set(doc.id, { id: doc.id, ...doc.data() }));
+
+            setSearchResults(Array.from(results.values()));
         } catch (error) {
             console.error('Error searching communities:', error);
         }
@@ -48,30 +63,34 @@ const CommunitySearchBar = () => {
             />
             <ul className="community-search-results">
                 {searchResults.map((community) => (
-                    // <div key={community.id} className="community-search-result-item">
-                        <div key={community.id} className="CommunitysBOX">
-                            {/* コミュニティのアイコン */}
-                            {community.community_image_url && (
-                                <img src={community.community_image_url} alt="コミュニティアイコン"
-                                     className="CommunityImage"/>
-                            )}
-                            <div className="CommunityContent">
-                                <h3 className="CommunityName">{community.community_name}</h3>
-                                <p className="CommunityProfile">{community.community_profile}</p>
-                                <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
-                                <button className="ViewButton"
-                                        onClick={() => {
-                                            setCurrentCommunity(community.id);
-                                            router.push(`/CommunityPost/${community.id}`);
-                                        }}>コミュニティを見る
-                                </button>
-                            </div>
-                        {/*</div>*/}
+                    <div key={community.id} className="CommunitysBOX">
+                        {/* コミュニティのアイコン */}
+                        {community.community_image_url && (
+                            <img
+                                src={community.community_image_url}
+                                alt="コミュニティアイコン"
+                                className="CommunityImage"
+                            />
+                        )}
+                        <div className="CommunityContent">
+                            <h3 className="CommunityName">{community.community_name}</h3>
+                            <p className="CommunityProfile">{community.community_profile}</p>
+                            <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
+                            <button
+                                className="ViewButton"
+                                onClick={() => {
+                                    setCurrentCommunity(community.id);
+                                    router.push(`/CommunityPost/${community.id}`);
+                                }}
+                            >
+                                コミュニティを見る
+                            </button>
+                        </div>
                     </div>
-                    ))}
+                ))}
             </ul>
         </div>
-);
+    );
 };
 
 export default CommunitySearchBar;
