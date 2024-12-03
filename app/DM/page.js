@@ -55,7 +55,7 @@ const DM = () => {
                 const gid = currentUser.uid;
                 const userDocRef = doc(db, "users", gid);
                 const userDocSnap = await getDoc(userDocRef);
-    
+
                 if (userDocSnap.exists()) {
                     const userData = userDocSnap.data();
                     setUser({
@@ -72,10 +72,10 @@ const DM = () => {
                 setUser(null);
             }
         });
-    
+
         return () => unsubscribe();
     }, []);
-    
+
 
     useEffect(() => {
         const q = collection(db, "users");

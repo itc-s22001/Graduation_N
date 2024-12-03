@@ -137,7 +137,7 @@ const Sidebar = () => {
                         </svg>
                         <SidebarButton
                             push="/community"
-                            isActive={activeButton === '/community'}
+                            isActive={activeButton === '/Community'}
                             onClick={() => handleButtonClick('/Community')}
                         >
                             コミュニティ
