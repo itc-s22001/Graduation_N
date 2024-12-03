@@ -1,125 +1,163 @@
-.profile-layout {
-    display: flex;
-    height: 100vh;
-    justify-content: center;
+/* .profile-layout { */
+  /* display: flex; */
+  /* height: 100vh; */
+  /* justify-content: center; */
+/* } */
+
+/* Profile container */
+/* .profile-container {
+  flex: 1;
+  padding: 20px;
+  background-color: #f9f9f9;
+  max-width: 600px;
+  margin-right: auto;
+  position: relative; /* ここにもrelativeを追加 */
+  /* margin-left: auto; */
+/* } */ 
+profile-layout { 
+  display: flex;
+  flex-direction: column; /*縦方向も中央寄せに対応*/
+  align-items: center; /* 水平方向に中央寄せ*/
+  justify-content: center; /* 垂直方向に中央寄せ*/
+  height: 100vh; /* 画面全体をカバー*/
+  margin: 0; /*ページ全体の余白をなくす */
 }
 
 /* Profile container */
 .profile-container {
-    flex: 1;
-    padding: 20px;
-    background-color: #f9f9f9;
-    max-width: 600px; /* 幅を制限 */
-    margin: 0 auto;   /* 左右の余白を均等にする */
-    position: relative; 
-    overflow: hidden; /* 内容がはみ出さないように調整 */
-}
-
+  flex: 1;
+  padding: 20px;
+  background-color: #f9f9f9;
+  max-width: 600px;
+  margin: 0 auto; /* コンテナを中央に揃える */
+  position: relative;
+} 
 
 /* Profile header: Image + Name + ID + Bio */
 .profile-header {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 20px;
-    position: relative; /* ここにもrelativeを追加 */
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  position: relative; /* ここにもrelativeを追加 */
 }
 
 /* Profile image */
 .profile-image {
-    width: 133.5px;
-    height: 133.5px;
-    border-radius: 50%;
-    margin-left: 10px;
-    margin-top: 50px;
+  width: 133.5px;
+  height: 133.5px;
+  border-radius: 50%;
+  margin-left: 10px;
+  margin-top: 50px;
 }
 
 /* Profile info */
 .profile-info {
-    /* display: flex; */
-    flex-direction: column;
-    margin-left: 20px; /* アイコンと名前の間にスペースを追加 */
-    margin-top: 10px;
+  /* display: flex; */
+  flex-direction: column;
+  margin-left: 20px; /* アイコンと名前の間にスペースを追加 */
+  margin-top: 10px;
 }
 
 .username {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 0px; /* 名前とユーザーIDの間にスペースを追加 */
-    margin-top: 0px;
-    margin-bottom: 1px;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 0px; /* 名前とユーザーIDの間にスペースを追加 */
+  margin-top: 0px;
+  margin-bottom: 1px;
 }
 
 .user-id {
-    font-size: 14px;
-    color: #555;
-    margin-top: 0px;
-    margin-bottom: 5px; /* ユーザーIDと自己紹介の間にスペースを追加 */
+  font-size: 14px;
+  color: #555;
+  margin-top: 0px;
+  margin-bottom: 5px; /* ユーザーIDと自己紹介の間にスペースを追加 */
 }
 
 .self-introduction {
-    font-size: 20px;
-    color: #333;
-    margin-top: 10px;
-    margin-bottom: 0px;
+  font-size: 20px;
+  color: #333;
+  margin-top: 10px;
+  margin-bottom: 0px;
 }
 
 .user-create {
-    color: #848383;
-    font-size: 15px;
-    margin-bottom: 0px;
+  color: #848383;
+  font-size: 15px;
+  margin-bottom: 0px;
 }
 
 .follow-info {
-    display: flex;
-    width: 100%;
-    max-width: 230px;
-    margin-top: 0px;
-    margin-left: 0px;
+  display: flex;
+  width: 100%;
+  max-width: 230px;
+  margin-top: 0px;
+  margin-left: 0px;
 }
 
-.following, .follower {
-    width: 50%;
+.following,
+.follower {
+  width: 50%;
 }
 
 /* Black line below the logout button */
 .logout-divider {
-    height: 2px;
-    background-color: black;
-    margin: 20px 0;
+  height: 2px;
+  background-color: black;
+  margin: 20px 0;
 }
 
 /* User posts section */
 .user-posts {
-    margin-top: 20px;
-    background-color: #fff;
-    padding: 15px;
-    border-radius: 5px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 20px;
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    margin: 0;
+  margin: 0;
 }
 
 .follow-info {
-    display: flex;
-    width: 100%;
-    max-width: 230px;
-    margin-top: 0px;
-    margin-left: 0px;
+  display: flex;
+  width: 100%;
+  max-width: 230px;
+  margin-top: 0px;
+  margin-left: 0px;
 }
 
-.following, .follower {
-    width: 50%;
+.following,
+.follower {
+  width: 50%;
 }
 /* Follow button */
 /* Follow button */
 .follow-button {
-    padding: 8px 20px; /* 一貫したパディング */
+  padding: 8px 20px; /* 一貫したパディング */
+  border-radius: 4px;
+  border: none;
+  background-color: #010101;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 280px; /* アイコンとボタンの間にスペースを追加 */
+  margin-top: 100px;
+  font-size: 14px; /* 一貫したフォントサイズ */
+  height: 40px; /* 高さを固定 */
+  width: 120px; /* 幅を固定、必要に応じて調整 */
+}
+
+/* Follow button when in 'following' state */
+.follow-button.following {
+  /* Follow button */
+  .follow-button {
+    padding: 8px 20px;
     border-radius: 4px;
     border: none;
     background-color: #010101;
@@ -127,184 +165,246 @@ body {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-left: 280px; /* アイコンとボタンの間にスペースを追加 */
-    margin-top: 100px;
-    font-size: 14px; /* 一貫したフォントサイズ */
-    height: 40px; /* 高さを固定 */
-    width: 120px; /* 幅を固定、必要に応じて調整 */
-}
+    margin-top: 10px;
+    font-size: 14px; /* ボタンのサイズが変わらないように指定 */
+  }
 
-/* Follow button when in 'following' state */
-.follow-button.following {/* Follow button */
-    .follow-button {
-        padding: 8px 20px;
-        border-radius: 4px;
-        border: none;
-        background-color: #010101;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        margin-top: 10px;
-        font-size: 14px; /* ボタンのサイズが変わらないように指定 */
-    }
-    
-    /* Follow button when in 'following' state */
-    .follow-button.following {
-        background-color: #010101;
-        color: #333;
-    }
-    
-    /* Hover effect for follow button */
-    .follow-button:hover {
-        opacity: 0.9;
-    }
-    
-    /* Active effect for follow button */
-    .follow-button:active {
-        transform: scale(0.98);
-    }
-    background-color: #010101; /* 色変更 */
-    color: white; /* フォント色変更 */
+  /* Follow button when in 'following' state */
+  .follow-button.following {
+    background-color: #010101;
+    color: #333;
+  }
+
+  /* Hover effect for follow button */
+  .follow-button:hover {
+    opacity: 0.9;
+  }
+
+  /* Active effect for follow button */
+  .follow-button:active {
+    transform: scale(0.98);
+  }
+  background-color: #010101; /* 色変更 */
+  color: white; /* フォント色変更 */
 }
 
 /* Hover effect for follow button */
 .follow-button:hover {
-    opacity: 0.9;
+  opacity: 0.9;
 }
 
 /* Active effect for follow button */
 .follow-button:active {
-    transform: scale(0.98);
+  transform: scale(0.98);
 }
-
 
 /* モーダルオーバーレイ */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
 
 /* モーダルコンテンツ */
 .modal-content {
-    background-color: white;
-    border-radius: 8px;
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
+  background-color: white;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
 }
 
 /* モーダルヘッダー */
 .modal-header {
-    padding: 16px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .modal-title {
-    margin: 0;
-    font-size: 18px;
-    font-weight: bold;
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
 }
 
 .modal-close {
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-    color: #666;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  color: #666;
 }
 
 .modal-body {
-    padding: 16px;
+  padding: 16px;
 }
 
 /* フォローボタンとユーザーリストのスタイルは前回のまま */
 .following-button,
 .followers-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    /* padding: 0.5rem; */
-    transition: background-color 0.2s;
-    gap: 4px;
-    width: auto;
-    margin: 0;
-    margin-top: 0.5rm;
-    margin-left: 1px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* padding: 0.5rem; */
+  transition: background-color 0.2s;
+  gap: 4px;
+  width: auto;
+  margin: 0;
+  margin-top: 0.5rm;
+  margin-left: 1px;
 }
 
 .following-button:hover,
 .followers-button:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-    border-radius: 0.5rem;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 0.5rem;
 }
 
 .follow-count {
-    font-weight: bold;
-    font-size: 15px;
-    color: #333;
+  font-weight: bold;
+  font-size: 15px;
+  color: #333;
 }
 
 .follow-text {
-    color: #555;
-    font-size: 15px;
+  color: #555;
+  font-size: 15px;
 }
 
 .user-list {
-    max-height: 70vh;
-    overflow-y: auto;
+  max-height: 70vh;
+  overflow-y: auto;
 }
 
 .user-list-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
-    transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s;
 }
 
 .user-list-item:hover {
-    background-color: rgba(0, 0, 0, 0.02);
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
 .user-list-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    margin-right: 1rem;
-    object-fit: cover;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 1rem;
+  object-fit: cover;
 }
 
 .user-list-info {
-    flex: 1;
+  flex: 1;
 }
 
 .user-list-name {
-    font-weight: bold;
-    margin: 0;
-    font-size: 15px;
-    color: #333;
+  font-weight: bold;
+  margin: 0;
+  font-size: 15px;
+  color: #333;
 }
 
 .user-list-id {
-    color: #555;
-    font-size: 14px;
-    margin: 4px 0 0 0;
+  color: #555;
+  font-size: 14px;
+  margin: 4px 0 0 0;
+}
+
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.like-button:hover {
+  opacity: 0.8;
+}
+
+.like-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke-width: 2;
+  stroke: #000000;
+}
+
+.like-button svg.liked {
+  fill: #ff0000;
+}
+
+.like-button svg.not-liked {
+  fill: transparent;
+}
+.post-card {
+  background-color: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.post-card {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.user-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-weight: 500;
+}
+
+.user-id {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.post-content {
+  margin: 1rem 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.post-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.post-actions {
+  display: flex;
+  gap: 1rem;
 }
