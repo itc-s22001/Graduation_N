@@ -21,6 +21,7 @@
   background-color: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   position: relative;
+  overflow: visible; /* 必要に応じて 'visible' に設定 */
 }
 
 .single_post:hover {
@@ -51,12 +52,31 @@
 
 /* 削除ボタン */
 .post_name_distance button {
+  margin-left: auto;
+  position: relative;
+}
+.delete_button {
   background: none;
   border: none;
-  font-size: 20px;
+  color: red;
   cursor: pointer;
-  color: #657786;
-  padding: 0;
+  margin-left: 10px;
+}
+.post_delete_confirmation {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+.post_delete_confirmation button {
+  margin: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 .post_delete {
@@ -68,15 +88,6 @@
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   padding: 5px;
   cursor: pointer;
-  /* position: absolute;
-  right: 0;
-  top: 20px;
-  background: #e0245e;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px; */
 }
 
 /* 投稿内容 */
@@ -110,6 +121,71 @@
   background-color: transparent;
   cursor: pointer;
 }
+.popup_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.popup_content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+}
+
+.post_preview {
+  margin: 10px 0;
+  padding: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.popup_buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.delete_button {
+  color: red;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.delete_confirm_button {
+  background: red;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel_button {
+  background: gray;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error_message {
+  color: red;
+  margin-top: 10px;
+}
+
 /* .like-button {
   background: none;
   border: none;
@@ -121,11 +197,12 @@
 
 .like-button:hover .fa-heart {
   transform: scale(1.1); /* ボタンを少し拡大 */
-  /* transition: transform 0.2s ease-in-out;
-} */ */
+/* transition: transform 0.2s ease-in-out;
+} */
 
 /* 削除確認ポップアップ */
-.post_delete_confirmation {
+
+/* .post_delete_confirmation {
   position: fixed;
   top: 50%;
   left: 50%;
@@ -135,23 +212,14 @@
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-}
+} */
 
-.post_delete_confirmation p {
+/* .post_delete_confirmation p {
   margin-bottom: 16px;
   font-size: 16px;
-}
+} */
 
-.post_delete_confirmation button {
-  margin: 4px;
-  padding: 8px 16px;
-  font-size: 14px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.post_delete_confirmation button:first-of-type {
+/* .post_delete_confirmation button:first-of-type {
   background-color: #e0245e;
   color: white;
 }
@@ -159,4 +227,4 @@
 .post_delete_confirmation button:last-of-type {
   background-color: #f5f8fa;
   color: #14171a;
-}
+/* } */

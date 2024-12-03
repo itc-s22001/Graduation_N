@@ -1,0 +1,152 @@
+/* 中央寄せを実現するスタイル
+.centered-container {
+    align-items: center;
+    justify-self: center;
+    padding-top: 30vh;
+}
+.theme-post {
+    padding-left: 100px;
+
+}
+.post-cansel {
+    padding-left: 100px;
+    padding-top: 30px;
+    display: flex;
+    gap: 20px;
+} */
+
+/* 背景スタイル */
+.centered-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9a8d4, #8ec5fc);
+  font-family: "Arial", sans-serif;
+  animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* カードスタイル */
+.card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+  animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 見出しスタイル */
+.theme-post {
+  font-size: 24px;
+  color: #ff6f61;
+  margin-bottom: 20px;
+}
+
+/* ラベルスタイル */
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+/* テキスト入力 */
+.text-input {
+  width: 90%;
+  padding: 10px;
+  border: 2px solid #ff6f61;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.text-input:focus {
+  border-color: #8ec5fc;
+  box-shadow: 0 0 5px #8ec5fc;
+}
+
+/* 日付ピッカー */
+.date-picker {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #8ec5fc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.date-picker:focus {
+  border-color: #f9a8d4;
+  box-shadow: 0 0 5px #f9a8d4;
+}
+
+/* ボタンコンテナ */
+.post-cansel {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* 投稿ボタン */
+.post-button {
+  background: #ff6f61;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.post-button:hover {
+  background: #ff3d3d;
+  transform: scale(1.05);
+}
+
+/* 戻るボタン */
+.cancel-button {
+  background: #8ec5fc;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.cancel-button:hover {
+  background: #5eaefc;
+  transform: scale(1.05);
+}
