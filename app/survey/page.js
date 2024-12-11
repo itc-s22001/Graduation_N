@@ -50,7 +50,7 @@ const SurveyPage = () => {
         // Firestoreの "PostList" コレクションに新しいアンケートを追加
         try {
             await addDoc(collection(db, "PostList"), {
-                user_id: user.uid,
+                uid: user.uid,
                 user_name: user.name,
                 user_icon: user.profileImageUrl,
                 question: question,
