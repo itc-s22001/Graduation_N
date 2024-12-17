@@ -11,6 +11,7 @@ import Image from "next/image";
 import Sidebar from "../../Sidebar/page";
 import Searchdummy from "../../Searchdummy/page";
 import {useRouter} from "next/navigation";
+import CommunitySearchBar from "@/app/CommunitySearchBar/page";
 
 const CommunityPostPage = ({ params }) => {
     const { community_id } = params;
@@ -22,9 +23,6 @@ const CommunityPostPage = ({ params }) => {
     const [userIcons, setUserIcons] = useState({});
     const [userNames, setUserNames] = useState({});
     const [showPostPopup, setShowPostPopup] = useState(false);
-    const [isAdmin, setIsAdmin] = useState(false); // 管理者判定
-    const [showAdminPanel, setShowAdminPanel] = useState(false);  // 管理者パネルの表示
-    const [adminActions, setAdminActions] = useState({ deleteMember: "", deletePost: "" });  // 管理者操作
 
     const generatePostId = () => {
         return Math.floor(10000 + Math.random() * 90000).toString();  // 10000〜99999の範囲でランダムな整数
@@ -101,65 +99,7 @@ const CommunityPostPage = ({ params }) => {
         fetchCommunityData();
     }, [community_id, userIcons]);
 
-    const handleDeletePost = async (postId) => {
-        if (!isAdmin) {
-            console.log("管理者以外は削除できません");
-            return;
-        }
 
-        try {
-            const postsDocRef = doc(db, "community_posts", community_id);
-            const docSnap = await getDoc(postsDocRef);
-
-            if (docSnap.exists()) {
-                const updatedPosts = docSnap.data().posts.filter(post => post.post_id !== postId);
-                await updateDoc(postsDocRef, { posts: updatedPosts });
-                setPosts(updatedPosts);
-            }
-        } catch (error) {
-            console.error("投稿削除エラー:", error);
-        }
-    };
-
-    const handleDeleteMember = async (memberId) => {
-        if (!isAdmin) {
-            console.log("管理者以外はメンバーを削除できません");
-            return;
-        }
-
-        try {
-            // メンバー削除のロジック（ここでは例として、特定メンバーを削除するものとします）
-            const membersDocRef = doc(db, "community_members", community_id);
-            const docSnap = await getDoc(membersDocRef);
-            if (docSnap.exists()) {
-                const updatedMembers = docSnap.data().members.filter(member => member.id !== memberId);
-                await updateDoc(membersDocRef, { members: updatedMembers });
-            }
-
-            console.log("メンバーが削除されました");
-        } catch (error) {
-            console.error("メンバー削除エラー:", error);
-        }
-    };
-
-    const handleCommunityInfoUpdate = async () => {
-        if (!isAdmin) {
-            console.log("管理者のみが情報を更新できます");
-            return;
-        }
-
-        try {
-            const communityDocRef = doc(db, "communities", community_id);
-            await updateDoc(communityDocRef, {
-                community_name: adminActions.communityName || community.community_name,
-                community_profile: adminActions.communityProfile || community.community_profile,
-            });
-
-            console.log("コミュニティ情報が更新されました");
-        } catch (error) {
-            console.error("コミュニティ情報更新エラー:", error);
-        }
-    };
     const handleLikePost = async (postId) => {
         if (!user) {
             console.error("ユーザー情報が無効です");
@@ -268,66 +208,47 @@ const CommunityPostPage = ({ params }) => {
     };
 
     if (loading) {
-        return <p>コミュニティ情報を読み込んでいます...</p>;
+        return (
+            <div style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100vh",
+            }}>
+                <p>コミュニティ情報を読み込んでいます...</p>
+            </div>
+        );
     }
 
     return (
         <div style={{ display: "flex" }}>
             <Sidebar />
             <div className="community-post-page">
-                <div style={{ width: "auto"}}>
-                    <button onClick={GoBack}
-                    style={{ left: 0}}>
+                <div style={{position: "fixed", top: "50px", left: "30%", zIndex: 1000}}>
+                    <button
+                        onClick={GoBack}
+                        style={{
+                            backgroundColor: "#1d9bf0", // ボタン背景色
+                            color: "white", // ボタンの文字色
+                            border: "none", // ボーダーを削除
+                            borderRadius: "50%", // 丸いボタン
+                            width: "50px", // ボタンの幅
+                            height: "50px", // ボタンの高さ
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            cursor: "pointer", // ホバー時にポインターを表示
+                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // 軽い影
+                        }}
+                    >
                         ⬅
                     </button>
                 </div>
+
                 <h1 className="community-name">{community ? community.community_name : "コミュニティ情報を取得中"}</h1>
                 <p className="community-pro">{community ? community.community_profile : ""}</p>
-                {isAdmin && (
-                    <div className="settings-icon">
-                        <button onClick={() => setShowAdminPanel(true)}>
-                            <FaCog />
-                        </button>
-                    </div>
-                )}
 
-                {showAdminPanel && (
-                    <div className="admin-panel">
-                        <h3>管理者メニュー</h3>
-                        <div>
-                            <label>
-                                コミュニティ名:
-                                <input
-                                    type="text"
-                                    value={adminActions.communityName || community.community_name}
-                                    onChange={(e) => setAdminActions({ ...adminActions, communityName: e.target.value })}
-                                />
-                            </label>
-                        </div>
-                        <div>
-                            <label>
-                                コミュニティ説明:
-                                <textarea
-                                    value={adminActions.communityProfile || community.community_profile}
-                                    onChange={(e) => setAdminActions({ ...adminActions, communityProfile: e.target.value })}
-                                />
-                            </label>
-                        </div>
-                        <button onClick={handleCommunityInfoUpdate}>更新する</button>
 
-                        <div>
-                            <h4>メンバー削除</h4>
-                            <button onClick={() => handleDeleteMember("memberId")}>メンバー削除</button>
-                        </div>
-
-                        <div>
-                            <h4>不適切なコメント削除</h4>
-                            <button onClick={() => handleDeletePost("postId")}>投稿を削除</button>
-                        </div>
-
-                        <button onClick={() => setShowAdminPanel(false)}>閉じる</button>
-                    </div>
-                    )}
 
                 <div className="posts-list">
                     {posts.length === 0 ? (
@@ -384,9 +305,11 @@ const CommunityPostPage = ({ params }) => {
                     </div>
                 )}
             </div>
-            <Searchdummy/>
+            {/*<Searchdummy/>*/}
+            <CommunitySearchBar />
+
         </div>
     );
-    };
+};
 
-    export default CommunityPostPage;
+export default CommunityPostPage;
