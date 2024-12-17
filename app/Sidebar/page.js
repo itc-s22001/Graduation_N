@@ -84,7 +84,6 @@ const Sidebar = () => {
                         </SidebarButton>
                     </div>
 
-
                     {/* DMボタン */}
                     <div className="sidebar-button-container">
                         <svg className="dm-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -104,17 +103,6 @@ const Sidebar = () => {
                     {/* 投稿ボタン */}
                     <div className="sidebar-button-container">
                         <Modal />
-                        {/* <SidebarButton
-                        <svg className="post-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                            <path d="M3 17.25V21h3.75L16.88 12.88l-3.75-3.75L3 17.25zm15.41-10.83L20.25 4l-2.58-2.59c-.39-.39-1.02-.39-1.41 0L14.41 3.17l3.75 3.75z" />
-                        </svg>
-                        <SidebarButton
-                            push="/post"
-                            isActive={activeButton === '/post'}
-                            onClick={() => handleButtonClick('/post')}
-                        >
-                            投稿
-                        </SidebarButton> */}
                     </div>
 
                     {/* コミュニティボタン */}
@@ -124,7 +112,7 @@ const Sidebar = () => {
                         </svg>
                         <SidebarButton
                             push="/community"
-                            isActive={activeButton === '/community'}
+                            isActive={activeButton === '/Community'}
                             onClick={() => handleButtonClick('/Community')}
                         >
                             コミュニティ
