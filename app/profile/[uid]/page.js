@@ -20,6 +20,9 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import Sidebar from '@/app/Sidebar/page';
 import { useRouter } from 'next/navigation';
 import { Heart } from 'lucide-react';
+import Image from 'next/image';
+import Searchdummy from "../../Searchdummy/page";
+
 
 // カスタムモーダルコンポーネント
 const Modal = ({ isOpen, onClose, title, children }) => {
@@ -217,9 +220,11 @@ const UserProfilePage = ({ params }) => {
     const renderUserList = (users) => {
                 return users.map((user) => (
                     <div key={user.uid} className="user-list-item">
-                        <img 
+                        <Image
                             src={user.profile_image_url} 
-                            alt={`${user.name}'s profile`} 
+                            alt={`${user.name}'s profile`}
+                            width={48}
+                            height={48} 
                             className="user-list-avatar"
                             onClick={() => handleUserClick(user.uid)}
                             style={{ cursor: 'pointer' }}
@@ -306,9 +311,11 @@ const UserProfilePage = ({ params }) => {
                         <div className="post-header">
                             <div className="user-info">
                                 {post.user_icon ? (
-                                    <img
+                                    <Image
                                         src={post.user_icon}
                                         alt="User Icon"
+                                        width={40}
+                                        height={40}
                                         className="user-icon"
                                     />
                                 ) : (
@@ -379,9 +386,11 @@ const UserProfilePage = ({ params }) => {
             <Sidebar />
             <div className="profile-container">
                 <div className="profile-header">
-                    <img 
+                    <Image 
                         src={userData.profile_image_url} 
                         alt="Profile Image" 
+                        width={133.5}  // 必須の幅を指定
+                        height={133.5} // 必須の高さを指定
                         className="profile-image"
                     />
                     {currentUserData && currentUserData.uid !== userData.uid && (
@@ -442,6 +451,7 @@ const UserProfilePage = ({ params }) => {
                     {renderUserList(followingList)}
                 </div>
             </Modal>
+            <Searchdummy />
         </div>
     );
 };

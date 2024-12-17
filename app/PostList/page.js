@@ -6,9 +6,11 @@ import { db, auth } from "../../app/firebase";
 import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation'; // useRouterのインポート
 import Sidebar from "../Sidebar/page";
-import '@/styles/PostList.css';
+import '../../styles/PostList.css';
 import God from '../Images/God.png';
 import Image from "next/image";
+import Searchdummy from "../Searchdummy/page";
+
 
 const PostPage = () => {
     const router = useRouter(); // useRouterフックを使ってルーターを取得
@@ -101,41 +103,6 @@ const PostPage = () => {
         return () => unsubscribe();
     }, [user]);
 
-    // // 投稿データをリアルタイムで取得
-    // useEffect(() => {
-    //     const q = query(collection(db, "post"), orderBy("create_at", "desc"));
-    //     const unsubscribe = onSnapshot(q, async (snapshot) => {
-    //         const postData = await Promise.all(
-    //             snapshot.docs.map(async (docSnapshot) => {
-    //                 const post = docSnapshot.data();
-
-    //                 // ユーザーデータを取得
-    //                 const userDocRef = doc(db, "users", post.uid);
-    //                 const userDoc = await getDoc(userDocRef);
-    //                 let userData = {};
-    //                 if (userDoc.exists()) {
-    //                     userData = userDoc.data();
-    //                 }
-
-    //                 // コメント数を取得
-    //                 const commentsSnapshot = await getDocs(collection(docSnapshot.ref, "comments"));
-    //                 const commentsCount = commentsSnapshot.size;
-
-    //                 return {
-    //                     id: docSnapshot.id,
-    //                     ...post,
-    //                     user_name: userData.name || "名無し",
-    //                     user_icon: userData.profile_image_url || "/default_icon.png",
-    //                     likedByUser: (post.likedBy || []).includes(user?.uid),
-    //                     comments_count: commentsCount, // コメント数を追加
-    //                 };
-    //             })
-    //         );
-
-    //         setPosts(postData); // 投稿データをセット    
-    //     });
-    //     return () => unsubscribe();
-    // }, [user]);
 
     useEffect(() => {
         if (!user) return;
@@ -226,6 +193,7 @@ const PostPage = () => {
         router.push(`/profile/${userId}`); // プロフィールページに遷移
     };
 
+
     return (
         <div className="container">
             <Sidebar />
@@ -241,11 +209,7 @@ const PostPage = () => {
                                 {/* アイコン表示 */}
                                 {post.user_icon && (
                                     <Image
-                                        src={
-                                            post.isTheme
-                                                ? God
-                                                : post.user_icon
-                                        }
+                                    src={post.isTheme ? God : post.user_icon}
                                         alt="User Icon"
                                         width={50}
                                         height={50}
@@ -323,6 +287,7 @@ const PostPage = () => {
                     <button onClick={closeConfirmPopup}>キャンセル</button>
                 </div>
             )}
+            <Searchdummy />
         </div>
     );
 };

@@ -238,10 +238,21 @@ const Theme = () => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
             setIsAuthorized(currentUser && ALLOWED_EMAILS.includes(currentUser.email));
+            if (currentUser) {
+                fetchRecentThemes(currentUser.email);
+            }
         });
 
         return () => unsubscribe();
-    }, []);
+    }, [auth]);
+    // useEffect(() => {
+    //     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    //         setUser(currentUser);
+    //         setIsAuthorized(currentUser && ALLOWED_EMAILS.includes(currentUser.email));
+    //     });
+
+    //     return () => unsubscribe();
+    // }, []);
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -255,50 +266,109 @@ const Theme = () => {
                         uid: userData.uid,
                         ...userData,
                     });
-                    
-                    // Fetch recent themes for this user
+    
+                    // ユーザーの最新のお題を取得
                     await fetchRecentThemes(currentUser.email);
                 }
             } else {
                 setUser(null);
             }
         });
+    
         return () => unsubscribe();
-    }, []);
+    }, [auth]);  // authが変更された場合にのみ実行されるようにする
+    
 
-    // Fetch recent themes for deletion
-    const fetchRecentThemes = async (userEmail) => {
-        try {
-            const oneMinuteAgo = new Date(Date.now() - DELETE_WINDOW_MINUTES * 60 * 1000);
-            const q = query(
-                collection(db, 'post'), 
-                where('user_name', '==', '管理者'),
-                where('create_at', '>', oneMinuteAgo),
-                orderBy('create_at', 'desc')
-            );
-            const snapshot = await getDocs(q);
-            const themes = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
-            setRecentThemes(themes);
-        } catch (error) {
-            console.error("Error fetching recent themes: ", error);
-        }
-    };
+    // useEffect(() => {
+    //     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    //         if (currentUser) {
+    //             const q = query(collection(db, "users"), where("email", "==", currentUser.email));
+    //             const userSnapshot = await getDocs(q);
+    //             if (!userSnapshot.empty) {
+    //                 const userData = userSnapshot.docs[0].data();
+    //                 setUser({
+    //                     id: userSnapshot.docs[0].id,
+    //                     uid: userData.uid,
+    //                     ...userData,
+    //                 });
+                    
+    //                 // Fetch recent themes for this user
+    //                 await fetchRecentThemes(currentUser.email);
+    //             }
+    //         } else {
+    //             setUser(null);
+    //         }
+    //     });
+    //     return () => unsubscribe();
+    // }, []);
 
-    // Delete a recently posted theme
-    const handleDeleteTheme = async (themeId) => {
-        try {
-            await deleteDoc(doc(db, 'post', themeId));
-            alert('お題を削除しました。');
-            // Refresh recent themes
-            await fetchRecentThemes(user.email);
-        } catch (error) {
-            console.error("Error deleting theme: ", error);
-            alert(`削除中にエラーが発生しました。エラー: ${error.message}`);
-        }
-    };
+    // Fetch recent themes for deletion (modified and added)
+const fetchRecentThemes = async (userEmail) => {
+    try {
+        const oneMinuteAgo = new Date(Date.now() - DELETE_WINDOW_MINUTES * 60 * 1000);
+        const q = query(
+            collection(db, 'post'), 
+            where('user_name', '==', '管理者'),
+            where('create_at', '>', oneMinuteAgo),
+            orderBy('create_at', 'desc')
+        );
+        const snapshot = await getDocs(q);
+        const themes = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        setRecentThemes(themes);
+    } catch (error) {
+        console.error("Error fetching recent themes: ", error);
+    }
+};
+
+// Delete a recently posted theme
+const handleDeleteTheme = async (themeId) => {
+    try {
+        await deleteDoc(doc(db, 'post', themeId));
+        alert('お題を削除しました。');
+        // Refresh recent themes
+        await fetchRecentThemes(user.email);
+    } catch (error) {
+        console.error("Error deleting theme: ", error);
+        alert(`削除中にエラーが発生しました。エラー: ${error.message}`);
+    }
+};
+
+    // // Fetch recent themes for deletion
+    // const fetchRecentThemes = async (userEmail) => {
+    //     try {
+    //         const oneMinuteAgo = new Date(Date.now() - DELETE_WINDOW_MINUTES * 60 * 1000);
+    //         const q = query(
+    //             collection(db, 'post'), 
+    //             where('user_name', '==', '管理者'),
+    //             where('create_at', '>', oneMinuteAgo),
+    //             orderBy('create_at', 'desc')
+    //         );
+    //         const snapshot = await getDocs(q);
+    //         const themes = snapshot.docs.map(doc => ({
+    //             id: doc.id,
+    //             ...doc.data()
+    //         }));
+    //         setRecentThemes(themes);
+    //     } catch (error) {
+    //         console.error("Error fetching recent themes: ", error);
+    //     }
+    // };
+
+    // // Delete a recently posted theme
+    // const handleDeleteTheme = async (themeId) => {
+    //     try {
+    //         await deleteDoc(doc(db, 'post', themeId));
+    //         alert('お題を削除しました。');
+    //         // Refresh recent themes
+    //         await fetchRecentThemes(user.email);
+    //     } catch (error) {
+    //         console.error("Error deleting theme: ", error);
+    //         alert(`削除中にエラーが発生しました。エラー: ${error.message}`);
+    //     }
+    // };
 
     const handlePost = async () => {
         if (!isAuthorized) {

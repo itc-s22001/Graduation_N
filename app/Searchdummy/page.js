@@ -1,8 +1,11 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import { db } from "../firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { useRouter } from 'next/navigation';  // useRouterをインポート
 import '../../style/Searchdummy.css';
+import Image from 'next/image';
 
 const Searchdummy = () => {
     const [users, setUsers] = useState([]);
@@ -56,8 +59,8 @@ const Searchdummy = () => {
                         onClick={() => handleUserClick(user.uid)}  // ユーザーをクリックしたときの処理
                     >
                         <div style={{ display: "flex" }}>
-                            <img src={user.profile_image_url} alt={`${user.name}のプロフィール画像`}
-                                 className="search-profile-image"/>
+                            <Image src={user.profile_image_url} alt={`${user.name}のプロフィール画像`}
+                                width={30} height={30} className="search-profile-image" />
                             <p className="searchname">{user.name || "No Name"}</p>
                             {/*<p>{user.email}</p>*/}
                         </div>

@@ -6,6 +6,7 @@ import { doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp } from "fir
 import { getAuth } from "firebase/auth";
 import { FaHeart, FaRegHeart, FaCog } from "react-icons/fa";
 import '../../../style/CommunityPostPage.css';
+import Image from "next/image";
 
 import Sidebar from "../../Sidebar/page";
 import Searchdummy from "../../Searchdummy/page";
@@ -336,8 +337,8 @@ const CommunityPostPage = ({ params }) => {
                             <div key={post.post_id || post.created_at} className="post">  {/* post_idを使用 */}
                                 <div className="post-header">
                                     <div className="user-info" style={{display: "flex", alignItems: "center"}}>
-                                        <img
-                                            style={{width: "50px", borderRadius: "60px"}}
+                                        <Image
+                                            style={{width: "50px", height: "50px", borderRadius: "60px"}}
                                             src={userIcons[post.user_id] || "default_icon_url"}
                                             alt={`${post.user_name}のアイコン`}
                                             className="user-icon"

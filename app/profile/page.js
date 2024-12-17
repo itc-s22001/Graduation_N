@@ -19,6 +19,8 @@ import Link from 'next/link';
 import { Heart } from 'lucide-react';
 import Sidebar from "@/app/Sidebar/page";
 import '../../style/profile.css';
+import Image from 'next/image';
+import Searchdummy from "../Searchdummy/page";
 
 // カスタムモーダルコンポーネント
 const Modal = ({ isOpen, onClose, title, children }) => {
@@ -248,21 +250,21 @@ const ProfilePage = () => {
             console.error("いいねの更新に失敗しました: ", error);
         }
     };
-
-    const runPeriodicCleanup = async () => {
-        try {
-            const postsQuery = query(collection(db, 'post'));
-            const querySnapshot = await getDocs(postsQuery);
-
-            for (const doc of querySnapshot.docs) {
-                await cleanupLikes(doc.id);
-            }
-        } catch (error) {
-            console.error('Periodic cleanup failed:', error);
-        }
-    };
-
     useEffect(() => {
+        // runPeriodicCleanup を useEffect 内で定義
+        const runPeriodicCleanup = async () => {
+            try {
+                const postsQuery = query(collection(db, 'post'));
+                const querySnapshot = await getDocs(postsQuery);
+
+                for (const doc of querySnapshot.docs) {
+                    await cleanupLikes(doc.id);
+                }
+            } catch (error) {
+                console.error('Periodic cleanup failed:', error);
+            }
+        };
+
         // コンポーネントマウント時にクリーンアップを実行
         runPeriodicCleanup();
 
@@ -273,6 +275,43 @@ const ProfilePage = () => {
             clearInterval(cleanupInterval);
         };
     }, []);
+
+    // const runPeriodicCleanup = async () => {
+    //     try {
+    //         const postsQuery = query(collection(db, 'post'));
+    //         const querySnapshot = await getDocs(postsQuery);
+
+    //         for (const doc of querySnapshot.docs) {
+    //             await cleanupLikes(doc.id);
+    //         }
+    //     } catch (error) {
+    //         console.error('Periodic cleanup failed:', error);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     // コンポーネントマウント時にクリーンアップを実行
+    //     runPeriodicCleanup();
+
+    //     // 24時間ごとにクリーンアップを実行（必要に応じて間隔を調整）
+    //     const cleanupInterval = setInterval(runPeriodicCleanup, 24 * 60 * 60 * 1000);
+
+    //     return () => {
+    //         clearInterval(cleanupInterval);
+    //     };
+    // }, [runPeriodicCleanup]);  // runPeriodicCleanup を依存関係に追加
+
+    // useEffect(() => {
+    //     // コンポーネントマウント時にクリーンアップを実行
+    //     runPeriodicCleanup();
+
+    //     // 24時間ごとにクリーンアップを実行（必要に応じて間隔を調整）
+    //     const cleanupInterval = setInterval(runPeriodicCleanup, 24 * 60 * 60 * 1000);
+
+    //     return () => {
+    //         clearInterval(cleanupInterval);
+    //     };
+    // }, []);
 
     // フォロワーモーダルを開く
     const handleFollowersClick = async () => {
@@ -371,10 +410,13 @@ const ProfilePage = () => {
                 className="user-list-item hover:bg-gray-100 cursor-pointer"
                 onClick={() => handleUserClick(user.uid)}
             >
-                <img
+                <Image
                     src={user.profile_image_url}
                     alt={`${user.name}'s profile`}
+                    width={48}
+                    height={48}
                     className="user-list-avatar"
+
                 />
                 <div className="user-list-info">
                     <p className="user-list-name">{user.name}</p>
@@ -400,9 +442,11 @@ const ProfilePage = () => {
                         <div className="post-header">
                             <div className="user-info">
                                 {post.user_icon ? (
-                                    <img
+                                    <Image
                                         src={post.user_icon}
                                         alt="User Icon"
+                                        width={40}
+                                        height={40}
                                         className="user-icon"
                                     />
                                 ) : (
@@ -490,9 +534,11 @@ const ProfilePage = () => {
                                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
                                 >
                                     {post.user_icon ? (
-                                        <img
+                                        <Image
                                             src={post.user_icon}
                                             alt={`${post.user_name}のアイコン`}
+                                            width={40}
+                                            height={40}
                                             className="user-icon"
                                         />
                                     ) : (
@@ -566,10 +612,12 @@ const ProfilePage = () => {
             <div className="profile-container">
                 {/* Profile header and info sections remain the same... */}
                 <div className="profile-header">
-                    <img
+                    <Image
                         src={userData.profile_image_url}
                         alt="Profile Image"
-                        className="profile-image"
+                        width={133.5}  // 必須の幅を指定
+                        height={133.5} // 必須の高さを指定
+                        className="profile_image"
                     />
                     <Link href="/profile/edit">
                         <button className="edit-profile-button">プロフィール編集</button>
@@ -641,6 +689,7 @@ const ProfilePage = () => {
                     </div>
                 </Modal>
             </div>
+            <Searchdummy />
         </div>
     );
 };

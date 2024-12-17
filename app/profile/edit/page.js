@@ -6,6 +6,7 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { storage, db, auth } from '@/app/firebase';
 import { useRouter } from 'next/navigation';
 import '@/style/profileedit.css';
+import Image from 'next/image';
 
 const EditProfilePage = () => {
     const [uid, setUid] = useState('');
@@ -121,10 +122,12 @@ const EditProfilePage = () => {
                         onChange={handleFileChange}
                     />
                     {profileImageUrl && (
-                        <img 
-                            src={profileImageUrl} 
-                            alt="Preview" 
-                            style={{ maxWidth: '100px', marginTop: '10px' }} 
+                        <Image
+                            src={profileImageUrl}
+                            alt="Preview"
+                            width={133.5}  // 必須の幅を指定
+                            height={133.5} // 必須の高さを指定
+                            style={{ maxWidth: '100px', marginTop: '10px' }}
                         />
                     )}
                 </div>
