@@ -1,15 +1,37 @@
-/* 投稿リストを中央に配置 */
+/* デフォルトの余白をリセット */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* コンテナスタイル */
 .container {
-  display: flex;
+  position: relative;
+  background-color: rgba(179, 14, 168, 0.2);
+  min-height: 100vh; /* 画面全体を覆う */
+  padding-top: 10px;
+}
+/* 投稿リストを中央に配置 */
+/* .container { */
+/* display: flex;
   flex-direction: column;
   align-self: center;
-  min-height: 100vh;
-  margin-left: 500px;
-}
+  min-height: 100vh; */
+/* margin-left: 500px; */
+/* background: linear-gradient(135deg, #f9a8d4, #8ec5fc); */
+/* position: relative; */
+/* background: linear-gradient(135deg, #f9a8d4, #8ec5fc); */
+/* background-color: rgba(179, 14, 168, 0.2); */
+/* } */
 /* 投稿リスト全体 */
 .post_all {
   width: 100%;
+  /* max-width: 600px;*/
   max-width: 600px;
+  margin: auto;
+  /* background: linear-gradient(135deg, #f9a8d4, #8ec5fc); */
 }
 
 /* 投稿カード */
@@ -22,6 +44,8 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: visible; /* 必要に応じて 'visible' に設定 */
+  background: linear-gradient(150deg, #f9a8d4e6, #8ec5fc94);
+  border: none;
 }
 
 .single_post:hover {
@@ -32,6 +56,8 @@
 .post_icon_name {
   display: flex;
   align-items: center;
+  width: 100%;
+  height: 100px;
 }
 
 .post_icon {

@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router"; // Next.jsのuseRouterをインポート
+import { useRouter } from "next/navigation"; // Next.jsのuseRouterをインポート
 import { db } from "../firebase"; // Firebaseの設定をインポート
 import { collection, getDocs, addDoc, query, orderBy, where } from "firebase/firestore"; // Firestoreのクエリ関連メソッド
 import { auth } from "../firebase"; // Firebase Authenticationの設定をインポート
+import Image from "next/image";
 
-const CommunityPosts = () => {
+const CommunityPosts = ({params}) => {
     const [community, setCommunity] = useState(null); // コミュニティ情報
     const [posts, setPosts] = useState([]); // 投稿一覧
     const [newPost, setNewPost] = useState(""); // 新しい投稿内容
     const [loading, setLoading] = useState(true); // ローディング状態
     const router = useRouter();
-    const { community_id } = router.query;  // URLパラメータからcommunity_idを取得
+    const { community_id } = params;  // URLパラメータからcommunity_idを取得
 
     useEffect(() => {
         const fetchCommunityData = async () => {
@@ -117,7 +118,7 @@ const CommunityPosts = () => {
                     posts.map((post) => (
                         <div key={post.post_id} style={{ borderBottom: "1px solid #ccc", marginBottom: "10px" }}>
                             <div>
-                                <img
+                                <Image
                                     src={post.user_icon || "/default-icon.png"} // ユーザーアイコンの表示、なければデフォルト画像
                                     alt={post.user_name}
                                     style={{ width: "40px", height: "40px", borderRadius: "50%" }}

@@ -6,6 +6,7 @@ import { doc, getDoc, addDoc, collection } from "firebase/firestore"; // addDoc,
 import { auth, db } from "../firebase";
 import Sidebar from "../Sidebar/page";
 import '../../style/survey.css'; // CSSファイルをインポート
+import Image from "next/image";
 
 const SurveyPage = () => {
     const [user, setUser] = useState(null); // ログイン中のユーザー情報
@@ -74,9 +75,11 @@ const SurveyPage = () => {
             {user && (
                 <div className="survey-user-info">
                     {/* アイコン表示 */}
-                    <img 
+                    <Image
                         src={user.profileImageUrl || '/default-avatar.png'} 
                         alt="User Icon" 
+                        width={50}
+                        height={50}
                         className="survey-user-icon"
                     />
                     {/* ユーザー名表示 */}

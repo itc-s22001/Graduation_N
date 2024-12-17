@@ -6,9 +6,10 @@ import { db, auth } from "../../app/firebase";
 import { onAuthStateChanged } from 'firebase/auth';
 import { useRouter } from 'next/navigation'; // useRouterのインポート
 import Sidebar from "../Sidebar/page";
-import '@/styles/PostList.css';
+import '../../styles/PostList.css';
 import God from '../Images/God.png';
 import Image from "next/image";
+import Searchdummy from "../Searchdummy/page";
 import "@/styles/SurveyForm.css";
 
 const PostPage = () => {
@@ -302,6 +303,7 @@ const PostPage = () => {
         router.push(`/profile/${userId}`); // プロフィールページに遷移
     };
 
+
     return (
         <div className="container">
             <Sidebar />
@@ -311,7 +313,7 @@ const PostPage = () => {
                     <div>読み込み中...</div>
                 ) : combinedContent.length === 0 ? (
                     <div>まだ投稿がありません。</div>
-                ) : (
+                ) : (            
                     combinedContent.map((item) => {
                         // 投稿のレンダリング
                         if (item.content) {
@@ -334,7 +336,6 @@ const PostPage = () => {
                                                 borderRadius: '50%'  // 丸型にする場合
                                             }}
                                             onClick={() => handleUserProfileClick(item.uid)} // アイコンクリックで遷移
-
                                         />
                                         )}
                                         <p className="post_name">{item.user_name}</p>
@@ -517,6 +518,7 @@ const PostPage = () => {
                     <button onClick={closeConfirmPopup}>キャンセル</button>
                 </div>
             )}
+            <Searchdummy />
             {isSurveyConfirmPopupOpen && (
                 <div className="survey_delete_confirmation">
                     <p>本当にこのアンケートを削除しますか？</p>

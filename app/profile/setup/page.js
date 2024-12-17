@@ -5,6 +5,7 @@ import { doc, setDoc, serverTimestamp, getDoc, query, collection, where, getDocs
 import { storage, db, auth } from '@/app/firebase';
 import { useRouter } from 'next/navigation';
 import '@/style/profileedit.css';
+import Image from 'next/image';
 
 const EditProfilePage = () => {
     const [customUid, setCustomUid] = useState(''); // ユーザーが設定する独自のID
@@ -63,11 +64,11 @@ const EditProfilePage = () => {
     // カスタムUIDの重複チェック
     const checkCustomUidExists = async (uidToCheck) => {
         if (!uidToCheck) return false;
-        
+
         const usersRef = collection(db, "users");
         const q = query(usersRef, where("uid", "==", uidToCheck));
         const querySnapshot = await getDocs(q);
-        
+
         // 自分のドキュメント以外で重複がないかチェック
         return querySnapshot.docs.some(doc => doc.id !== auth.currentUser?.uid);
     };
@@ -166,16 +167,18 @@ const EditProfilePage = () => {
                         onChange={handleFileChange}
                     />
                     {profileImageUrl && (
-                        <img 
-                            src={profileImageUrl} 
-                            alt="プロフィール画像プレビュー" 
-                            style={{ maxWidth: '100px', marginTop: '10px' }} 
+                        <Image
+                            src={profileImageUrl}
+                            alt="プロフィール画像プレビュー"
+                            width={100}  // 必須の幅を指定
+                            height={100} // 必須の高さを指定
+                            style={{ maxWidth: '100px', height: '100px', width: '100px', marginTop: '10px' }}
                         />
                     )}
                 </div>
                 {error && <p className="error-message" style={{ color: 'red' }}>{error}</p>}
-                <button 
-                    type="button" 
+                <button
+                    type="button"
                     onClick={handleSave}
                     className="save-button"
                 >

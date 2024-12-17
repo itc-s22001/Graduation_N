@@ -235,9 +235,11 @@ const DM = () => {
                                         <button onClick={() => setSelectedUser(otherUser)}>
                                             {/* アイコンを表示 */}
                                             <div style={{display: 'flex', marginTop: '15px'}}>
-                                                <img
+                                                <Image
                                                     src={otherUser.profile_image_url}
                                                     alt={`${otherUser.name}'s profile`}
+                                                    width={50}
+                                                    height={50}
                                                     className="dm-user-icon"
                                                 />
                                                 <p className="DMusername">{otherUser.name}</p>

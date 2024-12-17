@@ -8,6 +8,7 @@ import '../../style/Community.css'
 import Sidebar from "../Sidebar/page";
 import Searchdummy from "../Searchdummy/page";
 import CommunityModal from "../CommunityModal/page";
+import Image from "next/image";
 
 const CommunityPage = () => {
     const [currentCommunity, setCurrentCommunity] = useState(null);
@@ -104,7 +105,7 @@ const CommunityPage = () => {
 
 
     return (
-        <div style={{display:"flex", position: "relative"}}>
+        <div style={{ display: "flex", position: "relative" }}>
             <Sidebar />
             <div className="CommunityContent">
                 <div className="CommunityBox">
@@ -121,15 +122,16 @@ const CommunityPage = () => {
                                     <div key={community.id} className="CommunitysBOX">
                                         {/* コミュニティのアイコン */}
                                         {community.community_image_url && (
-                                            <img src={community.community_image_url} alt="コミュニティアイコン"
-                                                 className="CommunityImage"/>
+                                            <Image src={community.community_image_url} alt="コミュニティアイコン"
+                                                width={50} height={50}
+                                                className="CommunityImage" />
                                         )}
                                         <div className="CommunityContent">
                                             <h3 className="CommunityName">{community.community_name}</h3>
                                             <p className="CommunityProfile">{community.community_profile}</p>
                                             <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
                                             <button className="JoinButton"
-                                                    onClick={() => joinCommunity(community.id)}>コミュニティを見る
+                                                onClick={() => joinCommunity(community.id)}>コミュニティを見る
                                             </button>
                                         </div>
                                     </div>
@@ -151,15 +153,16 @@ const CommunityPage = () => {
                                 <div key={community.id} className="CommunitysBOX">
                                     {/* コミュニティのアイコン */}
                                     {community.community_image_url && (
-                                        <img src={community.community_image_url} alt="コミュニティアイコン"
-                                             className="CommunityImage"/>
+                                        <Image src={community.community_image_url} alt="コミュニティアイコン"
+                                            width={50} height={50}
+                                            className="CommunityImage" />
                                     )}
                                     <div className="CommunityContent">
                                         <h3 className="CommunityName">{community.community_name}</h3>
                                         <p className="CommunityProfile">{community.community_profile}</p>
                                         <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
                                         <button className="JoinButton"
-                                                onClick={() => joinCommunity(community.id)}>参加
+                                            onClick={() => joinCommunity(community.id)}>参加
                                         </button>
                                     </div>
                                 </div>
@@ -177,12 +180,12 @@ const CommunityPage = () => {
                         height: '100vh',
                         backgroundColor: 'rgba(0, 0, 0, 0.7)',
                         zIndex: 1000,
-                    }} onClick={() => setShowPopup(false)}/>
+                    }} onClick={() => setShowPopup(false)} />
                 )}
-                <CommunityModal/>
+                <CommunityModal />
 
             </div>
-            <Searchdummy/>
+            <Searchdummy />
         </div>
     );
 };
