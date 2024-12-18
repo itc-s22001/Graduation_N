@@ -16,15 +16,16 @@
 
 /* アンケートカード */
 .survey_card {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
   margin-bottom: 10px;
-  background-color: white;
+  background: linear-gradient(150deg, #f9a8d4e6, #8ec5fc94);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
   position: relative;
-  width: 100%;
-  max-width: 580px;
+  width: 600px;
+  background-color: white;
+  /*max-width: 580px;*/
 }
 
 .survey_card:hover {
@@ -47,7 +48,7 @@
 
 .survey_user {
   font-weight: bold;
-  color: #657786;
+  color: black;
 }
 
 /* アンケートの質問 */

@@ -371,8 +371,8 @@ const PostPage = () => {
                                         className="post_content_clickable"
                                         onClick={() => handlePostClick(item.id)}
                                     >
-                                        <p>{item.content}</p>
-                                        <p>
+                                        <p style={{ color: 'black', fontSize: '25px'}}>{item.content}</p>
+                                        <p style={{ color: 'black'}}>
                                             投稿日:{" "}
                                             {item.create_at
                                                 ? new Date(item.create_at.seconds * 1000).toLocaleString()
@@ -482,6 +482,7 @@ const PostPage = () => {
                                                             zIndex: 2,
                                                             display: "flex",
                                                             justifyContent: "space-between",
+                                                            color: "black",
                                                         }}
                                                     >
                                                         <span>{option}</span>
