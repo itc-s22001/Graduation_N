@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from 'react';
 import '../../style/CommunitySearchBar.css'; // CSSファイルをインポート
 import { db } from '../firebase'; // Firebase設定をインポート
