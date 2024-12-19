@@ -1,0 +1,87 @@
+/* sidebar-modal.css */
+.Msidebar-modal {
+    position: fixed; /* 画面下部に固定 */
+    bottom: 0; /* 画面下部に配置 */
+    left: 0; /* 画面左端に配置 */
+    width: 100%; /* 幅を100%に設定 */
+    background-color: #fff; /* 背景色 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); /* 上部に影 */
+    display: flex; /* フレックスボックスで並べる */
+    justify-content: space-around; /* アイテムを均等配置 */
+    align-items: center; /* アイテムを中央揃え */
+    padding: 10px 0; /* 上下の余白 */
+    z-index: 1000; /* 他のコンテンツより上に表示 */
+    border-top: 1px solid #e6ecf0; /* 上部の境界線 */
+}
+
+.Mlogo-button {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1da1f2;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px 0;
+    width: 100%;
+    margin: auto;
+}
+
+/*.Mlogo-button span {*/
+/*    font-size: 24px; !* "N"の文字の大きさ *!*/
+/*    font-weight: bold; !* 太文字 *!*/
+/*    color: #1DA1F2; !* Twitterの青色 *!*/
+/*    display: inline-block; !* インラインブロックで中央揃え *!*/
+/*    -webkit-text-stroke: 1px black; !* "N"の枠線を黒に *!*/
+/*}*/
+
+
+/* 親要素に対して高さ100%を指定 */
+html, body {
+    height: 100%; /* 高さを100%に設定 */
+    margin: 0; /* デフォルトの余白を削除 */
+    padding: 0; /* デフォルトのパディングを削除 */
+}
+
+
+
+.Msidebar-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.Msidebar-button {
+    background: none; /* 背景なし */
+    border: none; /* 境界線なし */
+    font-size: 18px; /* フォントサイズ */
+    cursor: pointer; /* ポインター */
+    color: #333; /* 通常時の色 */
+    padding: 10px; /* 内部の余白 */
+    transition: background-color 0.3s ease; /* 背景色のトランジション */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.Msidebar-button:hover {
+    background-color: rgba(29, 161, 242, 0.1); /* ホバー時の背景色 */
+}
+
+.Msidebar-button svg {
+    width: 24px;
+    height: 24px;
+    fill: #333;
+}
+
+.Msidebar-button:hover svg {
+    fill: #1da1f2; /* ホバー時のアイコンの色 */
+}
+
+.Msidebar-button.active {
+    color: #1da1f2; /* アクティブなボタンの色 */
+    font-weight: bold;
+}
+
+.Msidebar-button.active svg {
+    fill: #1da1f2; /* アクティブ時のアイコンの色 */
+}

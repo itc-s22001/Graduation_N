@@ -21,6 +21,7 @@ import Sidebar from "@/app/Sidebar/page";
 import '../../style/profile.css';
 import Image from 'next/image';
 import Searchdummy from "../Searchdummy/page";
+import SidebarMobile from '../SidebarMobile/page'; // SidebarMobile コンポーネントのインポート
 
 // カスタムモーダルコンポーネント
 const Modal = ({ isOpen, onClose, title, children }) => {
@@ -57,6 +58,8 @@ const ProfilePage = () => {
     const [isLoadingPosts, setIsLoadingPosts] = useState(false);
     const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState({});
     const [activeTab, setActiveTab] = useState('posts'); // 'posts' or 'likes'
+    const [isMobile, setIsMobile] = useState(false);
+
 
     // ユーザープロフィールへの遷移を処理する関数
     const handleUserClick = (userId) => {
@@ -250,6 +253,22 @@ const ProfilePage = () => {
             console.error("いいねの更新に失敗しました: ", error);
         }
     };
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1000); // 1000px以下でisMobileをtrueに
+        };
+
+        // 初回読み込み時にウィンドウサイズを確認する
+        handleResize();
+
+        // リサイズイベントのリスナーを追加
+        window.addEventListener('resize', handleResize);
+
+        // クリーンアップ関数でリスナーを削除
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     useEffect(() => {
         // runPeriodicCleanup を useEffect 内で定義
         const runPeriodicCleanup = async () => {
@@ -263,6 +282,7 @@ const ProfilePage = () => {
             } catch (error) {
                 console.error('Periodic cleanup failed:', error);
             }
+
         };
 
         // コンポーネントマウント時にクリーンアップを実行
@@ -437,6 +457,8 @@ const ProfilePage = () => {
 
         return (
             <div className="posts-container">
+                {isMobile ? <SidebarMobile /> : <Sidebar />}
+
                 {userPosts.map((post) => (
                     <div key={post.id} className="post-card">
                         <div className="post-header">
@@ -521,6 +543,7 @@ const ProfilePage = () => {
             e.preventDefault();
             router.push(`/profile/${encodeURIComponent(userId)}`);
         };
+
 
         return (
             <div className="posts-container">

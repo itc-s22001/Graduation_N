@@ -255,3 +255,65 @@ body {
   background-color: #f5f8fa;
   color: #14171a;
 /* } */
+
+
+@media (max-width: 1000px) {
+  html, body {
+    overflow-x: hidden; /* 横スクロールを無効にする */
+  }
+  .container{
+    width: 100vw;
+    padding: 0;
+  }
+
+  .search-container {
+    display: none;
+  }
+
+
+  .post_all {
+    width: calc(100% - 10px); /* marginを考慮してwidthを調整 */
+    overflow: hidden;
+    margin: 3px 5px 65px 5px;
+
+  }
+
+
+
+  .single_post {
+    width: 100%;
+    padding: 10px;
+    word-break: break-word; /* 単語が長い場合でも折り返し */
+    box-sizing: border-box; /* パディングとボーダーを幅に含める */
+    overflow: hidden; /* 横にはみ出さないようにする */
+  }
+
+  .survey_card {
+    width: 100%; /* 幅を100%に設定 */
+    padding: 0; /* パディングをリセット */
+    box-sizing: border-box; /* パディングとボーダーを幅に含める */
+    overflow: hidden; /* 横にはみ出さないようにする */
+  }
+
+  .hamburger-menu {
+    display: block;
+  }
+
+  .sidebar {
+    display: none; /* Sidebarを非表示 */
+  }
+
+  .sidebar-mobile {
+    display: block; /* SidebarMobileを表示 */
+  }
+}
+
+@media (min-width: 1001px) {
+  /*.sidebar {*/
+  /*  display: block; !* Sidebarを表示 *!*/
+  /*}*/
+
+  .sidebar-mobile {
+    display: none; /* SidebarMobileを非表示 */
+  }
+}

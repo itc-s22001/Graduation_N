@@ -1,3 +1,5 @@
+
+
 .profile-layout {
     display: flex;
     /* height: 100vh;
@@ -546,4 +548,22 @@ body {
 .user-id {
     color: #666;
     font-size: 0.9rem;
+}
+
+@media (min-width: 1001px) {
+    .sidebar-mobile {
+        display: none; /* SidebarMobileを非表示 */
+    }
+}
+
+@media (max-width: 1000px) {
+    .sidebar {
+        display: none; /* PC版 Sidebar を非表示 */
+    }
+    .sidebar-mobile {
+        display: block; /* SidebarMobileを表示 */
+    }
+    .search-container {
+        display: none;
+    }
 }

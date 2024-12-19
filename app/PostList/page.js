@@ -11,6 +11,8 @@ import God from '../Images/God.png';
 import Image from "next/image";
 import Searchdummy from "../Searchdummy/page";
 import "@/styles/SurveyForm.css";
+import SidebarMobile from '../SidebarMobile/page';
+
 
 const PostPage = () => {
     const router = useRouter(); // useRouterフックを使ってルーターを取得
@@ -27,6 +29,9 @@ const PostPage = () => {
 
     const [isSurveyConfirmPopupOpen, setSurveyConfirmPopupOpen] = useState(false); // アンケート削除確認ポップアップの状態
     const [surveyToDelete, setSurveyToDelete] = useState(null); // 削除対象のアンケート
+
+    const [isMobile, setIsMobile] = useState(false);
+
 
     // ログイン中のユーザーを取得
     useEffect(() => {
@@ -48,6 +53,18 @@ const PostPage = () => {
         });
 
         return () => unsubscribe();
+    }, []);
+
+    //Mobile
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768); // 768px以下ならモバイルサイズ
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // 初回読み込み時に呼び出す
+
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     // 時間に基づいた投稿表示のロジック
@@ -306,7 +323,7 @@ const PostPage = () => {
 
     return (
         <div className="container">
-            <Sidebar />
+            {isMobile ? <SidebarMobile /> : <Sidebar />}
     
             <div className="post_all">
                 {loading ? (
