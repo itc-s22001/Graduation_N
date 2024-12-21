@@ -1,141 +1,271 @@
 "use client";
-
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // Next.jsのuseRouterをインポート
-import { db } from "../firebase"; // Firebaseの設定をインポート
-import { collection, getDocs, addDoc, query, orderBy, where } from "firebase/firestore"; // Firestoreのクエリ関連メソッド
-import { auth } from "../firebase"; // Firebase Authenticationの設定をインポート
-import Image from "next/image";
+import { db } from "../firebase";
+import { doc, getDoc, setDoc, updateDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { FaHeart, FaRegHeart, FaCog } from "react-icons/fa";
+import '../../style/CommunityPostPage.css';
+import Sidebar from "../Sidebar/page";
+import {useRouter} from "next/navigation";
+import CommunitySearchBar from "@/app/CommunitySearchBar/page";
 
-const CommunityPosts = ({params}) => {
-    const [community, setCommunity] = useState(null); // コミュニティ情報
-    const [posts, setPosts] = useState([]); // 投稿一覧
-    const [newPost, setNewPost] = useState(""); // 新しい投稿内容
-    const [loading, setLoading] = useState(true); // ローディング状態
-    const router = useRouter();
-    const { community_id } = params;  // URLパラメータからcommunity_idを取得
-
+const CommunityPostPage = ({ params }) => {
+    const { community_id } = params;
+    const [community, setCommunity] = useState(null);
+    const [posts, setPosts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [newPostContent, setNewPostContent] = useState("");
+    const [user, setUser] = useState(null);
+    const [userIcons, setUserIcons] = useState({});
+    const [userNames, setUserNames] = useState({});
+    const [showPostPopup, setShowPostPopup] = useState(false);
+    const generatePostId = () => {
+        return Math.floor(10000 + Math.random() * 90000).toString();  // 10000〜99999の範囲でランダムな整数
+    };
+    const router = useRouter();  // useRouterをコンポーネント内で呼び出し
+    const GoBack = () => {
+        router.push('/Community');  // ここで '/home' を遷移先のパスに変更
+    };
     useEffect(() => {
+        const auth = getAuth();
+        const unsubscribe = auth.onAuthStateChanged(setUser);
+        return () => unsubscribe();
+    }, []);
+    useEffect(() => {
+        if (!community_id) return;
         const fetchCommunityData = async () => {
-            if (!community_id) return; // community_idが未定義の場合は何もしない
-
-            setLoading(true);
-
             try {
-                // コミュニティ情報の取得
-                const communityRef = doc(db, "communities", community_id); // community_idで参照
-                const communitySnapshot = await getDoc(communityRef);
-
-                if (communitySnapshot.exists()) {
-                    setCommunity(communitySnapshot.data());
+                const communityDocRef = doc(db, "communities", community_id);
+                const communityDoc = await getDoc(communityDocRef);
+                if (communityDoc.exists()) {
+                    setCommunity(communityDoc.data());
                 } else {
-                    console.error("指定したコミュニティは存在しません");
+                    await setDoc(communityDocRef, {
+                        community_name: "新しいコミュニティ",
+                        community_profile: "このコミュニティについての説明",
+                        created_at: serverTimestamp(),
+                    });
+                    setCommunity({
+                        community_name: "新しいコミュニティ",
+                        community_profile: "このコミュニティについての説明",
+                    });
                 }
-
-                // コミュニティの投稿を取得 (community_idで絞り込む)
-                const postsRef = collection(db, "community_posts");
-                const postsQuery = query(postsRef, where("community_id", "==", community_id), orderBy("created_at", "desc"));
-                const postsSnapshot = await getDocs(postsQuery);
-                const postsData = postsSnapshot.docs.map((doc) => ({
-                    ...doc.data(),
-                    post_id: doc.id // ドキュメントIDをpost_idとして追加
-                }));
-
-                setPosts(postsData);
+                const postsDocRef = doc(db, "community_posts", community_id);
+                const unsubscribe = onSnapshot(postsDocRef, (docSnapshot) => {
+                    if (docSnapshot.exists()) {
+                        const postsData = docSnapshot.data().posts || [];
+                        setPosts(postsData.sort((a, b) => b.created_at.seconds - a.created_at.seconds));
+                        postsData.forEach(async (post) => {
+                            if (post.user_id && !userIcons[post.user_id]) {
+                                const userDocRef = doc(db, "users", post.user_id);
+                                const userDoc = await getDoc(userDocRef);
+                                if (userDoc.exists()) {
+                                    setUserIcons((prevIcons) => ({
+                                        ...prevIcons,
+                                        [post.user_id]: userDoc.data().profile_image_url,
+                                    }));
+                                    setUserNames((prevNames) => ({
+                                        ...prevNames,
+                                        [post.user_id]: userDoc.data().name || "名無し",
+                                    }));
+                                }
+                            }
+                        });
+                    } else {
+                        setDoc(postsDocRef, { posts: [] });
+                    }
+                    setLoading(false);
+                });
+                return () => unsubscribe();
             } catch (error) {
-                console.error("コミュニティデータの取得に失敗しました:", error);
-            } finally {
+                console.error("Error fetching data:", error);
                 setLoading(false);
             }
         };
-
         fetchCommunityData();
-    }, [community_id]);  // community_idが変更された場合にのみ実行
-
-    const handlePostSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!newPost.trim()) return;
-
+    }, [community_id, userIcons]);
+    const handleLikePost = async (postId) => {
+        if (!user) {
+            console.error("ユーザー情報が無効です");
+            return;
+        }
         try {
-            // 新しい投稿をFirestoreに追加
-            const newPostRef = await addDoc(collection(db, "community_posts"), {
-                content: newPost,
-                created_at: new Date(),
-                user_id: auth.currentUser.uid,
-                user_name: auth.currentUser.displayName || "匿名ユーザー", // ユーザー名が取得できない場合は"匿名ユーザー"
-                user_icon: auth.currentUser.photoURL || "", // アイコンURL
-                community_id, // 投稿がどのコミュニティに属するか
-                likedBy: [], // 初期状態ではいいねしているユーザーなし
-                likes: 0, // 初期状態ではいいねの数は0
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+            if (!userDoc.exists()) {
+                console.error("ユーザー情報が見つかりません");
+                return;
+            }
+            const userGid = userDoc.data().gid;
+            // 投稿をpost_idで取得
+            const post = posts.find((p) => p.post_id === postId);
+            if (!post) {
+                console.error("指定された投稿が見つかりません");
+                return;
+            }
+            // いいねの状態を更新
+            const updatedLikedBy = post.likedBy.includes(userGid)
+                ? post.likedBy.filter((gid) => gid !== userGid)  // いいねを取り消す
+                : [...post.likedBy, userGid];  // いいねを追加
+            const updatedLikes = updatedLikedBy.length;
+            // Firestoreでの投稿更新
+            const postsDocRef = doc(db, "community_posts", community_id);
+            await updateDoc(postsDocRef, {
+                posts: posts.map((p) =>
+                    p.post_id === postId  // post_idで特定の投稿を更新
+                        ? { ...p, likes: updatedLikes, likedBy: updatedLikedBy }
+                        : p
+                ),
             });
-
-            setPosts([
-                { content: newPost, created_at: new Date(), user_id: auth.currentUser.uid, user_name: auth.currentUser.displayName || "匿名ユーザー", user_icon: auth.currentUser.photoURL || "", likes: 0, post_id: newPostRef.id },
-                ...posts,
-            ]);
-            setNewPost(""); // 投稿後に入力欄をリセット
+            // ローカルステートで更新
+            setPosts((prevPosts) =>
+                prevPosts.map((p) =>
+                    p.post_id === postId  // post_idで特定の投稿を更新
+                        ? { ...p, likes: updatedLikes, likedBy: updatedLikedBy }
+                        : p
+                )
+            );
+        } catch (error) {
+            console.error("いいねの更新に失敗しました:", error);
+        }
+    };
+    const handleNewPost = async (event) => {
+        event.preventDefault();
+        if (!newPostContent.trim()) return;
+        try {
+            const currentUser = user || { uid: "guest", displayName: "ゲストユーザー" };
+            // 5桁のランダムなpost_idを生成
+            const postId = generatePostId();
+            // 新しい投稿オブジェクト
+            const newPost = {
+                post_id: postId,  // post_idを追加
+                content: newPostContent,
+                user_id: currentUser.uid,
+                user_name: currentUser.displayName || currentUser.email,
+                user_icon: currentUser.photoURL,
+                likes: 0,
+                likedBy: [],
+                created_at: new Date(),
+            };
+            const postsDocRef = doc(db, "community_posts", community_id);
+            const docSnap = await getDoc(postsDocRef);
+            if (docSnap.exists()) {
+                await updateDoc(postsDocRef, {
+                    posts: [...docSnap.data().posts, newPost],  // 新しい投稿を追加
+                });
+            } else {
+                await setDoc(postsDocRef, {
+                    posts: [newPost],  // 新しい投稿を初めて保存
+                });
+            }
+            // 投稿内容をリセット
+            setNewPostContent("");
+            setShowPostPopup(false);
         } catch (error) {
             console.error("投稿エラー:", error);
         }
     };
-
-    const handlePostChange = (e) => {
-        setNewPost(e.target.value);
+    const handleNewPostChange = (event) => {
+        setNewPostContent(event.target.value);
+    };
+    const formatTime = (timestamp) => {
+        const date = new Date(timestamp.seconds * 1000);
+        return date.toLocaleString();
     };
 
-    if (loading) {
-        return <p>コミュニティ情報を読み込んでいます...</p>;
+    if (loading) {       return (
+        <div style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100vh",
+        }}>
+            <p>コミュニティ情報を読み込んでいます...</p>
+        </div>
+    );
     }
 
     return (
-        <div>
-            <h1>{community ? community.community_name : "コミュニティ情報を取得中"}</h1>
-            <p>{community ? community.community_profile : ""}</p>
+        <div style={{ display: "flex" }}>
+            <Sidebar />
+            <div className="community-post-page">
+                <div style={{position: "fixed", top: "50px", left: "30%", zIndex: 1000}}>
+                    <button
+                        onClick={GoBack}
+                        style={{
+                            backgroundColor: "#1d9bf0", // ボタン背景色
+                            color: "white", // ボタンの文字色
+                            border: "none", // ボーダーを削除
+                            borderRadius: "50%", // 丸いボタン
+                            width: "50px", // ボタンの幅
+                            height: "50px", // ボタンの高さ
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            cursor: "pointer", // ホバー時にポインターを表示
+                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // 軽い影
+                        }}
+                    >
+                        ⬅
+                    </button>
+                </div>
 
-            {/* 投稿フォーム */}
-            <div>
-                <h3>新しい投稿を作成</h3>
-                <form onSubmit={handlePostSubmit}>
-                    <textarea
-                        value={newPost}
-                        onChange={handlePostChange}
-                        placeholder="投稿内容を入力..."
-                        rows="4"
-                        cols="50"
-                    />
-                    <br />
-                    <button type="submit">投稿</button>
-                </form>
-            </div>
-
-            {/* 投稿リスト */}
-            <div>
-                <h3>投稿一覧</h3>
-                {posts.length === 0 ? (
-                    <p>投稿はまだありません。</p>
-                ) : (
-                    posts.map((post) => (
-                        <div key={post.post_id} style={{ borderBottom: "1px solid #ccc", marginBottom: "10px" }}>
-                            <div>
-                                <Image
-                                    src={post.user_icon || "/default-icon.png"} // ユーザーアイコンの表示、なければデフォルト画像
-                                    alt={post.user_name}
-                                    style={{ width: "40px", height: "40px", borderRadius: "50%" }}
-                                />
-                                <strong>{post.user_name}</strong>
+                <h1 className="community-name">{community ? community.community_name : "コミュニティ情報を取得中"}</h1>
+                <p className="community-pro">{community ? community.community_profile : ""}</p>
+                <div className="posts-list">
+                    {posts.length === 0 ? (
+                        <p>投稿はまだありません。</p>
+                    ) : (
+                        posts.map((post) => (
+                            <div key={post.post_id || post.created_at} className="post">  {/* post_idを使用 */}
+                                <div className="post-header">
+                                    <div className="user-info" style={{display: "flex", alignItems: "center"}}>
+                                        <img
+                                            style={{width: "50px", borderRadius: "60px"}}
+                                            src={userIcons[post.user_id]}
+                                            alt={`${post.user_name}のアイコン`}
+                                            className="user-icon"
+                                        />
+                                        <span className="user-name">{userNames[post.user_id] || post.user_name}</span>
+                                    </div>
+                                </div>
+                                <p className="post-content">{post.content}</p>
+                                <div className="post-footer" style={{display: "flex", justifyContent: "space-between"}}>
+                                    <div className="likes">
+                                        <button onClick={() => handleLikePost(post.post_id)}
+                                                className="like-button">  {/* post_idを使用 */}
+                                            {post.likedBy.includes(user?.uid) ? (
+                                                <FaHeart className="heart-icon liked"/>
+                                            ) : (
+                                                <FaRegHeart className="heart-icon"/>
+                                            )}
+                                        </button>
+                                        <span className="like-count">{post.likes} いいね</span>
+                                    </div>
+                                    <span className="created-at">{formatTime(post.created_at)}</span>
+                                </div>
                             </div>
-                            <div>{post.content}</div>
-                            <div>投稿日: {new Date(post.created_at.seconds * 1000).toLocaleString()}</div>
-                            <div>
-                                <button onClick={() => handleLikePost(post)}>いいね ({post.likes})</button>
-                            </div>
+                        ))
+                    )}
+                </div>
+                <button onClick={() => setShowPostPopup(true)} className="new-post-button">コミュニティに投稿</button>
+                {showPostPopup && (
+                    <div className="post-popup">
+                        <div className="popup-content">
+                            <button onClick={() => setShowPostPopup(false)} className="close-popup-button">✕</button>
+                            <h2>新しい投稿</h2>
+                            <textarea
+                                value={newPostContent}
+                                onChange={handleNewPostChange}
+                                placeholder="投稿内容を入力..."
+                                className="post-input"
+                            />
+                            <button onClick={handleNewPost} className="submit-post-button">投稿する</button>
                         </div>
-                    ))
+                    </div>
                 )}
             </div>
         </div>
-    );
-};
+    );};
 
-export default CommunityPosts;
+export default CommunityPostPage;

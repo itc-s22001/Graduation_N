@@ -1,12 +1,10 @@
 "use client";
-
 import React, { useState } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth, storage } from "@/app/firebase";
 import { addDoc, collection, doc, updateDoc, arrayUnion, setDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { useRouter } from "next/navigation";
-
 const CommunityModal = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [communityName, setCommunityName] = useState("");
@@ -16,7 +14,6 @@ const CommunityModal = () => {
     const [category, setCategory] = useState("おもしろ");
     const [uploading, setUploading] = useState(false);
     const router = useRouter();
-
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => {
         setCommunityName("");
@@ -24,30 +21,24 @@ const CommunityModal = () => {
         setCommunityIcon(null);
         setIsModalOpen(false);
     };
-
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
             setCommunityIcon(e.target.files[0]);
         }
     };
-
     const handleCreateCommunity = async (e) => {
         e.preventDefault();
         if (!communityName || !description) {
             alert("コミュニティ名と説明文は必須です");
             return;
         }
-
         if (!communityIcon) {
             alert("アイコン画像をアップロードしてください");
             return;
         }
-
         const imageRef = ref(storage, `community_images/${communityIcon.name}`);
         const uploadTask = uploadBytesResumable(imageRef, communityIcon);
-
         setUploading(true);
-
         uploadTask.on(
             "state_changed",
             (snapshot) => {
@@ -61,7 +52,6 @@ const CommunityModal = () => {
             async () => {
                 try {
                     const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-
                     const communityRef = await addDoc(collection(db, "communities"), {
                         community_NOP: 0,
                         community_name: communityName,
@@ -72,24 +62,19 @@ const CommunityModal = () => {
                         created_at: new Date().toISOString(),
                         created_by: auth.currentUser.uid,
                     });
-
                     await updateDoc(communityRef, {
                         community_id: communityRef.id,
                     });
-
                     const userCommunityRef = doc(db, "users", auth.currentUser.uid);
                     await updateDoc(userCommunityRef, {
                         joined_communities: arrayUnion(communityRef.id),
                     });
-
                     const communityDocRef = doc(db, "community_members", communityRef.id);
                     await setDoc(communityDocRef, {
                         members: [auth.currentUser.uid],
                         community_NOP: 1,
                     });
-
                     router.push(`/CommunityPost/${communityRef.id}`);
-
                     setCommunityName("");
                     setDescription("");
                     setCommunityIcon(null);
@@ -102,7 +87,6 @@ const CommunityModal = () => {
             }
         );
     };
-
     return (
         <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
             <div style={{position: 'fixed', bottom: '20px', left: '400px', zIndex: 1000}}>
@@ -130,7 +114,6 @@ const CommunityModal = () => {
                     コミュニティ作成
                 </button>
             </div>
-
             {isModalOpen && (
                 <>
                     <div style={{
@@ -142,7 +125,6 @@ const CommunityModal = () => {
                         backgroundColor: 'rgba(0, 0, 0, 0.7)',
                         zIndex: 1000,
                     }} onClick={closeModal}/>
-
                     <div style={{
                         position: 'fixed',
                         top: '50%',
@@ -170,15 +152,13 @@ const CommunityModal = () => {
                                 placeholder="コミュニティの説明"
                                 style={{width: '100%', padding: '10px', marginBottom: '10px', resize: 'none'}}
                             />
-
                             <textarea
-                                value={category}
-                                onChange={(e) => {
-                                    // 入力を10文字まで制限
-                                    if (e.target.value.length <= 10) {
-                                        setCategory(e.target.value);
-                                    }
-                                }}
+                                value={category}   onChange={(e) => {
+                                // 入力を10文字まで制限
+                                if (e.target.value.length <= 10) {
+                                    setCategory(e.target.value);
+                                }
+                            }}
                                 placeholder="コミュニティのカテゴリー"
                                 style={{
                                     width: '100%',
@@ -236,5 +216,4 @@ const CommunityModal = () => {
         </div>
     );
 };
-
 export default CommunityModal;

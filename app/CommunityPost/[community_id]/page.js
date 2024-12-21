@@ -74,7 +74,7 @@ const CommunityPostPage = ({ params }) => {
                                 if (userDoc.exists()) {
                                     setUserIcons((prevIcons) => ({
                                         ...prevIcons,
-                                        [post.user_id]: userDoc.data().profile_image_url || "default_icon_url",
+                                        [post.user_id]: userDoc.data().profile_image_url,
                                     }));
                                     setUserNames((prevNames) => ({
                                         ...prevNames,
@@ -171,7 +171,7 @@ const CommunityPostPage = ({ params }) => {
                 content: newPostContent,
                 user_id: currentUser.uid,
                 user_name: currentUser.displayName || currentUser.email,
-                user_icon: currentUser.photoURL || "default_icon_url",
+                user_icon: currentUser.photoURL,
                 likes: 0,
                 likedBy: [],
                 created_at: new Date(),
@@ -245,9 +245,20 @@ const CommunityPostPage = ({ params }) => {
                     </button>
                 </div>
 
-                <h1 className="community-name">{community ? community.community_name : "コミュニティ情報を取得中"}</h1>
-                <p className="community-pro">{community ? community.community_profile : ""}</p>
+                <div style={{ display: "flex"}}>
+                    <Image
+                        style={{borderRadius: "60px"}}
+                        src={community.community_image_url}
+                        width={80}
+                        height={80}
+                    />
+                    <h1 className="community-name"
+                    style={{
+                        marginRight: '50px', marginLeft: '10px',
+                    }}>{community ? community.community_name : "コミュニティ情報を取得中"}</h1>
 
+                </div>
+                <p className="community-pro">{community ? community.community_profile : ""}</p>
 
 
                 <div className="posts-list">
@@ -259,12 +270,18 @@ const CommunityPostPage = ({ params }) => {
                                 <div className="post-header">
                                     <div className="user-info" style={{display: "flex", alignItems: "center"}}>
                                         <Image
-                                            style={{width: "50px", height: "50px", borderRadius: "60px"}}
-                                            src={userIcons[post.user_id] || "default_icon_url"}
+                                            style={{borderRadius: "60px"}}
+                                            src={userIcons[post.user_id]}
                                             alt={`${post.user_name}のアイコン`}
                                             className="user-icon"
+                                            width={50}
+                                            height={50}
                                         />
-                                        <span className="user-name">{userNames[post.user_id] || post.user_name}</span>
+                                        <span className="user-name"
+                                        style={{
+                                            marginLeft: '20px',
+                                            fontSize: '20px',
+                                        }}>{userNames[post.user_id] || post.user_name}</span>
                                     </div>
                                 </div>
                                 <p className="post-content">{post.content}</p>

@@ -36,7 +36,7 @@ const CommunityPage = () => {
     }, []);
 
 
-    const joinCommunity = async (communityId) => {
+    const joinCommunity = async (communityId, action = "join") => {
         const communityRef = doc(db, "community_members", communityId);
         const userCommunityRef = doc(db, "users", auth.currentUser.uid);
         const communityDocRef = doc(db, "communities", communityId);
@@ -47,22 +47,33 @@ const CommunityPage = () => {
                 await setDoc(communityRef, { members: [], community_NOP: 0 });
             }
 
-            await updateDoc(communityRef, {
-                community_NOP: increment(1),
-                members: arrayUnion(auth.currentUser.uid),
-            });
+            // ユーザーがすでに参加しているか確認
+            const userDoc = await getDoc(userCommunityRef);
+            const joinedCommunities = userDoc.exists() ? userDoc.data().joined_communities || [] : [];
 
-            await updateDoc(userCommunityRef, {
-                joined_communities: arrayUnion(communityId),
-            });
+            if (action === "join" && !joinedCommunities.includes(communityId)) {
+                // 参加していない場合のみ人数を増やす
+                await updateDoc(communityRef, {
+                    community_NOP: increment(1),
+                    members: arrayUnion(auth.currentUser.uid),
+                });
 
-            await updateDoc(communityDocRef, {
-                community_NOP: increment(1),
-            });
+                await updateDoc(userCommunityRef, {
+                    joined_communities: arrayUnion(communityId),
+                });
 
-            setJoinedCommunities((prev) => [...prev, communityId]);
-            setCurrentCommunity(communityId);
-            router.push(`/CommunityPost/${communityId}`);
+                await updateDoc(communityDocRef, {
+                    community_NOP: increment(1),
+                });
+
+                setJoinedCommunities((prev) => [...prev, communityId]);
+                setCurrentCommunity(communityId);
+                router.push(`/CommunityPost/${communityId}`);
+            } else if (action === "view" || joinedCommunities.includes(communityId)) {
+                // すでに参加している場合や「コミュニティを見る」アクションの場合は人数を変更しない
+                setCurrentCommunity(communityId);
+                router.push(`/CommunityPost/${communityId}`);
+            }
         } catch (error) {
             console.error("コミュニティ参加エラー:", error);
         }
