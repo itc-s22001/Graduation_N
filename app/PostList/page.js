@@ -12,6 +12,8 @@ import Image from "next/image";
 import Searchdummy from "../Searchdummy/page";
 import "@/styles/SurveyForm.css";
 import SidebarMobile from '../SidebarMobile/page';
+import Modal from '../Modal/page'
+import CommunitySearchBar from "@/app/CommunitySearchBar/page";
 
 
 const PostPage = () => {
@@ -31,6 +33,17 @@ const PostPage = () => {
     const [surveyToDelete, setSurveyToDelete] = useState(null); // 削除対象のアンケート
 
     const [isMobile, setIsMobile] = useState(false);
+
+    const [showSurveyOnly, setShowSurveyOnly] = useState(false);
+
+    const toggleSurveyFilter = () => {
+        setShowSurveyOnly((prev) => !prev);
+    };
+
+    // アンケートのみを表示するフィルタリング
+    const filteredContent = showSurveyOnly
+        ? combinedContent.filter((item) => item.type === "survey")
+        : combinedContent;
 
 
     // ログイン中のユーザーを取得
@@ -324,14 +337,41 @@ const PostPage = () => {
     return (
         <div className="container">
             {isMobile ? <SidebarMobile /> : <Sidebar />}
-    
+
             <div className="post_all">
+                <div style={{
+                    position: "fixed", // 画面に固定
+                    bottom: "20px",    // 画面の下から20pxの距離
+                    left: "400px",      // 画面の左から20pxの距離
+                    zIndex: 9999,      // 他の要素より前面に表示
+                    display: "flex",   // フレックスボックスで中央に配置
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}>
+                    <Modal/>
+                </div>
+                {/* アンケートのみ表示切替ボタン */}
+                <div className="toggle_buttons">
+                    <button
+                        onClick={toggleSurveyFilter}
+                        style={{
+                            border: "none",
+                            backgroundColor: "white",
+                        }}
+                    >
+                        <span style={{fontSize: "30px"}}>
+                          {showSurveyOnly ? "○ ●" : "● ○"}
+                        </span>
+
+                    </button>
+                </div>
+
                 {loading ? (
                     <div>読み込み中...</div>
-                ) : combinedContent.length === 0 ? (
+                ) : filteredContent.length === 0 ? (
                     <div>まだ投稿がありません。</div>
-                ) : (            
-                    combinedContent.map((item) => {
+                ) : (
+                    filteredContent.map((item) => {
                         // 投稿のレンダリング
                         if (item.content) {
                             return (
@@ -339,21 +379,21 @@ const PostPage = () => {
                                     <div className="post_icon_name">
                                         {item.user_icon && (
                                             <Image
-                                            src={
-                                                item.isTheme
-                                                    ? God
-                                                    : item.user_icon
-                                            }
-                                            alt="User Icon"
-                                            width={50}
-                                            height={50}
-                                            className="post_icon"
-                                            style={{
-                                                objectFit: 'cover',
-                                                borderRadius: '50%'  // 丸型にする場合
-                                            }}
-                                            onClick={() => handleUserProfileClick(item.uid)} // アイコンクリックで遷移
-                                        />
+                                                src={
+                                                    item.isTheme
+                                                        ? God
+                                                        : item.user_icon
+                                                }
+                                                alt="User Icon"
+                                                width={50}
+                                                height={50}
+                                                className="post_icon"
+                                                style={{
+                                                    objectFit: 'cover',
+                                                    borderRadius: '50%'  // 丸型にする場合
+                                                }}
+                                                onClick={() => handleUserProfileClick(item.uid)} // アイコンクリックで遷移
+                                            />
                                         )}
                                         <p className="post_name">{item.user_name}</p>
                                         {user?.uid === item.uid && (
@@ -383,7 +423,7 @@ const PostPage = () => {
                                             </div>
                                         )}
                                     </div>
-    
+
                                     <div
                                         className="post_content_clickable"
                                         onClick={() => handlePostClick(item.id)}
@@ -396,7 +436,7 @@ const PostPage = () => {
                                                 : "不明"}
                                         </p>
                                     </div>
-    
+
                                     <div className="post_nice_comment">
                                         <button
                                             onClick={() =>
@@ -411,7 +451,7 @@ const PostPage = () => {
                                 </div>
                             );
                         }
-    
+
                         // アンケートのレンダリング
                         if (item.type === "survey") {
                             return (
@@ -536,7 +576,8 @@ const PostPage = () => {
                     <button onClick={closeConfirmPopup}>キャンセル</button>
                 </div>
             )}
-            <Searchdummy />
+            {/*<Searchdummy />*/}
+            <CommunitySearchBar />
             {isSurveyConfirmPopupOpen && (
                 <div className="survey_delete_confirmation">
                     <p>本当にこのアンケートを削除しますか？</p>

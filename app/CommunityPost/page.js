@@ -8,6 +8,8 @@ import '../../style/CommunityPostPage.css';
 import Sidebar from "../Sidebar/page";
 import {useRouter} from "next/navigation";
 import CommunitySearchBar from "@/app/CommunitySearchBar/page";
+import Image from 'next/image';
+
 
 const CommunityPostPage = ({ params }) => {
     const { community_id } = params;
@@ -220,11 +222,13 @@ const CommunityPostPage = ({ params }) => {
                             <div key={post.post_id || post.created_at} className="post">  {/* post_idを使用 */}
                                 <div className="post-header">
                                     <div className="user-info" style={{display: "flex", alignItems: "center"}}>
-                                        <img
-                                            style={{width: "50px", borderRadius: "60px"}}
+                                        <Image
                                             src={userIcons[post.user_id]}
                                             alt={`${post.user_name}のアイコン`}
                                             className="user-icon"
+                                            width={50} // 幅を指定
+                                            height={50} // 高さを指定
+                                            style={{ borderRadius: '60px' }} // 必要に応じて追加スタイル
                                         />
                                         <span className="user-name">{userNames[post.user_id] || post.user_name}</span>
                                     </div>

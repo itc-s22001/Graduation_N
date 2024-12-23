@@ -101,9 +101,9 @@ const Sidebar = () => {
                     </div>
 
                     {/* 投稿ボタン */}
-                    <div className="sidebar-button-container">
-                        <Modal />
-                    </div>
+                    {/*<div className="sidebar-button-container">*/}
+                    {/*    <Modal />*/}
+                    {/*</div>*/}
 
                     {/* コミュニティボタン */}
                     <div className="sidebar-button-container">

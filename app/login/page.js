@@ -13,10 +13,15 @@ const LoginPage = () => {
 
     const handleLogin = async () => {
         const provider = new GoogleAuthProvider();
+        // アカウント選択を可能にするための設定
+        provider.setCustomParameters({
+            prompt: 'select_account', // アカウント選択を表示
+        });
+
         try {
             const result = await signInWithPopup(auth, provider);
             const user = result.user;
-    
+
             // Firestoreでユーザーデータを確認
             const userDoc = await getDoc(doc(db, "users", user.uid));
             if (!userDoc.exists()) {
@@ -27,14 +32,12 @@ const LoginPage = () => {
                 const fetchedUser = await getDoc(doc(db, "users", user.uid));
                 const userData = fetchedUser.data();
                 const userUid = userData.uid; // Firestoreから取得したuidを使う
-                router.push(`/profile/`); // @をつけて遷移
+                router.push(`/profile/`); // プロフィール画面へ遷移
             }
         } catch (error) {
             console.error("Login error:", error);
         }
     };
-    
-    
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -45,7 +48,6 @@ const LoginPage = () => {
         };
         fetchUserData();
     }, []);
-    
 
     return (
         <div className="login-container"> {/* クラスを追加 */}

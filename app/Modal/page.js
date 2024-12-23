@@ -5,6 +5,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { addDoc, collection, serverTimestamp, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import { db, auth, storage } from "@/app/firebase"; // storageもインポート
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useRouter } from "next/navigation";
 
 // 投稿モーダルを管理するコンポーネント
 const Modal = () => {
@@ -12,10 +13,14 @@ const Modal = () => {
     const [content, setContent] = useState("");
     const [user, setUser] = useState(null);
     const [image, setImage] = useState(null);
+    const router = useRouter();
 
     // 投稿モーダルを開く
     const openModal = () => setIsModalOpen(true);
-
+    const Next = () => {
+        router.push('/PostList');  // 先にページ遷移を行う
+        openModal();  // モーダルを開く
+    }
 
     // 投稿モーダルを閉じる
     const closeModal = () => {
@@ -24,6 +29,13 @@ const Modal = () => {
         setImage(null);
     };
 
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const showModal = params.get('showModal');
+        if (showModal === 'true') {
+            openModal();
+        }
+    }, []);
 
     // ログイン中のユーザーを取得
     useEffect(() => {
@@ -83,14 +95,9 @@ const Modal = () => {
             });
 
             // 追加した投稿にドキュメントIDを設定
-            // await updateDoc(doc(db, "post", postRef.id), {
-            //     post_id: postRef.id,
-            // });
             await updateDoc(postRef, { post_id: postRef.id });
 
             setContent("");
-            closeModal();
-            // 削除確認ポップアップを開く
             closeModal();
         } catch (error) {
             console.error("投稿に失敗しました:", error);
@@ -101,45 +108,130 @@ const Modal = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
             {/* 投稿ボタン */}
-            <div className="sidebar-button-container" style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%" }}>
-                <svg
-                    className="post-icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    style={{ width: "24px", height: "24px", fill: "#333", cursor: "pointer" }}
-                >
-                    <path d="M3 17.25V21h3.75L16.88 12.88l-3.75-3.75L3 17.25zm15.41-10.83L20.25 4l-2.58-2.59c-.39-.39-1.02-.39-1.41 0L14.41 3.17l3.75 3.75z" />
-                </svg>
+            <div className="sidebar-button-container"
+                 style={{display: "flex", alignItems: "center", gap: "10px", width: "100%"}}>
+                {/*<svg*/}
+                {/*    className="post-icon"*/}
+                {/*    xmlns="http://www.w3.org/2000/svg"*/}
+                {/*    viewBox="0 0 24 24"*/}
+                {/*    style={{ width: "24px", height: "24px", fill: "#333", cursor: "pointer" }}*/}
+                {/*>*/}
+                {/*    <path d="M3 17.25V21h3.75L16.88 12.88l-3.75-3.75L3 17.25zm15.41-10.83L20.25 4l-2.58-2.59c-.39-.39-1.02-.39-1.41 0L14.41 3.17l3.75 3.75z" />*/}
+                {/*</svg>*/}
                 <button
                     onClick={openModal}
                     style={{
-                        background: "none",
+                        backgroundColor: "#1d9bf0",   // Twitterの青色
                         border: "none",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        cursor: "pointer",
-                        color: "#333",
-                        padding: "10px",
-                        width: "100%",
-                        textAlign: "left",
-                        borderRadius: "20px",
-                        transition: "background-color 0.3s ease",
+                        color: "white",               // プラス記号を白に
+                        fontSize: "32px",             // プラス記号を大きくする
+                        width: "60px",                // ボタンの幅
+                        height: "60px",               // ボタンの高さ
+                        borderRadius: "50%",          // 丸型にする
+                        display: "flex",              // フレックスボックスで中央に配置
+                        justifyContent: "center",     // プラス記号を中央に
+                        alignItems: "center",         // プラス記号を中央に
+                        cursor: "pointer",           // カーソルをポインターに
+                        transition: "background-color 0.3s ease, transform 0.2s ease", // ホバー時の背景色と縮小効果
                     }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "rgba(29, 161, 242, 0.1)")}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "rgba(29, 161, 242, 0.7)"; // ホバー時に背景色を変える
+                        e.currentTarget.style.transform = "scale(1.1)"; // ホバー時に少し大きくなる
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "#1d9bf0"; // 元の色に戻す
+                        e.currentTarget.style.transform = "scale(1)"; // 元のサイズに戻す
+                    }}
                 >
-                    投稿する
+                    +
                 </button>
+
             </div>
+
             {isModalOpen && (
-                <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "400px", padding: "20px", backgroundColor: "white", borderRadius: "8px", zIndex: 1000 }}>
-                    <h2>新しい投稿</h2>
-                    <form onSubmit={handlePostSubmit}>
-                        <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="今何してる？" style={{ width: "100%", padding: "10px", marginBottom: "10px", resize: "none" }} />
-                        <input type="file" onChange={handleImageChange} accept="image/*" style={{ marginTop: "10px" }} />
-                        <button type="submit" style={{ padding: "10px", width: "100%", backgroundColor: "#1d9bf0", color: "white", border: "none", borderRadius: "5px", marginTop: "10px" }}>投稿</button>
-                        <button onClick={closeModal} style={{ marginTop: "10px", color: "#555" }}>閉じる</button>
-                    </form>
+                <div
+                    style={{
+                        position: "fixed",
+                        top: "0",
+                        left: "0",
+                        right: "0",
+                        bottom: "0",
+                        backgroundColor: "rgba(0, 0, 0, 0.5)",  // 背景を暗くする
+                        zIndex: 999,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center"
+                    }}
+                    onClick={closeModal}  // モーダル外をクリックしたら閉じる
+                >
+                    <div
+                        style={{
+                            position: "relative",
+                            width: "400px",
+                            padding: "20px",
+                            backgroundColor: "white",
+                            borderRadius: "8px",
+                            zIndex: 1000,
+                            boxSizing: "border-box"
+                        }}
+                        onClick={(e) => e.stopPropagation()}  // モーダル内のクリックイベントが親に伝わらないようにする
+                    >
+                        <h2>新しい投稿</h2>
+                        <form onSubmit={handlePostSubmit}>
+                            <textarea
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
+                                placeholder="今何してる？"
+                                style={{
+                                    width: "100%",
+                                    padding: "10px",
+                                    marginBottom: "10px",
+                                    resize: "none",
+                                    borderRadius: "5px",
+                                    boxSizing: "border-box"
+                                }}
+                            />
+                            <input
+                                type="file"
+                                onChange={handleImageChange}
+                                accept="image/*"
+                                style={{
+                                    marginTop: "10px",
+                                    width: "100%",
+                                    padding: "10px",
+                                    borderRadius: "5px",
+                                    boxSizing: "border-box"
+                                }}
+                            />
+                            <button
+                                type="submit"
+                                style={{
+                                    padding: "10px",
+                                    width: "100%",
+                                    backgroundColor: "#1d9bf0",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "5px",
+                                    marginTop: "10px"
+                                }}
+                            >
+                                投稿
+                            </button>
+                            <button
+                                type="button"
+                                onClick={closeModal}
+                                style={{
+                                    marginTop: "10px",
+                                    color: "#555",
+                                    background: "none",
+                                    border: "none",
+                                    fontSize: "16px"
+                                }}
+                            >
+                                閉じる
+                            </button>
+                        </form>
+                    </div>
                 </div>
             )}
         </div>
@@ -147,4 +239,3 @@ const Modal = () => {
 };
 
 export default Modal;
-

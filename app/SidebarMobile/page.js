@@ -94,9 +94,9 @@ const SidebarModal = () => {
                     </SidebarButton>
                 </div>
 
-                <div className="Msidebar-button-container">
-                    <Modal/>
-                </div>
+                {/*<div className="Msidebar-button-container">*/}
+                {/*    <Modal/>*/}
+                {/*</div>*/}
 
                 <div className="Msidebar-button-container">
                     <SidebarButton

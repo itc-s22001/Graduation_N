@@ -9,6 +9,7 @@ import Sidebar from "../Sidebar/page";
 import Searchdummy from "../Searchdummy/page";
 import CommunityModal from "../CommunityModal/page";
 import Image from "next/image";
+import CommunitySearchBar from "@/app/CommunitySearchBar/page";
 
 const CommunityPage = () => {
     const [currentCommunity, setCurrentCommunity] = useState(null);
@@ -196,7 +197,8 @@ const CommunityPage = () => {
                 <CommunityModal />
 
             </div>
-            <Searchdummy />
+            <CommunitySearchBar />
+
         </div>
     );
 };

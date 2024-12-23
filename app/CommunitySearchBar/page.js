@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import '../../style/CommunitySearchBar.css'; // CSSファイルをインポート
 import { db } from '../firebase'; // Firebase設定をインポート
 import { collection, query, where, getDocs } from 'firebase/firestore';
+import Image from 'next/image';
+
 
 const CommunitySearchBar = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -68,10 +70,12 @@ const CommunitySearchBar = () => {
                     <div key={community.id} className="CommunitysBOX">
                         {/* コミュニティのアイコン */}
                         {community.community_image_url && (
-                            <img
+                            <Image
                                 src={community.community_image_url}
                                 alt="コミュニティアイコン"
-                                className="CommunityImage"
+                                // className={styles.CommunityImage}
+                                width={100}
+                                height={100}
                             />
                         )}
                         <div className="CommunityContent">
