@@ -12,6 +12,7 @@ import Sidebar from "@/app/Sidebar/page";
 import Searchdummy from "@/app/Searchdummy/page"; // Searchdummyをインポート
 
 import Yaji from '../Images/Yajirusi.png';
+import SidebarMobile from "@/app/SidebarMobile/page";
 
 const DM = () => {
     const [user, setUser] = useState(null);
@@ -20,6 +21,8 @@ const DM = () => {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
+    const [isMobile, setIsMobile] = useState(false);
+
 
     const messagesEndRef = useRef(null);
     const router = useRouter();
@@ -74,6 +77,18 @@ const DM = () => {
         });
 
         return () => unsubscribe();
+    }, []);
+
+    //Mobile
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768); // 768px以下ならモバイルサイズ
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // 初回読み込み時に呼び出す
+
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
 
@@ -208,7 +223,7 @@ const DM = () => {
 
     return (
         <div className="container">
-            <Sidebar />
+            {isMobile ? <SidebarMobile /> : <Sidebar />}
             <div >
                 <div className="user-status">
                     {user ? (

@@ -144,3 +144,27 @@ textarea {
     padding-right: 20px;
     width: 500px;
 }
+
+@media (max-width: 1000px) {
+    html, body {
+        overflow-x: hidden; /* 横スクロールを無効にする */
+    }
+
+    .sidebar {
+        display: none; /* Sidebarを非表示 */
+    }
+
+    .sidebar-mobile {
+        display: block; /* SidebarMobileを表示 */
+    }
+}
+
+@media (min-width: 1001px) {
+    /*.sidebar {*/
+    /*  display: block; !* Sidebarを表示 *!*/
+    /*}*/
+
+    .sidebar-mobile {
+        display: none; /* SidebarMobileを非表示 */
+    }
+}
