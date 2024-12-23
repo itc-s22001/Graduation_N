@@ -10,6 +10,7 @@ import Searchdummy from "../Searchdummy/page";
 import CommunityModal from "../CommunityModal/page";
 import Image from "next/image";
 import CommunitySearchBar from "@/app/CommunitySearchBar/page";
+import SidebarMobile from "@/app/SidebarMobile/page";
 
 const CommunityPage = () => {
     const [currentCommunity, setCurrentCommunity] = useState(null);
@@ -17,6 +18,8 @@ const CommunityPage = () => {
     const [communities, setCommunities] = useState([]);
     const [showPopup, setShowPopup] = useState(false);
     const router = useRouter();
+    const [isMobile, setIsMobile] = useState(false);
+    const [activeTab, setActiveTab] = useState("joined");  // 新たに追加した状態管理
 
     useEffect(() => {
         const fetchCommunities = async () => {
@@ -36,7 +39,6 @@ const CommunityPage = () => {
         fetchCommunities();
     }, []);
 
-
     const joinCommunity = async (communityId, action = "join") => {
         const communityRef = doc(db, "community_members", communityId);
         const userCommunityRef = doc(db, "users", auth.currentUser.uid);
@@ -48,12 +50,10 @@ const CommunityPage = () => {
                 await setDoc(communityRef, { members: [], community_NOP: 0 });
             }
 
-            // ユーザーがすでに参加しているか確認
             const userDoc = await getDoc(userCommunityRef);
             const joinedCommunities = userDoc.exists() ? userDoc.data().joined_communities || [] : [];
 
             if (action === "join" && !joinedCommunities.includes(communityId)) {
-                // 参加していない場合のみ人数を増やす
                 await updateDoc(communityRef, {
                     community_NOP: increment(1),
                     members: arrayUnion(auth.currentUser.uid),
@@ -71,7 +71,6 @@ const CommunityPage = () => {
                 setCurrentCommunity(communityId);
                 router.push(`/CommunityPost/${communityId}`);
             } else if (action === "view" || joinedCommunities.includes(communityId)) {
-                // すでに参加している場合や「コミュニティを見る」アクションの場合は人数を変更しない
                 setCurrentCommunity(communityId);
                 router.push(`/CommunityPost/${communityId}`);
             }
@@ -79,7 +78,6 @@ const CommunityPage = () => {
             console.error("コミュニティ参加エラー:", error);
         }
     };
-
 
     const leaveCommunity = async () => {
         if (!currentCommunity) return;
@@ -114,74 +112,170 @@ const CommunityPage = () => {
         }
     };
 
+    // Mobile
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768); // 768px以下ならモバイルサイズ
+        };
 
+        window.addEventListener('resize', handleResize);
+        handleResize(); // 初回読み込み時に呼び出す
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     return (
         <div style={{ display: "flex", position: "relative" }}>
-            <Sidebar />
+            {isMobile ? <SidebarMobile /> : <Sidebar />}
             <div className="CommunityContent">
-                <div className="CommunityBox">
-                    <div>
-                        <h2 style={{
-                            borderBottom: '1px solid black',
-                            paddingLeft: '20px',
-                            paddingRight: '20px'
-                        }}>参加済みのコミュニティ</h2>
-                        <div>
-                            {communities
-                                .filter((community) => joinedCommunities.includes(community.id))
-                                .map((community) => (
-                                    <div key={community.id} className="CommunitysBOX">
-                                        {/* コミュニティのアイコン */}
-                                        {community.community_image_url && (
-                                            <Image src={community.community_image_url} alt="コミュニティアイコン"
-                                                width={50} height={50}
-                                                className="CommunityImage" />
-                                        )}
-                                        <div className="CommunityContent">
-                                            <h3 className="CommunityName">{community.community_name}</h3>
-                                            <p className="CommunityProfile">{community.community_profile}</p>
-                                            <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
-                                            <button className="JoinButton"
-                                                onClick={() => joinCommunity(community.id)}>コミュニティを見る
-                                            </button>
-                                        </div>
-                                    </div>
+                {isMobile ? (
+                        <div className='MobileCom'>
+                            <div className="CommunityTabs">
+                                <button
+                                    className={activeTab === "joined" ? "activeTab" : ""}
+                                    onClick={() => setActiveTab("joined")}
+                                >
+                                    参加済み
+                                </button>
+                                <button
+                                    className={activeTab === "notJoined" ? "activeTab" : ""}
+                                    onClick={() => setActiveTab("notJoined")}
+                                >
+                                    未参加
+                                </button>
+                            </div>
+                            <div className="CommunityBox">
+                                <div>
+                                    {activeTab === "joined" && (
+                                        <>
+                                            <h2>参加済みのコミュニティ</h2>
+                                            {communities
+                                                .filter((community) => joinedCommunities.includes(community.id))
+                                                .map((community) => (
+                                                    <div key={community.id} className="CommunitysBOX">
+                                                        {community.community_image_url && (
+                                                            <Image src={community.community_image_url}
+                                                                   alt="コミュニティアイコン"
+                                                                   width={50} height={50}
+                                                                   className="CommunityImage"/>
+                                                        )}
+                                                        <div className="CommunityContent">
+                                                            <h3 className="CommunityName">{community.community_name}</h3>
+                                                            <p className="CommunityProfile">{community.community_profile}</p>
+                                                            <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
+                                                            <button className="SeeJoinButton"
+                                                                    onClick={() => joinCommunity(community.id)}>コミュニティを見る
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                        </>
+                                    )}
 
-                                ))}
+                                    {activeTab === "notJoined" && (
+                                        <>
+                                            <h2>未参加のコミュニティ</h2>
+                                            {communities
+                                                .filter((community) => !joinedCommunities.includes(community.id))
+                                                .map((community) => (
+                                                    <div key={community.id} className="CommunitysBOX">
+                                                        {community.community_image_url && (
+                                                            <Image src={community.community_image_url}
+                                                                   alt="コミュニティアイコン"
+                                                                   width={50} height={50}
+                                                                   className="CommunityImage"/>
+                                                        )}
+                                                        <div className="CommunityContent">
+                                                            <h3 className="CommunityName">{community.community_name}</h3>
+                                                            <p className="CommunityProfile">{community.community_profile}</p>
+                                                            <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
+                                                            <button className="JoinButton"
+                                                                    onClick={() => joinCommunity(community.id)}>参加
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                         </div>
 
-                    </div>
+                    ) :
+                    <div className="PCCom">
 
-                    <div className="LeftCommunityBox">
-                        <h2 style={{
-                            borderBottom: '1px solid black',
-                            paddingLeft: '20px',
-                            paddingRight: '20px'
-                        }}>未参加のコミュニティ</h2>
-                        {communities
-                            .filter((community) => !joinedCommunities.includes(community.id))
-                            .map((community) => (
-                                <div key={community.id} className="CommunitysBOX">
-                                    {/* コミュニティのアイコン */}
-                                    {community.community_image_url && (
-                                        <Image src={community.community_image_url} alt="コミュニティアイコン"
-                                            width={50} height={50}
-                                            className="CommunityImage" />
-                                    )}
-                                    <div className="CommunityContent">
-                                        <h3 className="CommunityName">{community.community_name}</h3>
-                                        <p className="CommunityProfile">{community.community_profile}</p>
-                                        <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
-                                        <button className="JoinButton"
-                                            onClick={() => joinCommunity(community.id)}>参加
-                                        </button>
+
+                        <div className="CommunityContent">
+                            <div className="CommunityBox">
+                                <div>
+                                    <h2 style={{
+                                        borderBottom: '1px solid black',
+                                        paddingLeft: '20px',
+                                        paddingRight: '20px'
+                                    }}>参加済みのコミュニティ</h2>
+                                    <div>
+                                        {communities
+                                            .filter((community) => joinedCommunities.includes(community.id))
+                                            .map((community) => (
+                                                <div key={community.id} className="CommunitysBOX">
+                                                    {/* コミュニティのアイコン */}
+                                                    {community.community_image_url && (
+                                                        <Image src={community.community_image_url}
+                                                               alt="コミュニティアイコン"
+                                                               width={50} height={50}
+                                                               className="CommunityImage"/>
+                                                    )}
+                                                    <div className="CommunityContent">
+                                                        <h3 className="CommunityName">{community.community_name}</h3>
+                                                        <p className="CommunityProfile">{community.community_profile}</p>
+                                                        <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
+                                                        <button className="SeeJoinButton"
+                                                                onClick={() => joinCommunity(community.id)}>コミュニティを見る
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+                                            ))}
                                     </div>
+
                                 </div>
 
-                            ))}
+                                <div className="LeftCommunityBox">
+                                    <h2 style={{
+                                        borderBottom: '1px solid black',
+                                        paddingLeft: '20px',
+                                        paddingRight: '20px'
+                                    }}>未参加のコミュニティ</h2>
+                                    {communities
+                                        .filter((community) => !joinedCommunities.includes(community.id))
+                                        .map((community) => (
+                                            <div key={community.id} className="CommunitysBOX">
+                                                {/* コミュニティのアイコン */}
+                                                {community.community_image_url && (
+                                                    <Image src={community.community_image_url}
+                                                           alt="コミュニティアイコン"
+                                                           width={50} height={50}
+                                                           className="CommunityImage"/>
+                                                )}
+                                                <div className="CommunityContent">
+                                                    <h3 className="CommunityName">{community.community_name}</h3>
+                                                    <p className="CommunityProfile">{community.community_profile}</p>
+                                                    <p className="CommunityNOP">コミュニティ参加人数: {community.community_NOP + 1}</p>
+                                                    <button className="JoinButton"
+                                                            onClick={() => joinCommunity(community.id)}>参加
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        ))}
+                                </div>
+                            </div>
+
+
+
+                        </div>
                     </div>
-                </div>
+                }
 
                 {showPopup && (
                     <div style={{
@@ -192,13 +286,11 @@ const CommunityPage = () => {
                         height: '100vh',
                         backgroundColor: 'rgba(0, 0, 0, 0.7)',
                         zIndex: 1000,
-                    }} onClick={() => setShowPopup(false)} />
+                    }} onClick={() => setShowPopup(false)}/>
                 )}
-                <CommunityModal />
-
+                <CommunityModal/>
             </div>
-            <CommunitySearchBar />
-
+            <CommunitySearchBar/>
         </div>
     );
 };

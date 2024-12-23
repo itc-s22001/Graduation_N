@@ -17,6 +17,25 @@
     padding-bottom: 60px;
 }
 
+.BackButton {
+    background-color: #1d9bf0; /* ボタン背景色 */
+    color: white; /* ボタンの文字色 */
+    border: none; /* ボーダーを削除 */
+    border-radius: 50%; /* 丸いボタン */
+    width: 50px; /* ボタンの幅 */
+    height: 50px; /* ボタンの高さ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* ホバー時にポインターを表示 */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 軽い影 */
+    transition: transform 0.2s, box-shadow 0.2s; /* ホバー時の動き */
+}
+
+.BackButton:hover {
+    transform: scale(1.1); /* ホバー時に少し拡大 */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2); /* ホバー時に影を強調 */
+}
 .post {
     border: 1px solid #ddd;
     padding: 15px;
@@ -307,18 +326,42 @@ form {
     background-color: #1A91DA;
 }
 
+@media (min-width: 1001px) {
+    .sidebar-mobile {
+        display: none; /* SidebarMobileを非表示 */
+    }
+}
 /* レスポンシブ対応 */
-@media (max-width: 600px) {
-    .popup-content {
-        width: 90%; /* モバイル対応の幅調整 */
-        padding: 15px;
+@media (max-width: 1000px) {
+    .sidebar {
+        display: none; /* PC版 Sidebar を非表示 */
     }
 
-    .popup-textarea {
-        height: 100px; /* モバイル用にテキストエリアの高さを調整 */
+    .sidebar-mobile {
+        display: block; /* SidebarMobileを表示 */
     }
 
-    .new-post-button, .submit-post-button {
-        width: 100%; /* モバイルではボタンを広く */
+    .search-container {
+        display: none;
+    }
+
+    .community-search-container {
+        display: none;
+    }
+    .Mlogo-button {
+        display: none;
+    }
+
+    .post-input {
+        width: 90%;
+    }
+    .BackButton {
+       position: fixed;
+        left: 10px;
+        top: 35px
+    }
+    .new-post-button {
+        position: fixed;
+        bottom: 100px;
     }
 }

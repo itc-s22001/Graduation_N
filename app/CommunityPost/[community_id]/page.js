@@ -12,6 +12,7 @@ import Sidebar from "../../Sidebar/page";
 import Searchdummy from "../../Searchdummy/page";
 import {useRouter} from "next/navigation";
 import CommunitySearchBar from "@/app/CommunitySearchBar/page";
+import SidebarMobile from "@/app/SidebarMobile/page";
 
 const CommunityPostPage = ({ params }) => {
     const { community_id } = params;
@@ -23,6 +24,8 @@ const CommunityPostPage = ({ params }) => {
     const [userIcons, setUserIcons] = useState({});
     const [userNames, setUserNames] = useState({});
     const [showPostPopup, setShowPostPopup] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
 
     const generatePostId = () => {
         return Math.floor(10000 + Math.random() * 90000).toString();  // 10000〜99999の範囲でランダムな整数
@@ -39,6 +42,19 @@ const CommunityPostPage = ({ params }) => {
         const unsubscribe = auth.onAuthStateChanged(setUser);
         return () => unsubscribe();
     }, []);
+
+    //Mobile
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768); // 768px以下ならモバイルサイズ
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // 初回読み込み時に呼び出す
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
 
     useEffect(() => {
         if (!community_id) return;
@@ -222,24 +238,12 @@ const CommunityPostPage = ({ params }) => {
 
     return (
         <div style={{ display: "flex" }}>
-            <Sidebar />
+            {isMobile ? <SidebarMobile /> : <Sidebar />}
             <div className="community-post-page">
                 <div style={{position: "fixed", top: "50px", left: "30%", zIndex: 1000}}>
                     <button
                         onClick={GoBack}
-                        style={{
-                            backgroundColor: "#1d9bf0", // ボタン背景色
-                            color: "white", // ボタンの文字色
-                            border: "none", // ボーダーを削除
-                            borderRadius: "50%", // 丸いボタン
-                            width: "50px", // ボタンの幅
-                            height: "50px", // ボタンの高さ
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            cursor: "pointer", // ホバー時にポインターを表示
-                            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // 軽い影
-                        }}
+                        className='BackButton'
                     >
                         ⬅
                     </button>

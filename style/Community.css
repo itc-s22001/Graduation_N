@@ -7,7 +7,31 @@
     color: #14171a;
     justify-content: space-between;
     margin: auto;
+    text-align: center;
 }
+
+.CommunityTabs {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0 0 0;
+}
+
+.CommunityTabs button {
+    padding: 10px;
+    margin: 0 5px;
+    border: 1px solid #ccc;
+    background: #f0f0f0;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.CommunityTabs .activeTab {
+    background-color: #007bff;
+    color: white;
+}
+
+
 
 
 .CommunityContent h2 {
@@ -199,7 +223,7 @@
     color: #888;
 }
 
-.JoinButton {
+.SeeJoinButton {
     background-color: #3897f0;
     color: white;
     border: none;
@@ -208,9 +232,60 @@
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin: auto;
+    width: auto;
 }
 
 .JoinButton:hover {
     background-color: #287dc9;
 }
 
+@media (max-width: 1000px) {
+    html, body {
+        overflow-x: hidden; /* 横スクロールを無効にする */
+    }
+
+    .community-search-container {
+        display: none;
+    }
+
+    .sidebar {
+        display: none; /* Sidebarを非表示 */
+    }
+
+    .sidebar-mobile {
+        display: block; /* SidebarMobileを表示 */
+    }
+    .Mlogo-button {
+        display: none;
+    }
+    .PCCom {
+        display: none;
+    }
+
+
+    .create-button {
+        position: fixed;
+        width: auto;
+        left: 30px;
+        bottom:100px;
+    }
+    .CommunityBox {
+        margin-bottom: 60px;
+    }
+
+
+}
+
+@media (min-width: 1001px) {
+    /*.sidebar {*/
+    /*  display: block; !* Sidebarを表示 *!*/
+    /*}*/
+
+    .sidebar-mobile {
+        display: none; /* SidebarMobileを非表示 */
+    }
+    .MobileCom {
+        display: none;
+    }
+}
