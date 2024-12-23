@@ -566,4 +566,7 @@ body {
     .search-container {
         display: none;
     }
+    .Mlogo-button {
+        display: none;
+    }
 }

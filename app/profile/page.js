@@ -22,6 +22,7 @@ import '../../style/profile.css';
 import Image from 'next/image';
 import Searchdummy from "../Searchdummy/page";
 import SidebarMobile from '../SidebarMobile/page'; // SidebarMobile コンポーネントのインポート
+import '../../style/SidebarMobile.css'
 
 // カスタムモーダルコンポーネント
 const Modal = ({ isOpen, onClose, title, children }) => {
@@ -59,6 +60,7 @@ const ProfilePage = () => {
     const [isDeleteMenuOpen, setIsDeleteMenuOpen] = useState({});
     const [activeTab, setActiveTab] = useState('posts'); // 'posts' or 'likes'
     const [isMobile, setIsMobile] = useState(false);
+
 
 
     // ユーザープロフィールへの遷移を処理する関数
@@ -141,6 +143,18 @@ const ProfilePage = () => {
             console.error('Error cleaning up likes:', error);
         }
     };
+
+    //Mobile
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768); // 768px以下ならモバイルサイズ
+        };
+
+        window.addEventListener('resize', handleResize);
+        handleResize(); // 初回読み込み時に呼び出す
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const cleanupDeletedUsers = async (deletedUserIds) => {
         try {
@@ -457,9 +471,12 @@ const ProfilePage = () => {
         }
 
         return (
-            <div className="posts-container">
+            <div style={{
+                position: 'relative',
+                minHeight: '100vh',
+                paddingTop: '10px',
+            }}>
                 {isMobile ? <SidebarMobile /> : <Sidebar />}
-
                 {userPosts.map((post) => (
                     <div key={post.id} className="post-card">
                         <div className="post-header">
@@ -547,6 +564,7 @@ const ProfilePage = () => {
 
 
         return (
+
             <div className="posts-container">
                 {posts.map((post) => (
                     <div key={post.id} className="post-card">
@@ -644,7 +662,7 @@ const ProfilePage = () => {
 
     return (
         <div className="profile-layout">
-            <Sidebar />
+            {isMobile ? <SidebarMobile /> : <Sidebar />}
             <div className="profile-container">
                 {/* Profile header and info sections remain the same... */}
                 <div className="profile-header">
