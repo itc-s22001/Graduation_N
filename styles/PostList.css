@@ -64,7 +64,7 @@ body {
 .post_icon {
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 50px;
   margin-right: 10px;
 }
 
@@ -316,4 +316,10 @@ body {
   .sidebar-mobile {
     display: none; /* SidebarMobileを非表示 */
   }
+}
+
+.single_post img {
+  border-radius: 8px;
+  max-width: 100%;
+  height: auto;
 }

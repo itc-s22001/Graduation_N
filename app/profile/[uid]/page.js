@@ -1,18 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { 
-    collection, 
-    query, 
-    where, 
-    getDocs, 
-    doc, 
-    updateDoc, 
-    getDoc, 
-    arrayUnion, 
+import {
+    collection,
+    query,
+    where,
+    getDocs,
+    doc,
+    updateDoc,
+    getDoc,
+    arrayUnion,
     arrayRemove,
     onSnapshot,
-    orderBy 
+    orderBy
 } from 'firebase/firestore';
 import { db } from '@/app/firebase';
 import '@/style/otherprofile.css';
@@ -152,25 +152,25 @@ const UserProfilePage = ({ params }) => {
         return () => unsubscribe();
     }, [decodedUid, currentUserData]);
 
-        // フォロー状態の確認を追加
-        useEffect(() => {
-            if (!currentUserData || !decodedUid) return;
-    
-            const userQuery = query(
-                collection(db, 'users'),
-                where('uid', '==', currentUserData.uid)
-            );
-    
-            const unsubscribe = onSnapshot(userQuery, (snapshot) => {
-                if (!snapshot.empty) {
-                    const user = snapshot.docs[0].data();
-                    const following = user.following || [];
-                    setIsFollowing(following.includes(decodedUid));
-                }
-            });
-    
-            return () => unsubscribe();
-        }, [currentUserData, decodedUid]);
+    // フォロー状態の確認を追加
+    useEffect(() => {
+        if (!currentUserData || !decodedUid) return;
+
+        const userQuery = query(
+            collection(db, 'users'),
+            where('uid', '==', currentUserData.uid)
+        );
+
+        const unsubscribe = onSnapshot(userQuery, (snapshot) => {
+            if (!snapshot.empty) {
+                const user = snapshot.docs[0].data();
+                const following = user.following || [];
+                setIsFollowing(following.includes(decodedUid));
+            }
+        });
+
+        return () => unsubscribe();
+    }, [currentUserData, decodedUid]);
 
     const handleFollow = async () => {
         if (!currentUser) {
@@ -184,7 +184,7 @@ const UserProfilePage = ({ params }) => {
                 where('uid', '==', currentUserData.uid)
             );
             const currentUserSnapshot = await getDocs(currentUserQuery);
-            
+
             const targetUserQuery = query(
                 collection(db, 'users'),
                 where('uid', '==', decodedUid)
@@ -218,45 +218,45 @@ const UserProfilePage = ({ params }) => {
     };
 
     const renderUserList = (users) => {
-                return users.map((user) => (
-                    <div key={user.uid} className="user-list-item">
-                        <Image
-                            src={user.profile_image_url} 
-                            alt={`${user.name}'s profile`}
-                            width={48}
-                            height={48} 
-                            className="user-list-avatar"
-                            onClick={() => handleUserClick(user.uid)}
-                            style={{ cursor: 'pointer' }}
-                        />
-                        <div 
-                            className="user-list-info"
-                            onClick={() => handleUserClick(user.uid)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <p className="user-list-name">{user.name}</p>
-                            <p className="user-list-id">{user.uid}</p>
-                        </div>
-                    </div>
-                ));
-            };
+        return users.map((user) => (
+            <div key={user.uid} className="user-list-item">
+                <Image
+                    src={user.profile_image_url}
+                    alt={`${user.name}'s profile`}
+                    width={48}
+                    height={48}
+                    className="user-list-avatar"
+                    onClick={() => handleUserClick(user.uid)}
+                    style={{ cursor: 'pointer' }}
+                />
+                <div
+                    className="user-list-info"
+                    onClick={() => handleUserClick(user.uid)}
+                    style={{ cursor: 'pointer' }}
+                >
+                    <p className="user-list-name">{user.name}</p>
+                    <p className="user-list-id">{user.uid}</p>
+                </div>
+            </div>
+        ));
+    };
 
-            const fetchUsersList = async (userIds, setList) => {
-                        try {
-                            const usersData = [];
-                            for (const uid of userIds) {
-                                const userQuery = query(collection(db, 'users'), where('uid', '==', uid));
-                                const querySnapshot = await getDocs(userQuery);
-                                if (!querySnapshot.empty) {
-                                    const userData = querySnapshot.docs[0].data();
-                                    usersData.push(userData);
-                                }
-                            }
-                            setList(usersData);
-                        } catch (error) {
-                            console.error('Error fetching users list:', error);
-                        }
-                    };
+    const fetchUsersList = async (userIds, setList) => {
+        try {
+            const usersData = [];
+            for (const uid of userIds) {
+                const userQuery = query(collection(db, 'users'), where('uid', '==', uid));
+                const querySnapshot = await getDocs(userQuery);
+                if (!querySnapshot.empty) {
+                    const userData = querySnapshot.docs[0].data();
+                    usersData.push(userData);
+                }
+            }
+            setList(usersData);
+        } catch (error) {
+            console.error('Error fetching users list:', error);
+        }
+    };
 
     // いいね機能の実装
     const toggleLike = async (postId) => {
@@ -283,27 +283,27 @@ const UserProfilePage = ({ params }) => {
         }
     };
 
-        const handleUserClick = (userId) => {
-            setShowFollowersModal(false);
-            setShowFollowingModal(false);
-            // 自分のプロフィールページに戻る場合
-            if (userId === currentUserData.uid) {
-                router.push('/profile/');
-            } else {
-                // 他のユーザーのプロフィールページに遷移
-                router.push(`/profile/${encodeURIComponent(userId)}`);
-            }
-        };
+    const handleUserClick = (userId) => {
+        setShowFollowersModal(false);
+        setShowFollowingModal(false);
+        // 自分のプロフィールページに戻る場合
+        if (userId === currentUserData.uid) {
+            router.push('/profile/');
+        } else {
+            // 他のユーザーのプロフィールページに遷移
+            router.push(`/profile/${encodeURIComponent(userId)}`);
+        }
+    };
 
     const renderUserPosts = () => {
         if (isLoadingPosts) {
             return <div>投稿を読み込み中...</div>;
         }
-    
+
         if (userPosts.length === 0) {
             return <div>まだ投稿はありません。</div>;
         }
-    
+
         return (
             <div className="posts-container">
                 {userPosts.map((post) => (
@@ -326,10 +326,10 @@ const UserProfilePage = ({ params }) => {
                             </div>
                             {currentUserData?.uid === post.uid && (
                                 <div className="post-menu">
-                                    <button 
-                                        onClick={() => setIsDeleteMenuOpen(prev => ({ 
-                                            ...prev, 
-                                            [post.id]: !prev[post.id] 
+                                    <button
+                                        onClick={() => setIsDeleteMenuOpen(prev => ({
+                                            ...prev,
+                                            [post.id]: !prev[post.id]
                                         }))}
                                     >
                                         ⋮
@@ -342,6 +342,20 @@ const UserProfilePage = ({ params }) => {
                                 </div>
                             )}
                         </div>
+
+                        {/* 投稿画像を表示 */}
+                        {post.image_url && (
+                            <div className="post-image-container">
+                                <Image
+                                    src={post.image_url}
+                                    alt="投稿画像"
+                                    width={500}
+                                    height={300}
+                                    className="post-image"
+                                />
+                            </div>
+                        )}
+
                         <div className="post-content">
                             {post.content}
                         </div>
@@ -350,17 +364,17 @@ const UserProfilePage = ({ params }) => {
                                 {post.create_at ? new Date(post.create_at.seconds * 1000).toLocaleString('ja-JP') : "日時不明"}
                             </span>
                             <div className="post-actions">
-                            <button 
-                                onClick={() => toggleLike(post.id)}
-                                className="like-button"
-                                aria-label={post.likedByUser ? "いいねを取り消す" : "いいね"}
-                            >
-                                <Heart
-                                    className={post.likedByUser ? "liked" : "not-liked"}
-                                />
-                                <span>{post.likes}</span>
-                                <span className="comment-count">コメント数: {post.comments_count}</span>
-                            </button>
+                                <button
+                                    onClick={() => toggleLike(post.id)}
+                                    className="like-button"
+                                    aria-label={post.likedByUser ? "いいねを取り消す" : "いいね"}
+                                >
+                                    <Heart
+                                        className={post.likedByUser ? "liked" : "not-liked"}
+                                    />
+                                    <span>{post.likes}</span>
+                                    <span className="comment-count">コメント数: {post.comments_count}</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -386,15 +400,15 @@ const UserProfilePage = ({ params }) => {
             <Sidebar />
             <div className="profile-container">
                 <div className="profile-header">
-                    <Image 
-                        src={userData.profile_image_url} 
-                        alt="Profile Image" 
+                    <Image
+                        src={userData.profile_image_url}
+                        alt="Profile Image"
                         width={133.5}  // 必須の幅を指定
                         height={133.5} // 必須の高さを指定
                         className="profile-image"
                     />
                     {currentUserData && currentUserData.uid !== userData.uid && (
-                        <button 
+                        <button
                             onClick={handleFollow}
                             className={`follow-button ${isFollowing ? 'following' : ''}`}
                         >
@@ -407,14 +421,14 @@ const UserProfilePage = ({ params }) => {
                     <p className="user-id">{userData.uid}</p>
                     <p className="self-introduction">{userData.profile_description}</p>
                     <div className="follow-info">
-                        <button 
+                        <button
                             className="following-button"
                             onClick={() => setShowFollowingModal(true)}
                         >
                             <span className="follow-count">{followingCount}</span>
                             <span className="follow-text">フォロー中</span>
                         </button>
-                        <button 
+                        <button
                             className="followers-button"
                             onClick={() => setShowFollowersModal(true)}
                         >
@@ -423,7 +437,7 @@ const UserProfilePage = ({ params }) => {
                         </button>
                     </div>
                 </div>
-                
+
                 <div className="user-posts-section">
                     <h2 className="posts-title">投稿一覧</h2>
                     {renderUserPosts()}
@@ -611,7 +625,7 @@ export default UserProfilePage;
 //             console.error('Error fetching users list:', error);
 //         }
 //     };
-    
+
 
 //     const handleFollow = async () => {
 //         if (!currentUser) {
@@ -625,7 +639,7 @@ export default UserProfilePage;
 //                 where('uid', '==', currentUserData.uid)
 //             );
 //             const currentUserSnapshot = await getDocs(currentUserQuery);
-            
+
 //             const targetUserQuery = query(
 //                 collection(db, 'users'),
 //                 where('uid', '==', decodedUid)
@@ -669,7 +683,7 @@ export default UserProfilePage;
 //             router.push(`/profile/${encodeURIComponent(userId)}`);
 //         }
 //     };
-    
+
 
 //     const renderUserList = (users) => {
 //         return users.map((user) => (
@@ -745,7 +759,7 @@ export default UserProfilePage;
 //                         </button>
 //                     </div>
 //                 </div>
-                
+
 //                 <div className="user-posts">
 //                     {/* ユーザーポストコンテンツ */}
 //                 </div>

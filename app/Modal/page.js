@@ -1,11 +1,12 @@
 "use client";
 
+
 import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged } from "firebase/auth";
-import { addDoc, collection, serverTimestamp, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
+import { addDoc, collection, serverTimestamp, query, where, getDocs, updateDoc } from "firebase/firestore";
 import { db, auth, storage } from "@/app/firebase"; // storageもインポート
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useRouter } from "next/navigation";
+
 
 // 投稿モーダルを管理するコンポーネント
 const Modal = () => {
@@ -13,14 +14,12 @@ const Modal = () => {
     const [content, setContent] = useState("");
     const [user, setUser] = useState(null);
     const [image, setImage] = useState(null);
-    const router = useRouter();
+    const [uploading, setUploading] = useState(false);
+
 
     // 投稿モーダルを開く
     const openModal = () => setIsModalOpen(true);
-    const Next = () => {
-        router.push('/PostList');  // 先にページ遷移を行う
-        openModal();  // モーダルを開く
-    }
+
 
     // 投稿モーダルを閉じる
     const closeModal = () => {
@@ -29,13 +28,6 @@ const Modal = () => {
         setImage(null);
     };
 
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const showModal = params.get('showModal');
-        if (showModal === 'true') {
-            openModal();
-        }
-    }, []);
 
     // ログイン中のユーザーを取得
     useEffect(() => {
@@ -62,6 +54,7 @@ const Modal = () => {
         return () => unsubscribe();
     }, []);
 
+
     // 画像変更時の処理
     const handleImageChange = (e) => {
         if (e.target.files && e.target.files[0]) {
@@ -69,9 +62,28 @@ const Modal = () => {
         }
     };
 
+
+    // 画像をFirebase Storageにアップロードする関数
+    const uploadImage = async () => {
+        if (!image) return null;
+
+
+        try {
+            const imageRef = ref(storage, `posts/${user.uid}/${Date.now()}_${image.name}`);
+            await uploadBytes(imageRef, image);
+            const imageUrl = await getDownloadURL(imageRef);
+            return imageUrl;
+        } catch (error) {
+            console.error("画像アップロードエラー:", error);
+            return null;
+        }
+    };
+
+
     // 投稿の送信処理
     const handlePostSubmit = async (e) => {
         e.preventDefault();
+
 
         if (content.trim() === "" || !user || !user.uid) {
             console.error("投稿内容またはユーザー情報が不足しています");
@@ -79,7 +91,15 @@ const Modal = () => {
             return;
         }
 
+
+        setUploading(true);
+
+
         try {
+            // 画像をアップロードしてURLを取得
+            const imageUrl = await uploadImage();
+
+
             // Firestoreに投稿を追加
             const postRef = await addDoc(collection(db, "post"), {
                 content: content,
@@ -92,24 +112,25 @@ const Modal = () => {
                 user_icon: user.profile_image_url || "",
                 comments_count: 0,
                 email: user.email || "unknown@example.com",
+                image_url: imageUrl || null, // 画像URLを保存
             });
 
-            // 追加した投稿にドキュメントIDを設定
-            await updateDoc(postRef, { post_id: postRef.id });
 
             setContent("");
             closeModal();
         } catch (error) {
             console.error("投稿に失敗しました:", error);
             alert("投稿に失敗しました。");
+        } finally {
+            setUploading(false);
         }
     };
+
 
     return (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
             {/* 投稿ボタン */}
-            <div className="sidebar-button-container"
-                 style={{display: "flex", alignItems: "center", gap: "10px", width: "100%"}}>
+            <div className="sidebar-button-container" style={{ display: "flex", alignItems: "center", gap: "10px", width: "100%" }}>
                 {/*<svg*/}
                 {/*    className="post-icon"*/}
                 {/*    xmlns="http://www.w3.org/2000/svg"*/}
@@ -145,9 +166,7 @@ const Modal = () => {
                 >
                     +
                 </button>
-
             </div>
-
             {isModalOpen && (
                 <div
                     style={{

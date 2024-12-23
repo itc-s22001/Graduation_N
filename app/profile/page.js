@@ -202,6 +202,7 @@ const ProfilePage = () => {
                 uid: doc.data().uid,
                 user_icon: doc.data().user_icon || "",
                 user_name: doc.data().user_name || "",
+                image_url: doc.data().image_url || "", // 画像の URL を取得
                 likeDate: doc.data().likeDates?.[currentUserUid] || null // いいねした日付を取得
             }));
 
@@ -591,6 +592,18 @@ const ProfilePage = () => {
                                 </div>
                             )}
                         </div>
+                        {/* 投稿画像の表示 */}
+                        {post.image_url && (
+                            <div className="post-image-container">
+                                <Image
+                                    src={post.image_url}
+                                    alt="投稿画像"
+                                    width={500}
+                                    height={300}
+                                    className="post-image"
+                                />
+                            </div>
+                        )}
                         <div className="post-content">
                             {post.content}
                         </div>

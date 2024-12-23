@@ -6,7 +6,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import Sidebar from "../../Sidebar/page"
 import Image from "next/image";
 import God from "../../Images/God.png"
-import  NextImage  from 'next/image';
+import NextImage from 'next/image';
 import Searchdummy from "../../Searchdummy/page"
 
 
@@ -180,6 +180,18 @@ const PostDetailPage = ({ params }) => {
 
             {/* 投稿内容 */}
             <h1 style={styles.postContent}>{post.content}</h1>
+            {/* 投稿画像を表示 */}
+            {post.image_url && (
+                <div style={styles.imageContainer}>
+                    <NextImage
+                        src={post.image_url}
+                        alt="投稿画像"
+                        width={500}
+                        height={300}
+                        style={styles.postImage}
+                    />
+                </div>
+            )}
             <p style={styles.likes}>
                 いいね: {post.likes} コメント <span style={styles.commentCount}>({comments.length})</span>
             </p>
@@ -602,4 +614,3 @@ const styles = {
 // };
 
 // export default PostDetailPage;
-
