@@ -339,15 +339,7 @@ const PostPage = () => {
             {isMobile ? <SidebarMobile /> : <Sidebar />}
 
             <div className="post_all">
-                <div style={{
-                    position: "fixed", // 画面に固定
-                    bottom: "20px",    // 画面の下から20pxの距離
-                    left: "400px",      // 画面の左から20pxの距離
-                    zIndex: 9999,      // 他の要素より前面に表示
-                    display: "flex",   // フレックスボックスで中央に配置
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}>
+                <div className='modalContainer'>
                     <Modal/>
                 </div>
                 {/* アンケートのみ表示切替ボタン */}
@@ -428,10 +420,15 @@ const PostPage = () => {
                                         className="post_content_clickable"
                                         onClick={() => handlePostClick(item.id)}
                                     >
-                                        <p style={{ color: 'black', fontSize: '25px', marginLeft: '30px', marginBottom: '20px'}}>{item.content}</p>
+                                        <p style={{
+                                            color: 'black',
+                                            fontSize: '25px',
+                                            marginLeft: '30px',
+                                            marginBottom: '20px'
+                                        }}>{item.content}</p>
                                         {/* 投稿画像表示 */}
                                         {item.image_url && (
-                                            <div style={{ marginTop: "10px", width: "500px", margin: "auto" }}>
+                                            <div style={{marginTop: "10px", width: "500px", margin: "auto"}}>
                                                 <Image
                                                     src={item.image_url}
                                                     alt="投稿画像"
@@ -448,7 +445,7 @@ const PostPage = () => {
                                         )}
 
 
-                                        <p style={{ color: 'black'}}>
+                                        <p style={{color: 'black'}}>
                                             投稿日:{" "}
                                             {item.create_at
                                                 ? new Date(item.create_at.seconds * 1000).toLocaleString()
@@ -595,8 +592,8 @@ const PostPage = () => {
                     <button onClick={closeConfirmPopup}>キャンセル</button>
                 </div>
             )}
-            {/*<Searchdummy />*/}
-            <CommunitySearchBar />
+            <Searchdummy />
+            {/*<CommunitySearchBar />*/}
             {isSurveyConfirmPopupOpen && (
                 <div className="survey_delete_confirmation">
                     <p>本当にこのアンケートを削除しますか？</p>

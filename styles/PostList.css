@@ -213,6 +213,15 @@ body {
   margin-top: 10px;
 }
 
+.modalContainer {
+  position: fixed;
+  bottom: 20px;
+  left: 400px;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 /* .like-button {
   background: none;
   border: none;
@@ -261,7 +270,8 @@ body {
   html, body {
     overflow-x: hidden; /* 横スクロールを無効にする */
   }
-  .container{
+
+  .container {
     width: 100vw;
     padding: 0;
   }
@@ -277,7 +287,6 @@ body {
     margin: 3px 5px 65px 5px;
 
   }
-
 
 
   .single_post {
@@ -306,6 +315,17 @@ body {
   .sidebar-mobile {
     display: block; /* SidebarMobileを表示 */
   }
+
+  .modalContainer {
+    position: fixed;
+    bottom: 100px;
+    left: 10px;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
 }
 
 @media (min-width: 1001px) {
