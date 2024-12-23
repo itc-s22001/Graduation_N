@@ -73,7 +73,7 @@ const CommunitySearchBar = () => {
                             <Image
                                 src={community.community_image_url}
                                 alt="コミュニティアイコン"
-                                // className={styles.CommunityImage}
+                                className='CommunityImage'
                                 width={100}
                                 height={100}
                             />
