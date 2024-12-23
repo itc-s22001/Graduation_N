@@ -428,18 +428,13 @@ const PostPage = () => {
                                         }}>{item.content}</p>
                                         {/* 投稿画像表示 */}
                                         {item.image_url && (
-                                            <div style={{marginTop: "10px", width: "500px", margin: "auto"}}>
+                                            <div className='ImagePost'>
                                                 <Image
                                                     src={item.image_url}
                                                     alt="投稿画像"
                                                     width={500} // 表示サイズを調整
                                                     height={500}
-                                                    style={{
-                                                        objectFit: "contain", // アスペクト比を保持して表示
-                                                        borderRadius: "8px",
-                                                        maxWidth: "100%",
-                                                        margin: 'auto'
-                                                    }}
+                                                    className="posts_image"
                                                 />
                                             </div>
                                         )}

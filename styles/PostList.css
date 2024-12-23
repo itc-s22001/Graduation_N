@@ -68,6 +68,13 @@ body {
   margin-right: 10px;
 }
 
+.posts_image {
+  object-fit: contain;
+  border-radius: 8px;
+  max-width: 100%;
+  margin: auto;
+}
+
 .post_name {
   font-weight: bold;
 }
@@ -222,6 +229,11 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+.ImagePost{
+  width: 500px;
+  margin: auto;
+}
 /* .like-button {
   background: none;
   border: none;
@@ -325,6 +337,23 @@ body {
     justify-content: center;
     align-items: center;
   }
+
+  .ImagePost{
+    width: auto;
+    margin: auto;
+  }
+
+  .posts_image {
+    object-fit: contain; /* 画像を要素に収める */
+    border-radius: 8px; /* 角を丸く */
+    width: 100%; /* 親要素（.single_post）の幅に合わせる */
+    /*max-width: 100%; !* 親要素を超えない *!*/
+    /*height: auto; !* 縦横比を維持 *!*/
+    /*display: block; !* 無駄な余白を排除 *!*/
+    /*margin: 0 auto; !* 画像を中央揃え *!*/
+  }
+
+
 
 }
 
